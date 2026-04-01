@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sports Content Agent Control Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body data-sample-input="{{ sample_input }}">
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="kicker">Sports Content Agent</p>
+          <h1>Control Room</h1>
+          <p class="subtitle">一边运行工作流，一边盯着后台每一步怎么走，最后直接拿到虎扑与抖音发布包。</p>
+        </div>
+        <div class="hero-scoreboard">
+          <div class="score-chip">
+            <span>Live Ops</span>
+            <strong>HUPU + DOUYIN</strong>
+          </div>
+          <div class="score-metric">
+            <span>Mode</span>
+            <strong>Postgame</strong>
+          </div>
+          <div class="score-metric">
+            <span>Feed</span>
+            <strong>NBA Official</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard-grid">
+        <section class="panel control-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">Launch</p>
+            <h2>Run a Workflow</h2>
+          </div>
+
+          <form id="job-form" class="job-form">
+            <label class="field">
+              <span>Source</span>
+              <select id="source">
+                <option value="fetch_today">抓官方最新完赛比赛</option>
+                <option value="input">用本地输入文件</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Team Filter</span>
+              <input id="team" type="text" placeholder="比如 LAL / 湖人 / Warriors">
+            </label>
+
+            <label class="field">
+              <span>Input Path</span>
+              <input id="input-path" type="text" value="{{ sample_input }}">
+            </label>
+
+            <div class="button-row">
+              <button type="submit" class="primary-button">Run Control Room</button>
+              <button type="button" id="use-sample" class="ghost-button">Use Sample</button>
+            </div>
+          </form>
+
+          <div class="hint-box">
+            <p>虎扑当前走“人工确认后发帖”路线，抖音走“官方能力预留 + 资产准备完毕”路线。</p>
+          </div>
+
+          <div class="job-list-wrap">
+            <div class="panel-header compact">
+              <p class="panel-kicker">Recent</p>
+              <h3>Jobs</h3>
+            </div>
+            <div id="job-list" class="job-list"></div>
+          </div>
+        </section>
+
+        <section class="panel workflow-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">Workflow</p>
+            <h2>Backend Timeline</h2>
+          </div>
+          <div id="job-status-banner" class="status-banner idle">等待运行</div>
+          <div id="steps" class="steps"></div>
+
+          <div class="panel-header compact log-header">
+            <p class="panel-kicker">Trace</p>
+            <h3>Runtime Log</h3>
+          </div>
+          <div id="logs" class="logs"></div>
+        </section>
+
+        <section class="panel output-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">Output</p>
+            <h2>Content & Publish</h2>
+          </div>
+
+          <div id="overview" class="overview-card empty-state">运行后会在这里看到比赛摘要、可视化资产和平台发布计划。</div>
+
+          <div class="preview-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Hupu</span>
+                <strong>Article Preview</strong>
+              </div>
+              <div id="hupu-preview" class="preview-body empty-state">暂无内容</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Douyin</span>
+                <strong>Script Preview</strong>
+              </div>
+              <div id="douyin-preview" class="preview-body empty-state">暂无内容</div>
+            </article>
+          </div>
+
+          <div class="publish-grid">
+            <article class="publish-card">
+              <div class="preview-head">
+                <span>Hupu</span>
+                <strong>Publish Plan</strong>
+              </div>
+              <div id="hupu-publish" class="publish-body empty-state">暂无发布计划</div>
+            </article>
+
+            <article class="publish-card">
+              <div class="preview-head">
+                <span>Douyin</span>
+                <strong>Publish Plan</strong>
+              </div>
+              <div id="douyin-publish" class="publish-body empty-state">暂无发布计划</div>
+            </article>
+          </div>
+
+          <article class="poster-card">
+            <div class="preview-head">
+              <span>Asset</span>
+              <strong>Poster Preview</strong>
+            </div>
+            <div id="poster-wrap" class="poster-wrap empty-state">暂无海报</div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

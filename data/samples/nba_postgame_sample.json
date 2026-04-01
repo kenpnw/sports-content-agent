@@ -1,0 +1,124 @@
+{
+  "league": "NBA",
+  "game_id": "2026-03-31-lal-gsw",
+  "game_date": "2026-03-31",
+  "status": "final",
+  "venue": "Chase Center",
+  "source": "manual_sample",
+  "winner": "勇士",
+  "home_team": {
+    "name": "Golden State Warriors",
+    "short_name": "勇士",
+    "score": 118,
+    "record": "49-26",
+    "stats": {
+      "points": 118,
+      "rebounds": 46,
+      "assists": 31,
+      "turnovers": 11,
+      "three_points_made": 18,
+      "three_points_attempted": 42
+    }
+  },
+  "away_team": {
+    "name": "Los Angeles Lakers",
+    "short_name": "湖人",
+    "score": 110,
+    "record": "45-30",
+    "stats": {
+      "points": 110,
+      "rebounds": 41,
+      "assists": 24,
+      "turnovers": 14,
+      "three_points_made": 11,
+      "three_points_attempted": 34
+    }
+  },
+  "top_players": [
+    {
+      "name": "Stephen Curry",
+      "team": "勇士",
+      "points": 34,
+      "rebounds": 5,
+      "assists": 9,
+      "steals": 2,
+      "blocks": 0,
+      "field_goals_made": 12,
+      "field_goals_attempted": 21,
+      "three_points_made": 7,
+      "three_points_attempted": 13,
+      "plus_minus": 14,
+      "summary": "末节连续命中关键三分，彻底拉开比分。"
+    },
+    {
+      "name": "LeBron James",
+      "team": "湖人",
+      "points": 28,
+      "rebounds": 8,
+      "assists": 10,
+      "steals": 1,
+      "blocks": 1,
+      "field_goals_made": 11,
+      "field_goals_attempted": 20,
+      "three_points_made": 2,
+      "three_points_attempted": 6,
+      "plus_minus": -6,
+      "summary": "三节前稳住局面，但末节体能和防守轮转压力都上来了。"
+    },
+    {
+      "name": "Jonathan Kuminga",
+      "team": "勇士",
+      "points": 22,
+      "rebounds": 7,
+      "assists": 3,
+      "steals": 1,
+      "blocks": 1,
+      "field_goals_made": 8,
+      "field_goals_attempted": 13,
+      "three_points_made": 2,
+      "three_points_attempted": 4,
+      "plus_minus": 11,
+      "summary": "持续冲筐，给湖人内线制造了很大压力。"
+    }
+  ],
+  "game_flow": [
+    {
+      "quarter": "首节",
+      "note": "湖人开局更主动，詹姆斯连续推动转换，客队一度领先8分。"
+    },
+    {
+      "quarter": "第二节",
+      "note": "勇士替补阵容把节奏提起来，外线连续命中追平比分。"
+    },
+    {
+      "quarter": "第三节",
+      "note": "双方持续拉锯，勇士通过二次传导找到弱侧空位三分。"
+    },
+    {
+      "quarter": "第四节",
+      "note": "库里末节接管比赛，连续远投命中，勇士打出一波流收下比赛。"
+    }
+  ],
+  "notable_context": [
+    "这场比赛直接影响西部前六卡位。",
+    "勇士三分命中数和替补得分都明显占优。",
+    "湖人末节失误增多，转换回防也没跟上。"
+  ],
+  "analysis": {
+    "headline": "勇士靠末节外线火力和更快的轮转速度拿下关键卡位战。",
+    "key_takeaways": [
+      "库里在高强度比赛里再次证明了无球和持球切换的杀伤力。",
+      "勇士的二次传导做得更好，弱侧投射机会明显更多。",
+      "湖人能咬住前三节，但末节失误和退防质量下滑太明显。"
+    ],
+    "tactical_observations": [
+      "勇士频繁用高位掩护把湖人的大个拉出禁区，再惩罚协防慢一步的回合。",
+      "湖人试图用更大的阵容保护篮板，但换防后外线脚步跟不上。"
+    ],
+    "trending_angles": [
+      "库里末节是否还是联盟最强收比赛后卫？",
+      "湖人面对顶级投射队时，换防质量是不是硬伤？",
+      "勇士这套轮换在季后赛卡位战里已经打出模板了吗？"
+    ]
+  }
+}
