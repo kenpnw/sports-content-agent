@@ -1,0 +1,381 @@
+{
+  "source": "video_scout.auto_observation_builder",
+  "observation_count": 12,
+  "observations": [
+    {
+      "observation_id": "poss_p1_e2",
+      "timecode_seconds": 21.0,
+      "period": 1,
+      "clock": "PT11M42S",
+      "frame_path": "",
+      "event_description": "L. James 25' 3PT Jump Shot Made",
+      "possession_team": "LAL",
+      "defense_team": "",
+      "clip_start_seconds": 14.0,
+      "clip_end_seconds": 21.0,
+      "clip_label": "poss_p1_e2_key_shot",
+      "tactic_tags": [
+        "three_point_creation",
+        "key_shot",
+        "made_shot"
+      ],
+      "players": [
+        "L. James"
+      ],
+      "court_structure": "PBP-inferred possession from PT11M42S to PT11M42S; ended by made_shot.",
+      "action_summary": "L. James 25' 3PT Jump Shot Made",
+      "decision_analysis": "Rule detector marked this as key_shot with salience 0.58; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:2",
+        "L. James 25' 3PT Jump Shot Made",
+        "L. James 29分 19投10中 三分3/6 8板9助 1断1帽 正负值-3"
+      ],
+      "confidence": 0.62,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p1_e3",
+      "timecode_seconds": 43.0,
+      "period": 1,
+      "clock": "PT11M20S",
+      "frame_path": "",
+      "event_description": "S. Curry 26' 3PT Jump Shot Made",
+      "possession_team": "GSW",
+      "defense_team": "",
+      "clip_start_seconds": 36.0,
+      "clip_end_seconds": 43.0,
+      "clip_label": "poss_p1_e3_key_shot",
+      "tactic_tags": [
+        "three_point_creation",
+        "key_shot",
+        "made_shot"
+      ],
+      "players": [
+        "S. Curry"
+      ],
+      "court_structure": "PBP-inferred possession from PT11M20S to PT11M20S; ended by made_shot.",
+      "action_summary": "S. Curry 26' 3PT Jump Shot Made",
+      "decision_analysis": "Rule detector marked this as key_shot with salience 0.58; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:3",
+        "S. Curry 26' 3PT Jump Shot Made",
+        "S. Curry 34分 22投12中 三分7/13 5板8助 2断0帽 正负值+9"
+      ],
+      "confidence": 0.62,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p1_e4",
+      "timecode_seconds": 65.0,
+      "period": 1,
+      "clock": "PT10M58S",
+      "frame_path": "",
+      "event_description": "A. Davis Cutting Dunk Shot Made",
+      "possession_team": "LAL",
+      "defense_team": "",
+      "clip_start_seconds": 58.0,
+      "clip_end_seconds": 65.0,
+      "clip_label": "poss_p1_e4_key_shot",
+      "tactic_tags": [
+        "rim_pressure",
+        "key_shot",
+        "made_shot"
+      ],
+      "players": [
+        "A. Davis"
+      ],
+      "court_structure": "PBP-inferred possession from PT10M58S to PT10M58S; ended by made_shot.",
+      "action_summary": "A. Davis Cutting Dunk Shot Made",
+      "decision_analysis": "Rule detector marked this as key_shot with salience 0.58; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:4",
+        "A. Davis Cutting Dunk Shot Made",
+        "A. Davis 24分 15投9中 三分0/1 12板3助 1断3帽 正负值-1"
+      ],
+      "confidence": 0.62,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p1_e5",
+      "timecode_seconds": 92.0,
+      "period": 1,
+      "clock": "PT10M31S",
+      "frame_path": "",
+      "event_description": "D. Green Turnover Bad Pass",
+      "possession_team": "GSW",
+      "defense_team": "",
+      "clip_start_seconds": 85.0,
+      "clip_end_seconds": 92.0,
+      "clip_label": "poss_p1_e5_turnover",
+      "tactic_tags": [
+        "ball_security",
+        "turnover",
+        "turnover"
+      ],
+      "players": [
+        "D. Green"
+      ],
+      "court_structure": "PBP-inferred possession from PT10M31S to PT10M31S; ended by turnover.",
+      "action_summary": "D. Green Turnover Bad Pass",
+      "decision_analysis": "Rule detector marked this as turnover with salience 0.50; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:5",
+        "D. Green Turnover Bad Pass",
+        "D. Green 8分 7投3中 三分1/2 9板7助 2断1帽 正负值+8"
+      ],
+      "confidence": 0.5900000000000001,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p1_e6",
+      "timecode_seconds": 135.0,
+      "period": 1,
+      "clock": "PT09M48S",
+      "frame_path": "",
+      "event_description": "K. Thompson 24' 3PT Jump Shot Made",
+      "possession_team": "GSW",
+      "defense_team": "",
+      "clip_start_seconds": 128.0,
+      "clip_end_seconds": 135.0,
+      "clip_label": "poss_p1_e6_lead_change",
+      "tactic_tags": [
+        "three_point_creation",
+        "late_game_execution",
+        "lead_change",
+        "made_shot"
+      ],
+      "players": [
+        "K. Thompson"
+      ],
+      "court_structure": "PBP-inferred possession from PT09M48S to PT09M48S; ended by made_shot.",
+      "action_summary": "K. Thompson 24' 3PT Jump Shot Made",
+      "decision_analysis": "Rule detector marked this as lead_change with salience 0.84; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:6",
+        "K. Thompson 24' 3PT Jump Shot Made",
+        "K. Thompson 17分 14投6中 三分4/9 3板2助 1断0帽 正负值+6"
+      ],
+      "confidence": 0.88,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p2_e11",
+      "timecode_seconds": 1003.0,
+      "period": 2,
+      "clock": "PT07M20S",
+      "frame_path": "",
+      "event_description": "L. James Turnover Lost Ball",
+      "possession_team": "LAL",
+      "defense_team": "",
+      "clip_start_seconds": 996.0,
+      "clip_end_seconds": 1003.0,
+      "clip_label": "poss_p2_e11_turnover",
+      "tactic_tags": [
+        "ball_security",
+        "turnover",
+        "turnover"
+      ],
+      "players": [
+        "L. James"
+      ],
+      "court_structure": "PBP-inferred possession from PT07M20S to PT07M20S; ended by turnover.",
+      "action_summary": "L. James Turnover Lost Ball",
+      "decision_analysis": "Rule detector marked this as turnover with salience 0.50; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:11",
+        "L. James Turnover Lost Ball",
+        "L. James 29分 19投10中 三分3/6 8板9助 1断1帽 正负值-3"
+      ],
+      "confidence": 0.5900000000000001,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p2_e12",
+      "timecode_seconds": 1025.0,
+      "period": 2,
+      "clock": "PT06M58S",
+      "frame_path": "",
+      "event_description": "K. Thompson 25' 3PT Jump Shot Made",
+      "possession_team": "GSW",
+      "defense_team": "",
+      "clip_start_seconds": 1018.0,
+      "clip_end_seconds": 1025.0,
+      "clip_label": "poss_p2_e12_key_shot",
+      "tactic_tags": [
+        "three_point_creation",
+        "key_shot",
+        "made_shot"
+      ],
+      "players": [
+        "K. Thompson"
+      ],
+      "court_structure": "PBP-inferred possession from PT06M58S to PT06M58S; ended by made_shot.",
+      "action_summary": "K. Thompson 25' 3PT Jump Shot Made",
+      "decision_analysis": "Rule detector marked this as key_shot with salience 0.58; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:12",
+        "K. Thompson 25' 3PT Jump Shot Made",
+        "K. Thompson 17分 14投6中 三分4/9 3板2助 1断0帽 正负值+6"
+      ],
+      "confidence": 0.62,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p3_e15",
+      "timecode_seconds": 1873.0,
+      "period": 3,
+      "clock": "PT04M50S",
+      "frame_path": "",
+      "event_description": "S. Curry Turnover Traveling",
+      "possession_team": "GSW",
+      "defense_team": "",
+      "clip_start_seconds": 1866.0,
+      "clip_end_seconds": 1873.0,
+      "clip_label": "poss_p3_e15_turnover",
+      "tactic_tags": [
+        "ball_security",
+        "turnover",
+        "turnover"
+      ],
+      "players": [
+        "S. Curry"
+      ],
+      "court_structure": "PBP-inferred possession from PT04M50S to PT04M50S; ended by turnover.",
+      "action_summary": "S. Curry Turnover Traveling",
+      "decision_analysis": "Rule detector marked this as turnover with salience 0.50; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:15",
+        "S. Curry Turnover Traveling",
+        "S. Curry 34分 22投12中 三分7/13 5板8助 2断0帽 正负值+9"
+      ],
+      "confidence": 0.5900000000000001,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p3_e16",
+      "timecode_seconds": 1903.0,
+      "period": 3,
+      "clock": "PT04M20S",
+      "frame_path": "",
+      "event_description": "A. Davis Alley Oop Dunk Shot Made",
+      "possession_team": "LAL",
+      "defense_team": "",
+      "clip_start_seconds": 1896.0,
+      "clip_end_seconds": 1903.0,
+      "clip_label": "poss_p3_e16_key_shot",
+      "tactic_tags": [
+        "rim_pressure",
+        "key_shot",
+        "made_shot"
+      ],
+      "players": [
+        "A. Davis"
+      ],
+      "court_structure": "PBP-inferred possession from PT04M20S to PT04M20S; ended by made_shot.",
+      "action_summary": "A. Davis Alley Oop Dunk Shot Made",
+      "decision_analysis": "Rule detector marked this as key_shot with salience 0.58; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:16",
+        "A. Davis Alley Oop Dunk Shot Made",
+        "A. Davis 24分 15投9中 三分0/1 12板3助 1断3帽 正负值-1"
+      ],
+      "confidence": 0.62,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p4_e17",
+      "timecode_seconds": 2753.0,
+      "period": 4,
+      "clock": "PT02M10S",
+      "frame_path": "",
+      "event_description": "L. James 26' 3PT Jump Shot Made",
+      "possession_team": "LAL",
+      "defense_team": "",
+      "clip_start_seconds": 2746.0,
+      "clip_end_seconds": 2753.0,
+      "clip_label": "poss_p4_e17_clutch_shot",
+      "tactic_tags": [
+        "three_point_creation",
+        "late_game_execution",
+        "clutch_shot",
+        "made_shot"
+      ],
+      "players": [
+        "L. James"
+      ],
+      "court_structure": "PBP-inferred possession from PT02M10S to PT02M10S; ended by made_shot.",
+      "action_summary": "L. James 26' 3PT Jump Shot Made",
+      "decision_analysis": "Rule detector marked this as clutch_shot with salience 0.96; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:17",
+        "L. James 26' 3PT Jump Shot Made",
+        "L. James 29分 19投10中 三分3/6 8板9助 1断1帽 正负值-3"
+      ],
+      "confidence": 0.9,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p4_e18",
+      "timecode_seconds": 2848.0,
+      "period": 4,
+      "clock": "PT00M35S",
+      "frame_path": "",
+      "event_description": "D. Green Turnover Out of Bounds",
+      "possession_team": "GSW",
+      "defense_team": "",
+      "clip_start_seconds": 2841.0,
+      "clip_end_seconds": 2848.0,
+      "clip_label": "poss_p4_e18_turnover",
+      "tactic_tags": [
+        "ball_security",
+        "turnover",
+        "turnover"
+      ],
+      "players": [
+        "D. Green"
+      ],
+      "court_structure": "PBP-inferred possession from PT00M35S to PT00M35S; ended by turnover.",
+      "action_summary": "D. Green Turnover Out of Bounds",
+      "decision_analysis": "Rule detector marked this as turnover with salience 0.50; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:18",
+        "D. Green Turnover Out of Bounds",
+        "D. Green 8分 7投3中 三分1/2 9板7助 2断1帽 正负值+8"
+      ],
+      "confidence": 0.5900000000000001,
+      "source": "auto_pbp"
+    },
+    {
+      "observation_id": "poss_p4_e19",
+      "timecode_seconds": 2875.0,
+      "period": 4,
+      "clock": "PT00M08S",
+      "frame_path": "",
+      "event_description": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+      "possession_team": "GSW",
+      "defense_team": "",
+      "clip_start_seconds": 2868.0,
+      "clip_end_seconds": 2875.0,
+      "clip_label": "poss_p4_e19_clutch_shot",
+      "tactic_tags": [
+        "three_point_creation",
+        "late_game_execution",
+        "clutch_shot",
+        "made_shot"
+      ],
+      "players": [
+        "S. Curry"
+      ],
+      "court_structure": "PBP-inferred possession from PT00M08S to PT00M08S; ended by made_shot.",
+      "action_summary": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+      "decision_analysis": "Rule detector marked this as clutch_shot with salience 0.96; use video review to validate spacing and decision quality.",
+      "evidence": [
+        "event:19",
+        "S. Curry 28' 3PT Jump Shot Made (clutch)",
+        "S. Curry 34分 22投12中 三分7/13 5板8助 2断0帽 正负值+9"
+      ],
+      "confidence": 0.9,
+      "source": "auto_pbp"
+    }
+  ]
+}

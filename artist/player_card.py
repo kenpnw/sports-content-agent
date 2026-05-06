@@ -25,10 +25,19 @@ class PlayerCard:
 
     def _resolve_chinese_font_path(self) -> str:
         candidate_paths = [
+            # Windows
+            "C:/Windows/Fonts/msyh.ttc",
+            "C:/Windows/Fonts/msyhbd.ttc",
+            "C:/Windows/Fonts/simhei.ttf",
+            "C:/Windows/Fonts/simsun.ttc",
+            # macOS
             "/System/Library/Fonts/PingFang.ttc",
             "/System/Library/Fonts/STHeiti Medium.ttc",
             "/System/Library/Fonts/Hiragino Sans GB.ttc",
             "/Library/Fonts/Arial Unicode.ttf",
+            # Linux
+            "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         ]
         for font_path in candidate_paths:
             if os.path.exists(font_path):
@@ -40,12 +49,25 @@ class PlayerCard:
             return ImageFont.truetype(self.font_path, size)
         return ImageFont.load_default()
 
+    # Reasonable per-game maximums for radar normalization when raw NBA stats are passed.
+    _STAT_CEILINGS = {
+        "scoring": 60.0,
+        "defense": 20.0,
+        "playmaking": 20.0,
+        "athleticism": 25.0,
+        "efficiency": 100.0,
+    }
+
     def _safe_stat_value(self, stats: dict[str, Any], key: str) -> float:
         value = stats.get(key, 50)
         try:
             number = float(value)
         except (TypeError, ValueError):
             return 50.0
+        # If value is already in 0-100 range, use directly; otherwise normalize by ceiling.
+        ceiling = self._STAT_CEILINGS.get(key, 100.0)
+        if number > 100.0:
+            number = (number / ceiling) * 100.0
         return max(0.0, min(100.0, number))
 
     def _build_gradient_background(self) -> Image.Image:

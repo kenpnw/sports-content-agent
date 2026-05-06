@@ -5,6 +5,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = str(DATA_DIR / "generated")
+KNOWLEDGE_DIR = DATA_DIR / "knowledge"
+KNOWLEDGE_DB_PATH = str(KNOWLEDGE_DIR / "sports_facts.sqlite3")
 APP_HOST = os.getenv("SPORTS_AGENT_APP_HOST", "127.0.0.1")
 APP_PORT = int(os.getenv("SPORTS_AGENT_APP_PORT", "8765"))
 

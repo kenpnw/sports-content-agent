@@ -1,0 +1,79 @@
+{
+  "game_id": "demo_0001",
+  "title": "GSW @ LAL video scout sample",
+  "notes": "This sample is intentionally small. Replace observations with real clip/frame annotations for defense demo work.",
+  "observations": [
+    {
+      "observation_id": "clip_q1_1142_lal_spain_pnr",
+      "timecode_seconds": 18,
+      "period": 1,
+      "clock": "PT11M42S",
+      "event_description": "L. James 25' 3PT Jump Shot Made",
+      "possession_team": "LAL",
+      "defense_team": "GSW",
+      "clip_start_seconds": 6,
+      "clip_end_seconds": 23,
+      "clip_label": "lal_early_drag_screen_lebron_three",
+      "tactic_tags": ["early drag screen", "above-the-break three", "transition defense"],
+      "players": ["L. James"],
+      "court_structure": "湖人推进到前场后，持球人借早期掩护在弧顶获得出手空间，勇士防守还没有完全落位。",
+      "action_summary": "詹姆斯在转换落位未稳时直接选择弧顶三分，属于早攻阶段利用防守站位迟缓的出手。",
+      "decision_analysis": "这个选择合理，因为防守人距离偏远且协防还没有形成，早出手反而能避免半场阵地被完全站住。",
+      "evidence": [
+        "Q1 PT11M42S",
+        "L. James 25' 3PT Jump Shot Made",
+        "home 3 away 0"
+      ],
+      "confidence": 0.78,
+      "source": "manual_demo"
+    },
+    {
+      "observation_id": "clip_q1_1120_gsw_high_pnr",
+      "timecode_seconds": 40,
+      "period": 1,
+      "clock": "PT11M20S",
+      "event_description": "S. Curry 26' 3PT Jump Shot Made",
+      "possession_team": "GSW",
+      "defense_team": "LAL",
+      "clip_start_seconds": 28,
+      "clip_end_seconds": 44,
+      "clip_label": "gsw_high_pnr_curry_pullup_three",
+      "tactic_tags": ["high pick-and-roll", "drop coverage punishment", "pull-up three"],
+      "players": ["S. Curry"],
+      "court_structure": "勇士在高位发起掩护，持球人绕过掩护后防守中锋没有及时上提，弧顶出现短暂投篮窗口。",
+      "action_summary": "库里利用高位掩护后的半步空间直接拔三分，把湖人的保守防守选择变成惩罚点。",
+      "decision_analysis": "这是典型的球星阅读防守：当防守选择沉退时，不必继续突破，第一时间三分就是最高价值选择。",
+      "evidence": [
+        "Q1 PT11M20S",
+        "S. Curry 26' 3PT Jump Shot Made",
+        "home 3 away 3"
+      ],
+      "confidence": 0.84,
+      "source": "manual_demo"
+    },
+    {
+      "observation_id": "clip_q4_0008_gsw_clutch_spacing",
+      "timecode_seconds": 2872,
+      "period": 4,
+      "clock": "PT00M08S",
+      "event_description": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+      "possession_team": "GSW",
+      "defense_team": "LAL",
+      "clip_start_seconds": 2856,
+      "clip_end_seconds": 2876,
+      "clip_label": "gsw_clutch_spacing_curry_pullup",
+      "tactic_tags": ["late-clock spacing", "switch hunting", "clutch pull-up"],
+      "players": ["S. Curry"],
+      "court_structure": "勇士在末节最后阶段拉开空间，弱侧球员站位把协防拉远，持球人获得一对一处理窗口。",
+      "action_summary": "库里在最后 8 秒命中远距离三分，关键不只是个人能力，也来自弱侧拉开后协防无法及时夹击。",
+      "decision_analysis": "这是高压回合里的正确选择：比分接近、时间不足，直接用最强持球点完成终结，比复杂传导更可靠。",
+      "evidence": [
+        "Q4 PT00M08S",
+        "S. Curry 28' 3PT Jump Shot Made (clutch)",
+        "home 110 away 113"
+      ],
+      "confidence": 0.86,
+      "source": "manual_demo"
+    }
+  ]
+}

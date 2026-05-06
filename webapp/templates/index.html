@@ -9,13 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
-  <body data-sample-input="{{ sample_input }}">
+  <body data-sample-input="{{ sample_input }}" data-sample-replay="{{ sample_replay }}" data-sample-video-scout="{{ sample_video_scout }}">
     <div class="page-shell">
       <header class="hero">
         <div class="hero-copy">
           <p class="kicker">Sports Content Agent</p>
           <h1>Control Room</h1>
-          <p class="subtitle">一边运行工作流，一边盯着后台每一步怎么走，最后直接拿到虎扑与抖音发布包。</p>
+          <p class="subtitle">
+            不只写稿。现在这套控制台会同时跑选题、证据、争议、赛季剧情、人格化账号实验和发布计划，
+            让你看到一场比赛为什么值得发、怎么发、发完之后还能追什么。
+          </p>
         </div>
         <div class="hero-scoreboard">
           <div class="score-chip">
@@ -24,11 +27,11 @@
           </div>
           <div class="score-metric">
             <span>Mode</span>
-            <strong>Postgame</strong>
+            <strong>EDITORIAL LAB</strong>
           </div>
           <div class="score-metric">
-            <span>Feed</span>
-            <strong>NBA Official</strong>
+            <span>Stack</span>
+            <strong>FACT + RAG + DNA</strong>
           </div>
         </div>
       </header>
@@ -45,7 +48,9 @@
               <span>Source</span>
               <select id="source">
                 <option value="fetch_today">抓官方最新完赛比赛</option>
-                <option value="input">用本地输入文件</option>
+                <option value="input">使用本地输入文件</option>
+                <option value="replay_demo">Realtime replay demo</option>
+                <option value="video_scout_demo">Video scout demo</option>
               </select>
             </label>
 
@@ -62,11 +67,16 @@
             <div class="button-row">
               <button type="submit" class="primary-button">Run Control Room</button>
               <button type="button" id="use-sample" class="ghost-button">Use Sample</button>
+              <button type="button" id="use-replay-sample" class="ghost-button">Use Replay</button>
+              <button type="button" id="use-video-scout-sample" class="ghost-button">Use Video Scout</button>
             </div>
           </form>
 
           <div class="hint-box">
-            <p>虎扑当前走“人工确认后发帖”路线，抖音走“官方能力预留 + 资产准备完毕”路线。</p>
+            <p>
+              这条链路现在会显式分成 selector、researcher、editorial lab、writer、fact checker、risk guard、publisher 七个角色。
+              谁负责选题、谁负责找证据、谁负责制造讨论场，都能在后台看清楚。
+            </p>
           </div>
 
           <div class="job-list-wrap">
@@ -95,11 +105,153 @@
 
         <section class="panel output-panel">
           <div class="panel-header">
-            <p class="panel-kicker">Output</p>
-            <h2>Content & Publish</h2>
+            <p class="panel-kicker">Editorial OS</p>
+            <h2>Content, Debate & Storyline</h2>
           </div>
 
-          <div id="overview" class="overview-card empty-state">运行后会在这里看到比赛摘要、可视化资产和平台发布计划。</div>
+          <div id="overview" class="overview-card empty-state">运行后会在这里看到比赛摘要、编辑判断和发布总览。</div>
+
+          <article class="preview-card">
+            <div class="preview-head">
+              <span>Realtime</span>
+              <strong>Replay Commentary</strong>
+            </div>
+            <div id="realtime-preview" class="preview-body empty-state">No realtime replay has been run yet.</div>
+          </article>
+
+          <article class="preview-card">
+            <div class="preview-head">
+              <span>Video Scout</span>
+              <strong>Tactical Report</strong>
+            </div>
+            <div id="video-scout-preview" class="preview-body empty-state">No video scout report has been run yet.</div>
+          </article>
+
+          <div class="insight-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Selector</span>
+                <strong>Chosen Match</strong>
+              </div>
+              <div id="selection-preview" class="preview-body empty-state">暂无选题信息</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Opportunity Board</span>
+                <strong>Today’s Match Ranking</strong>
+              </div>
+              <div id="opportunity-preview" class="preview-body empty-state">暂无比赛机会榜</div>
+            </article>
+          </div>
+
+          <div class="insight-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Topic Engine</span>
+                <strong>Why This Game</strong>
+              </div>
+              <div id="topic-preview" class="preview-body empty-state">暂无选题评分</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Debate</span>
+                <strong>Controversy Simulator</strong>
+              </div>
+              <div id="controversy-preview" class="preview-body empty-state">暂无争议模拟</div>
+            </article>
+          </div>
+
+          <div class="insight-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Facts + RAG</span>
+                <strong>Research Packet</strong>
+              </div>
+              <div id="knowledge-preview" class="preview-body empty-state">暂无研究上下文</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>DNA</span>
+                <strong>Team / Player DNA</strong>
+              </div>
+              <div id="dna-preview" class="preview-body empty-state">暂无 DNA 报告</div>
+            </article>
+          </div>
+
+          <div class="insight-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Storyline</span>
+                <strong>Season Storyline Tree</strong>
+              </div>
+              <div id="storyline-preview" class="preview-body empty-state">暂无赛季剧情树</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Persona Lab</span>
+                <strong>Account Personalities</strong>
+              </div>
+              <div id="persona-preview" class="preview-body empty-state">暂无人格化账号版本</div>
+            </article>
+          </div>
+
+          <div class="insight-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Comments</span>
+                <strong>Comment Forecast</strong>
+              </div>
+              <div id="forecast-preview" class="preview-body empty-state">暂无评论区预判</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Next</span>
+                <strong>Follow-up Queue</strong>
+              </div>
+              <div id="followup-preview" class="preview-body empty-state">暂无后续选题</div>
+            </article>
+          </div>
+
+          <div class="insight-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Evidence</span>
+                <strong>Claim Trace</strong>
+              </div>
+              <div id="evidence-preview" class="preview-body empty-state">暂无证据链</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Angle Lab</span>
+                <strong>Contrarian & Discussion Modes</strong>
+              </div>
+              <div id="anglelab-preview" class="preview-body empty-state">暂无反直觉角度</div>
+            </article>
+          </div>
+
+          <div class="insight-grid">
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Governance</span>
+                <strong>Prompt Contracts</strong>
+              </div>
+              <div id="governance-preview" class="preview-body empty-state">暂无治理配置</div>
+            </article>
+
+            <article class="preview-card">
+              <div class="preview-head">
+                <span>Review</span>
+                <strong>Supervision</strong>
+              </div>
+              <div id="supervision-preview" class="preview-body empty-state">暂无审查结果</div>
+            </article>
+          </div>
 
           <div class="preview-grid">
             <article class="preview-card">

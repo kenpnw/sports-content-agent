@@ -1,0 +1,95 @@
+{
+  "version": "1.0",
+  "prompt_policy": {
+    "required_sections": [
+      "task",
+      "source_scope",
+      "evidence_requirements",
+      "forbidden_behaviors",
+      "output_contract",
+      "review_gate"
+    ],
+    "forbidden_patterns": [
+      "编造数据",
+      "无证据断言",
+      "省略时间戳",
+      "把观察写成事实",
+      "跨平台复用同一口吻"
+    ],
+    "claim_min_evidence_points": 2,
+    "primary_claim_min_confidence": 0.8,
+    "publish_min_topic_score": 65.0
+  },
+  "rag_policy": {
+    "source_priority": [
+      "official_stats",
+      "league_api",
+      "official_recap",
+      "team_release",
+      "verified_media",
+      "internal_archive"
+    ],
+    "mandatory_metadata": [
+      "sport",
+      "league",
+      "source_type",
+      "published_at",
+      "uri",
+      "teams"
+    ],
+    "freshness_rules": {
+      "postgame": 3,
+      "injury": 7,
+      "season_feature": 30
+    },
+    "chunk_rules": {
+      "target_chars": 900,
+      "overlap_chars": 120,
+      "max_chunks_per_doc": 12
+    }
+  },
+  "agent_roles": [
+    {
+      "name": "selector",
+      "responsibility": "决定当天哪些比赛值得进入选题池，并输出推荐角度",
+      "inputs": ["fact_store", "topic_engine"],
+      "outputs": ["selection"],
+      "reviewed_by": "fact_checker"
+    },
+    {
+      "name": "fact_researcher",
+      "responsibility": "检索结构化事实和文本证据，不写最终结论",
+      "inputs": ["fact_store", "text_rag"],
+      "outputs": ["research_packet"],
+      "reviewed_by": "fact_checker"
+    },
+    {
+      "name": "writer",
+      "responsibility": "按平台生成内容包，只能使用已批准事实和证据",
+      "inputs": ["selection", "research_packet", "analysis"],
+      "outputs": ["platform_packages"],
+      "reviewed_by": "risk_guard"
+    },
+    {
+      "name": "fact_checker",
+      "responsibility": "审查选题和内容中的事实支撑、证据数量和置信度",
+      "inputs": ["selection", "research_packet", "platform_packages"],
+      "outputs": ["fact_check_report"],
+      "reviewed_by": "publisher"
+    },
+    {
+      "name": "risk_guard",
+      "responsibility": "审查夸张表达、引战风险、时间过期和来源不合规问题",
+      "inputs": ["platform_packages", "fact_check_report"],
+      "outputs": ["risk_report"],
+      "reviewed_by": "publisher"
+    },
+    {
+      "name": "publisher",
+      "responsibility": "只有在事实和风险双通过后，才允许进入发布步骤",
+      "inputs": ["fact_check_report", "risk_report", "platform_packages"],
+      "outputs": ["publish_plan"],
+      "reviewed_by": ""
+    }
+  ]
+}

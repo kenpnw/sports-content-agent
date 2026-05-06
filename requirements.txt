@@ -1,3 +1,14 @@
+# ---- Existing dependencies ----
 pillow
 matplotlib
 flask
+
+# ---- New: realtime + LLM ----
+openai>=1.0
+python-dotenv>=1.0
+flask-sock>=0.7
+pydantic>=2.0
+
+# ---- New: evaluation experiments ----
+pandas>=2.0
+numpy>=1.24

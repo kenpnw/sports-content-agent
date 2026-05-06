@@ -3,10 +3,17 @@
 This project is currently focused on one working MVP scenario:
 
 - NBA postgame input
+- official NBA final-game fetching
+- topic selection and ranking
+- evidence-backed scoring
+- local Fact Store
+- local Text RAG layer
+- prompt contracts and agent supervision
 - Hupu article package generation
 - Douyin short video script generation
 - local control room frontend
 - visible backend workflow timeline
+- video scout tactical analysis demo
 
 The current workflow reads a normalized postgame JSON file and writes local content artifacts.
 
@@ -46,6 +53,10 @@ The control room lets you:
 
 - start a live fetch workflow
 - inspect each backend step
+- see which game the topic engine selected
+- inspect score breakdown and evidence claims
+- inspect Fact Store and Text RAG retrieval results
+- inspect prompt contracts and supervision reports
 - preview Hupu and Douyin output
 - inspect publish plans and generated assets
 
@@ -67,6 +78,28 @@ You can also target a specific team:
 python main.py --fetch-today --team LAL --save-input
 ```
 
+Run the Video Scout tactical analysis demo:
+
+```bash
+python -m video_scout.demo_runner --observations data\samples\video_scout_observations_sample.json --replay data\samples\nba_replay_sample.json --court-report data\samples\court_ai_report_sample.json --use-llm --target-chars 2000
+```
+
+This writes a timestamp-grounded tactical report under:
+
+```text
+data/generated/video_scout/<timestamp>/
+```
+
+The control room also supports `Video scout demo` from the source dropdown.
+
+If a full NBA replay video is available, add `--video` to generate tactical clip plans or real clips:
+
+```bash
+python -m video_scout.demo_runner --video D:\nba_demo\full_game.mp4 --observations data\samples\video_scout_observations_sample.json --court-report data\samples\court_ai_report_sample.json --target-chars 2000
+```
+
+When `ffmpeg` is installed, each tactical possession can produce both an `mp4` clip and a lightweight `gif` preview.
+
 You should get output under:
 
 ```text
@@ -76,6 +109,7 @@ data/generated/nba_postgame/<timestamp>/
 Typical generated files:
 
 - `summary.json`
+- `selection.json`
 - `hupu/package.json`
 - `hupu/article.md`
 - `hupu/publish/publish_payload.json`
@@ -87,8 +121,74 @@ Typical generated files:
 Note:
 
 - `--fetch-today` uses the NBA official live scoreboard feed
+- if you do not pass `--team`, the system now ranks all completed NBA games and picks the best topic of the day
 - that feed follows the NBA game day context, not China local wording
 - for example, Beijing time `2026-03-31` may correspond to NBA feed games dated `2026-03-30`
+
+
+## Knowledge Layer
+
+The project now maintains a lightweight local fact store at:
+
+```text
+data/knowledge/sports_facts.sqlite3
+```
+
+Current role of this database:
+
+- cache normalized game facts
+- build team recent-form summaries
+- build simple head-to-head context
+- build player tracked-form summaries
+- support the topic engine and evidence layer
+
+This is the first step toward a future `Fact Store + RAG Store` architecture:
+
+- structured facts should come from tables
+- narrative documents, recaps, and interviews can later go into a separate RAG layer
+
+
+## Text RAG Layer
+
+The project also supports local text retrieval from:
+
+```text
+data/knowledge/documents/
+```
+
+You can place:
+
+- official recap markdown
+- interview notes
+- injury updates
+- verified media reports
+
+The Text RAG store chunks these documents and indexes them locally in SQLite FTS.
+
+
+## Governance Layer
+
+The project now includes a machine-readable governance policy:
+
+```text
+data/standards/governance.json
+```
+
+It defines:
+
+- prompt constraints
+- minimum evidence count
+- minimum confidence thresholds
+- RAG source priority
+- agent boundaries
+- review chain
+
+The workflow uses these rules to generate:
+
+- prompt contracts
+- fact check reports
+- risk review reports
+- publish gating context
 
 
 ## Python Environment
@@ -265,3 +365,6 @@ Do not depend on the old PDF workflow for the new MVP path.
 - [BEHAVIOR.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/BEHAVIOR.md)
 - [ROADMAP.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/ROADMAP.md)
 - [CONTENT_STYLE_GUIDE.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/CONTENT_STYLE_GUIDE.md)
+- [PROMPT_CONTRACT.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/PROMPT_CONTRACT.md)
+- [RAG_REFERENCE_STANDARD.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/RAG_REFERENCE_STANDARD.md)
+- [AGENT_SUPERVISION.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/AGENT_SUPERVISION.md)

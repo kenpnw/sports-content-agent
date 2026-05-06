@@ -169,16 +169,16 @@ def build_nba_postgame_analysis(boxscore_game: dict[str, Any]) -> dict[str, Any]
         )
     elif loser_star:
         key_takeaways.append(
-            f"{loser_name}虽然有{loser_star['name']}撑场面，但整体比赛内容还是没能翻过来。"
+            f"{loser_name}虽然有{loser_star['name']}苦撑场面，但整体内容还是没能翻过来。"
         )
 
     tactical_observations = []
     if rebound_diff >= 8:
-        tactical_observations.append(f"{winner_name}把身体对抗和篮板球先拿住了，比赛基础盘就已经偏向他们。")
+        tactical_observations.append(f"{winner_name}先把身体对抗和篮板球拿住了，比赛底盘自然就偏向他们。")
     if assist_diff >= 5:
-        tactical_observations.append(f"{winner_name}回合里愿意多传一步，球能更顺地转到终结点，这就是助攻差出来的原因。")
+        tactical_observations.append(f"{winner_name}回合里更愿意多传一步，球能更顺地转到终结点，这就是助攻差出来的原因。")
     if three_diff >= 4:
-        tactical_observations.append(f"{loser_name}没能及时限制外线，比分一旦被三分球拉开，追分难度就明显上来了。")
+        tactical_observations.append(f"{loser_name}没能及时限制外线，比分一旦被三分球拉开，追分难度就会明显抬升。")
     if turnover_diff >= 3:
         tactical_observations.append(f"{loser_name}失误一多，转换和节奏都交出去，比赛很容易被对面一波带走。")
     if not tactical_observations:
@@ -186,7 +186,7 @@ def build_nba_postgame_analysis(boxscore_game: dict[str, Any]) -> dict[str, Any]
     tactical_observations = tactical_observations[:2]
 
     discussion_angles = [
-        f"{winner_name}这场赢球，第一原因你更认同{reason_labels[0]}，还是球星硬解？",
+        f"{winner_name}这场赢球，你更认同{reason_labels[0]}，还是球星硬解？",
         f"{loser_name}这场最该复盘的是防守轮转，还是进攻处理球？",
         f"{winner_name}这种赢法放到更强的对手面前，还能不能继续成立？",
     ]

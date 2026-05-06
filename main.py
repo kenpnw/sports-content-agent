@@ -53,13 +53,20 @@ def main() -> None:
         return
 
     input_path = args.input
+    selection_context = None
     if args.fetch_today:
-        input_path = fetch_today_nba_postgame_data(
+        fetch_result = fetch_today_nba_postgame_data(
             output_dir=args.output_dir,
             team_filter=args.team,
             save_input=args.save_input,
         )
-    summary = run_nba_postgame_workflow(input_path, args.output_dir)
+        input_path = fetch_result["input_path"]
+        selection_context = fetch_result.get("selection")
+    summary = run_nba_postgame_workflow(
+        input_path,
+        args.output_dir,
+        selection_context=selection_context,
+    )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 
 

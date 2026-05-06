@@ -11,5 +11,7 @@ __pycache__/
 
 data/generated/
 data/outputs/
+data/knowledge/*.sqlite3
+data/knowledge/*.db
 
 *.log

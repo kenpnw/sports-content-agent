@@ -22,9 +22,13 @@ def _safe_generated_path(raw_path: str) -> Path:
 @app.get("/")
 def index():
     sample_path = BASE_DIR / "data" / "samples" / "nba_postgame_sample.json"
+    sample_replay_path = BASE_DIR / "data" / "samples" / "nba_replay_sample.json"
+    sample_video_scout_path = BASE_DIR / "data" / "samples" / "video_scout_observations_sample.json"
     return render_template(
         "index.html",
         sample_input=str(sample_path),
+        sample_replay=str(sample_replay_path),
+        sample_video_scout=str(sample_video_scout_path),
         api_host=APP_HOST,
         api_port=APP_PORT,
     )
