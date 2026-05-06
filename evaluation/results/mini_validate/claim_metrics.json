@@ -1,0 +1,130 @@
+{
+  "main": {
+    "accuracy": 1.0,
+    "coverage": 0.9,
+    "hallucination_rate": 0.0,
+    "matched": 9,
+    "total_gold": 10,
+    "correct": 9,
+    "incorrect": 0,
+    "unverifiable": 0,
+    "matches": [
+      {
+        "gold_claim": "L. James 25' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "L. James 25' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 26' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "S. Curry 26' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "D. Green Turnover Bad Pass",
+        "label": "correct",
+        "matched_claim": "D. Green Turnover Bad Pass",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "K. Thompson 24' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "K. Thompson 24' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "L. James Turnover Lost Ball",
+        "label": "correct",
+        "matched_claim": "L. James Turnover Lost Ball",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "K. Thompson 25' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "K. Thompson 25' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry Turnover Traveling",
+        "label": "correct",
+        "matched_claim": "S. Curry Turnover Traveling",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "L. James 26' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "L. James 26' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+        "label": "correct",
+        "matched_claim": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+        "similarity": 1.0
+      }
+    ],
+    "generated_claim_count": 101
+  },
+  "highlight_only": {
+    "accuracy": 1.0,
+    "coverage": 0.6,
+    "hallucination_rate": 0.0,
+    "matched": 6,
+    "total_gold": 10,
+    "correct": 6,
+    "incorrect": 0,
+    "unverifiable": 0,
+    "matches": [
+      {
+        "gold_claim": "L. James 25' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "L. James 25' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 26' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "S. Curry 26' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "K. Thompson 24' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "K. Thompson 24' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "K. Thompson 25' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "K. Thompson 25' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "L. James 26' 3PT Jump Shot Made",
+        "label": "correct",
+        "matched_claim": "L. James 26' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+        "label": "correct",
+        "matched_claim": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+        "similarity": 1.0
+      }
+    ],
+    "generated_claim_count": 20
+  },
+  "gpt_only": {
+    "accuracy": 0.0,
+    "coverage": 0.0,
+    "hallucination_rate": 0.0,
+    "matched": 0,
+    "total_gold": 10,
+    "correct": 0,
+    "incorrect": 0,
+    "unverifiable": 0,
+    "matches": [],
+    "generated_claim_count": 27
+  }
+}

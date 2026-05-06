@@ -1,0 +1,494 @@
+{
+  "title": "勇士客场113-110险胜湖人，库里关键三分定胜局",
+  "executive_summary": "勇士凭借库里34分8助攻的出色发挥，在客场以113-110击败湖人。湖人詹姆斯贡献29分9助攻，但关键时刻失误和防守漏人导致失利。勇士三分命中率更高，篮板和助攻也占优。",
+  "full_analysis": "## 战术博弈：勇士客场113-110险胜湖人，库里关键三分定胜局\n\n### 一、开局的试探与反超\n\n比赛伊始，双方迅速进入对攻状态。首节11分42秒，勒布朗·詹姆斯在25英尺处命中三分，为湖人首开纪录。这一球展现了詹姆斯作为战术发起点在进攻早期的果断——利用个人能力创造三分机会，为湖人奠定进攻基调。然而，勇士立即回应：仅22秒后，斯蒂芬·库里在26英尺处命中三分，利用挡拆或跑位获得出手空间，体现了勇士为库里创造三分机会的战术执行力。随后，安东尼·戴维斯通过空切扣篮得分，利用防守轮转未到位的机会完成终结。但勇士的回应更为致命：首节9分48秒，克莱·汤普森命中24英尺三分，帮助勇士反超比分。这一球被标记为“lead_change”，置信度高达0.88，充分说明其改变比赛走势的重要性。汤普森利用无球跑动和掩护创造出手空间，接球后果断出手，展现了出色的投射能力。首节对攻中，勇士凭借更高效的三分投射取得领先。\n\n### 二、次节三分雨与失误隐患\n\n第二节成为勇士拉开分差的关键时段。7分20秒，詹姆斯出现丢球失误，在持球推进时遭遇包夹，未能及时出球，导致球被抢断。此次失误反映出他在高压防守下的决策稍显犹豫，未能有效利用队友的掩护或传球路线。勇士抓住机会，仅22秒后，汤普森再次命中25英尺三分，将领先优势扩大到5分。汤普森的无球跑动和快速出手让湖人防守难以招架。然而，勇士自身也存在失误隐患：首节10分31秒，德雷蒙德·格林出现一次传球失误（Bad Pass），作为组织型发起点，这次传球选择不佳，可能因防守压迫或队友跑位未到位导致。勇士最终仅赢3分，每次失误都可能影响胜负。\n\n### 三、第三节的拉锯与内线博弈\n\n第三节中段，比赛进入拉锯阶段。4分50秒，库里出现走步失误，在持球推进时脚步不清晰，中断了球队进攻节奏，给了湖人反击机会。湖人随即利用挡拆后内切，戴维斯完成空中接力扣篮，利用勇士防守收缩后的空隙展现内线终结能力。戴维斯全场贡献24分12篮板，内线威胁巨大，但湖人未能将这种优势转化为胜势。勇士在第三节保持了微弱的领先优势，但失误问题依然存在。\n\n### 四、末节决战：巨星对决与关键失误\n\n第四节进入白热化阶段。2分10秒，詹姆斯命中26英尺三分，将比分追至110-113。这一球体现了詹姆斯在关键时刻的大心脏特质——利用挡拆后对手收缩内线的空隙果断出手，保留了比赛悬念。然而，湖人未能进一步缩小分差。最后35秒，格林出现界外失误，勇士失去关键球权。作为组织型发起点，这一失误直接终结了勇士的进攻回合，让湖人获得球权。但湖人未能把握机会，最终勇士险胜。\n\n### 五、决胜时刻：库里的超远三分\n\n比赛最后8秒，库里在28英尺处命中关键三分，帮助勇士锁定胜局。库里利用挡拆后获得微小空间，果断出手超远三分，展现了顶级的关键球能力和投篮自信。防守方湖人未能及时换防或协防，给了库里足够的出手空间。这一球被标记为“clutch_three_point_creation”，置信度0.9，是决定胜负的关键一球。库里全场34分，三分7/13，正负值+9，是勇士获胜的最大功臣。\n\n### 六、战术总结与胜负关键\n\n从战术层面看，勇士的三分投射和篮板优势是获胜的关键。勇士全场三分命中率更高，篮板和助攻也占优。库里和汤普森的无球跑动和快速出手让湖人防守顾此失彼。湖人方面，詹姆斯和戴维斯的个人能力毋庸置疑，但关键时刻的失误和防守漏人导致失利。詹姆斯全场29分9助攻，但4次失误和-3的正负值说明他在高压下的决策有待改进。戴维斯的内线终结是湖人的重要武器，但外线投射不足限制了球队的进攻空间。\n\n### 七、球员战术角色分析\n\n库里作为勇士的主要战术发起点，既承担持球组织，也承担终结压力。他的三分投射和无球跑动是勇士进攻体系的核心。汤普森作为空间牵制点，其站位影响了湖人的防守选择，为队友创造了突破和投篮空间。格林作为偏组织型发起点，主要价值在于串联和创造队友机会，但失误问题需要警惕。詹姆斯是湖人的主要战术发起点，既持球组织也承担终结压力，但失误较多。戴维斯作为内线结构点，影响篮板保护、护框和二次进攻，但外线投射不足。\n\n### 八、比赛启示与未来展望\n\n这场比赛充分展示了现代篮球中三分投射和失误控制的重要性。勇士凭借更高效的三分和更少的失误（尽管也有失误）赢得了比赛。湖人需要在关键时刻减少失误，并提升外线防守轮转速度。对于勇士而言，保持健康并延续三分火力是继续取胜的关键。对于湖人，詹姆斯和戴维斯的组合依然是联盟顶级，但需要更好的角色球员支持。这场比赛也为球迷提供了丰富的战术素材，值得反复回味。",
+  "key_segments": [
+    {
+      "timecode": "00:21",
+      "period": 1,
+      "clock": "PT11M42S",
+      "tactic_type": "three_point_creation",
+      "observation": "L. James 在25英尺处命中三分，这是湖人开场后的首次得分。",
+      "decision_analysis": "詹姆斯作为主要战术发起点，在进攻早期选择三分出手，利用个人能力创造得分机会。该球命中，为湖人奠定进攻基调。",
+      "win_loss_impact": "湖人最终以110-113惜败，但詹姆斯此球帮助球队紧咬比分，展现了其关键得分能力。",
+      "evidence": [
+        "poss_p1_e2",
+        "event:2",
+        "L. James 25' 3PT Jump Shot Made",
+        "L. James 29分 19投10中 三分3/6 8板9助 1断1帽 正负值-3"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "timecode": "00:43",
+      "period": 1,
+      "clock": "PT11M20S",
+      "tactic_type": "three_point_creation",
+      "observation": "S. Curry 26英尺三分命中",
+      "decision_analysis": "库里在进攻早期利用挡拆或跑位获得三分出手机会，果断出手命中。这一球体现了勇士队为库里创造三分机会的战术执行力，以及库里作为顶级射手的快速出手能力。",
+      "win_loss_impact": "为勇士队首开纪录，建立领先优势，并迫使湖人队调整防守策略，为后续进攻创造空间。",
+      "evidence": [
+        "poss_p1_e3",
+        "event:3",
+        "S. Curry 26' 3PT Jump Shot Made",
+        "S. Curry 34分 22投12中 三分7/13 5板8助 2断0帽 正负值+9"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "timecode": "01:05",
+      "period": 1,
+      "clock": "PT10M58S",
+      "tactic_type": "rim_pressure",
+      "observation": "A. Davis 空切扣篮得分",
+      "decision_analysis": "Davis 利用空切时机，在防守轮转未到位时接球完成扣篮，体现了其内线终结能力。",
+      "win_loss_impact": "为湖人队拿下2分，但最终球队以110-113惜败，此球对比赛走势影响有限。",
+      "evidence": [
+        "poss_p1_e4",
+        "event:4",
+        "A. Davis Cutting Dunk Shot Made",
+        "A. Davis 24分 15投9中 三分0/1 12板3助 1断3帽 正负值-1"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "timecode": "01:32",
+      "period": 1,
+      "clock": "PT10M31S",
+      "tactic_type": "ball_security",
+      "observation": "D. Green 出现一次传球失误（Bad Pass），导致勇士队失去球权。",
+      "decision_analysis": "D. Green 作为组织型发起点，这次传球选择不佳，可能因防守压迫或队友跑位未到位，导致失误。",
+      "win_loss_impact": "失误直接终结勇士进攻回合，湖人获得球权，可能转化为得分。勇士最终仅赢3分，每次失误都可能影响胜负。",
+      "evidence": [
+        "poss_p1_e5",
+        "event:5",
+        "D. Green Turnover Bad Pass",
+        "D. Green 8分 7投3中 三分1/2 9板7助 2断1帽 正负值+8"
+      ],
+      "confidence": 0.59
+    },
+    {
+      "timecode": "02:15",
+      "period": 1,
+      "clock": "PT09M48S",
+      "tactic_type": "three_point_creation",
+      "observation": "K. Thompson 在首节9分48秒命中一记24英尺三分球，帮助勇士队反超比分。",
+      "decision_analysis": "汤普森利用无球跑动和掩护创造出手空间，接球后果断出手，展现了出色的投射能力。",
+      "win_loss_impact": "这记三分球使勇士队取得领先，改变了比赛势头，为后续胜利奠定基础。",
+      "evidence": [
+        "poss_p1_e6",
+        "K. Thompson 24' 3PT Jump Shot Made",
+        "K. Thompson 全场17分，三分4/9",
+        "事件标记为lead_change，置信度0.88",
+        "event:6",
+        "K. Thompson 17分 14投6中 三分4/9 3板2助 1断0帽 正负值+6"
+      ],
+      "confidence": 0.88
+    },
+    {
+      "timecode": "16:43",
+      "period": 2,
+      "clock": "PT07M20S",
+      "tactic_type": "ball_security",
+      "observation": "L. James 失误丢球",
+      "decision_analysis": "詹姆斯在持球推进时遭遇包夹，未能及时出球，导致球被抢断。此次失误反映出他在高压防守下的决策稍显犹豫，未能有效利用队友的掩护或传球路线。",
+      "win_loss_impact": "这次失误直接导致湖人失去一次进攻机会，并可能让勇士获得转换进攻得分。考虑到比赛最终分差仅为3分，此类失误对胜负影响显著。",
+      "evidence": [
+        "poss_p2_e11",
+        "event:11",
+        "L. James Turnover Lost Ball",
+        "L. James 29分 19投10中 三分3/6 8板9助 1断1帽 正负值-3"
+      ],
+      "confidence": 0.59
+    },
+    {
+      "timecode": "17:05",
+      "period": 2,
+      "clock": "PT06M58S",
+      "tactic_type": "three_point_creation",
+      "observation": "K. Thompson 在25英尺处命中关键三分，帮助勇士队扩大领先优势。",
+      "decision_analysis": "Thompson 利用无球跑动和掩护创造出手空间，接球后迅速出手，防守人未能及时干扰。",
+      "win_loss_impact": "此球使勇士队领先优势扩大到5分，为后续胜利奠定基础。",
+      "evidence": [
+        "poss_p2_e12",
+        "event:12",
+        "K. Thompson 25' 3PT Jump Shot Made",
+        "K. Thompson 17分 14投6中 三分4/9 3板2助 1断0帽 正负值+6"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "timecode": "31:13",
+      "period": 3,
+      "clock": "PT04M50S",
+      "tactic_type": "ball_security",
+      "observation": "S. Curry 走步失误",
+      "decision_analysis": "库里在持球推进时出现走步违例，可能是在试图突破或变向时脚步不清晰。作为勇士主要持球点，这次失误中断了球队进攻节奏，也给了湖人反击机会。",
+      "win_loss_impact": "勇士最终仅赢3分，这次失误发生在第三节中段，可能影响了球队的势头和比分优势。",
+      "evidence": [
+        "poss_p3_e15",
+        "event:15",
+        "S. Curry Turnover Traveling",
+        "S. Curry 34分 22投12中 三分7/13 5板8助 2断0帽 正负值+9"
+      ],
+      "confidence": 0.59
+    },
+    {
+      "timecode": "31:43",
+      "period": 3,
+      "clock": "PT04M20S",
+      "tactic_type": "rim_pressure",
+      "observation": "A. Davis完成空中接力扣篮得分",
+      "decision_analysis": "湖人利用挡拆后内切，Davis在篮下获得空接机会，成功扣篮。此战术利用了勇士防守收缩后的空隙，Davis的终结能力是关键。",
+      "win_loss_impact": "湖人追近比分，但最终仍以110-113惜败。此球虽得分，但未能扭转局势。",
+      "evidence": [
+        "poss_p3_e16",
+        "A. Davis Alley Oop Dunk Shot Made",
+        "A. Davis全场24分12篮板，内线威胁大",
+        "勇士最终赢球，此球未改变比赛结果",
+        "event:16",
+        "A. Davis 24分 15投9中 三分0/1 12板3助 1断3帽 正负值-1"
+      ],
+      "confidence": 0.62
+    },
+    {
+      "timecode": "45:53",
+      "period": 4,
+      "clock": "PT02M10S",
+      "tactic_type": "clutch_shot",
+      "observation": "L. James 在第四节2分10秒命中26英尺三分球，将比分追至110-113。",
+      "decision_analysis": "勒布朗·詹姆斯在关键时刻选择三分出手，利用挡拆后对手收缩内线的空隙，果断出手命中。这一选择体现了其作为核心持球人的大心脏特质，也反映了湖人队追分阶段的战术倾向——依靠超级球星的外线投射。",
+      "win_loss_impact": "此球将分差缩小至3分，保留了比赛悬念，但最终湖人仍以110-113惜败。若未命中，湖人将陷入更大被动，因此该进球对维持比赛竞争性至关重要。",
+      "evidence": [
+        "poss_p4_e17",
+        "L. James 26' 3PT Jump Shot Made",
+        "L. James 29分 19投10中 三分3/6 8板9助 1断1帽 正负值-3",
+        "比赛时间剩余2分10秒，湖人110-113落后",
+        "event:17"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "timecode": "47:28",
+      "period": 4,
+      "clock": "PT00M35S",
+      "tactic_type": "ball_security",
+      "observation": "D. Green 出现界外失误，勇士失去关键球权。",
+      "decision_analysis": "D. Green 在第四节最后35秒出现界外失误，可能是在传球或运球时被防守压迫导致出界。作为组织型发起点，这一失误直接终结了勇士的进攻回合。",
+      "win_loss_impact": "勇士最终仅以3分获胜，若此回合成功得分，可能改变比赛走势。失误让湖人获得球权，但湖人未能反超，勇士险胜。",
+      "evidence": [
+        "poss_p4_e18",
+        "event:18",
+        "D. Green Turnover Out of Bounds",
+        "D. Green 8分 7投3中 三分1/2 9板7助 2断1帽 正负值+8"
+      ],
+      "confidence": 0.59
+    },
+    {
+      "timecode": "47:55",
+      "period": 4,
+      "clock": "PT00M08S",
+      "tactic_type": "clutch_three_point_creation",
+      "observation": "比赛最后8秒，库里在28英尺处命中关键三分，帮助勇士锁定胜局。",
+      "decision_analysis": "库里利用挡拆后获得微小空间，果断出手超远三分，展现了顶级的关键球能力和投篮自信。防守方湖人未能及时换防或协防，给了库里足够的出手空间。",
+      "win_loss_impact": "此球使勇士领先至3分，几乎杀死比赛，最终勇士以113-110获胜，是决定胜负的关键一球。",
+      "evidence": [
+        "poss_p4_e19",
+        "event:19",
+        "S. Curry 28' 3PT Jump Shot Made (clutch)",
+        "S. Curry 34分 22投12中 三分7/13 5板8助 正负值+9",
+        "S. Curry 34分 22投12中 三分7/13 5板8助 2断0帽 正负值+9"
+      ],
+      "confidence": 0.9
+    }
+  ],
+  "tactical_themes": [
+    "库里持球挡拆三分",
+    "詹姆斯突破分球",
+    "戴维斯内线终结"
+  ],
+  "quarter_flow": [
+    "首节对攻，勇士领先",
+    "次节勇士三分拉开分差",
+    "末节詹姆斯追平，库里绝杀"
+  ],
+  "deciding_factors": [
+    "库里末节关键三分",
+    "勇士篮板优势",
+    "湖人失误过多"
+  ],
+  "mvp_analysis": "S. Curry: 库里全场34分12/22投三分7/13，关键时刻命中28英尺超远三分锁定胜局，正负值+9全场最高。作为主攻手兼组织核心，以59.9的战术发起评分扛起勇士进攻体系，8次助攻串联全队，是勇士113-110险胜湖人的绝对功臣。",
+  "player_tactical_profiles": [
+    {
+      "player": "S. Curry",
+      "team": "GSW",
+      "role": "持球核心/关键先生",
+      "tactical_read": "利用无球跑动和挡拆创造三分机会，关键时刻持球强投终结比赛；8次助攻体现其吸引包夹后的出球能力。",
+      "stat_evidence": [
+        "34分 7/13三分",
+        "8助攻 正负值+9"
+      ],
+      "video_evidence": [
+        "poss_p1_e3",
+        "poss_p4_e19"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "player": "L. James",
+      "team": "LAL",
+      "role": "全能组织前锋",
+      "tactical_read": "持球推进主导进攻，利用突破分球创造机会，但4次失误和-3正负值显示其效率受勇士防守干扰。",
+      "stat_evidence": [
+        "29分 9助攻",
+        "4失误 正负值-3"
+      ],
+      "video_evidence": [
+        "poss_p1_e2",
+        "poss_p2_e11"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "player": "A. Davis",
+      "team": "LAL",
+      "role": "内线终结者/护框核心",
+      "tactical_read": "通过空切和挡拆顺下高效终结，3次盖帽守护禁区，但三分出手少限制其空间牵制力。",
+      "stat_evidence": [
+        "24分 12篮板",
+        "3盖帽 15投9中"
+      ],
+      "video_evidence": [
+        "poss_p1_e4",
+        "poss_p3_e16"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "player": "D. Green",
+      "team": "GSW",
+      "role": "防守组织枢纽",
+      "tactical_read": "高位策应和短传驱动勇士进攻，防守端指挥轮转，但2次失误暴露其处理球风险。",
+      "stat_evidence": [
+        "7助攻 9篮板",
+        "正负值+8"
+      ],
+      "video_evidence": [
+        "poss_p1_e5",
+        "poss_p4_e18"
+      ],
+      "confidence": 0.8
+    }
+  ],
+  "player_decision_notes": [
+    "Ball-handlers should be evaluated by when they attack, pass, or shoot after coverage declares itself.",
+    "Weak-side defenders create risk when they over-help and expose corner or wing spacing."
+  ],
+  "content_angles": [
+    "Use the tactical clip as proof: this was not just a highlight, it was a repeatable action.",
+    "Frame the social post around the possession logic behind the turning point."
+  ],
+  "limitations": [
+    "样本数据有限",
+    "部分回合缺乏视频验证"
+  ],
+  "evidence_index": [
+    {
+      "id": "poss_p1_e2",
+      "timecode": "00:21",
+      "source": "auto_pbp",
+      "value": "L. James 25' 3PT Jump Shot Made"
+    },
+    {
+      "id": "poss_p1_e3",
+      "timecode": "00:43",
+      "source": "auto_pbp",
+      "value": "S. Curry 26' 3PT Jump Shot Made"
+    },
+    {
+      "id": "poss_p1_e4",
+      "timecode": "01:05",
+      "source": "auto_pbp",
+      "value": "A. Davis Cutting Dunk Shot Made"
+    },
+    {
+      "id": "poss_p1_e5",
+      "timecode": "01:32",
+      "source": "auto_pbp",
+      "value": "D. Green Turnover Bad Pass"
+    },
+    {
+      "id": "poss_p1_e6",
+      "timecode": "02:15",
+      "source": "auto_pbp",
+      "value": "K. Thompson 24' 3PT Jump Shot Made"
+    },
+    {
+      "id": "poss_p2_e11",
+      "timecode": "16:43",
+      "source": "auto_pbp",
+      "value": "L. James Turnover Lost Ball"
+    },
+    {
+      "id": "poss_p2_e12",
+      "timecode": "17:05",
+      "source": "auto_pbp",
+      "value": "K. Thompson 25' 3PT Jump Shot Made"
+    },
+    {
+      "id": "poss_p3_e15",
+      "timecode": "31:13",
+      "source": "auto_pbp",
+      "value": "S. Curry Turnover Traveling"
+    },
+    {
+      "id": "poss_p3_e16",
+      "timecode": "31:43",
+      "source": "auto_pbp",
+      "value": "A. Davis Alley Oop Dunk Shot Made"
+    },
+    {
+      "id": "poss_p4_e17",
+      "timecode": "45:53",
+      "source": "auto_pbp",
+      "value": "L. James 26' 3PT Jump Shot Made"
+    },
+    {
+      "id": "poss_p4_e18",
+      "timecode": "47:28",
+      "source": "auto_pbp",
+      "value": "D. Green Turnover Out of Bounds"
+    },
+    {
+      "id": "poss_p4_e19",
+      "timecode": "47:55",
+      "source": "auto_pbp",
+      "value": "S. Curry 28' 3PT Jump Shot Made (clutch)"
+    }
+  ],
+  "metadata": {
+    "contract_id": "video_scout.tactical_report.v1",
+    "fallback_reason": "",
+    "observation_count": 12,
+    "court_report_attached": true,
+    "target_chars": 2000,
+    "model": "deepseek-chat",
+    "llm_used_successfully": true,
+    "llm_steps": [
+      {
+        "step": "step_1_skeleton",
+        "model": "deepseek-chat",
+        "status": "ok",
+        "latency_seconds": 3.53,
+        "tokens": {
+          "prompt_tokens": 6777,
+          "completion_tokens": 188,
+          "total_tokens": 6965
+        },
+        "fallback_reason": "",
+        "details": []
+      },
+      {
+        "step": "step_2_segments",
+        "model": "deepseek-chat",
+        "status": "ok",
+        "latency_seconds": 42.56,
+        "tokens": {
+          "prompt_tokens": 20301,
+          "completion_tokens": 2656,
+          "total_tokens": 22957
+        },
+        "fallback_reason": "",
+        "details": [
+          {
+            "observation_id": "poss_p1_e2",
+            "status": "ok",
+            "latency_seconds": 3.52
+          },
+          {
+            "observation_id": "poss_p1_e3",
+            "status": "ok",
+            "latency_seconds": 3.88
+          },
+          {
+            "observation_id": "poss_p1_e4",
+            "status": "ok",
+            "latency_seconds": 3.05
+          },
+          {
+            "observation_id": "poss_p1_e5",
+            "status": "ok",
+            "latency_seconds": 3.61
+          },
+          {
+            "observation_id": "poss_p1_e6",
+            "status": "ok",
+            "latency_seconds": 3.27
+          },
+          {
+            "observation_id": "poss_p2_e11",
+            "status": "ok",
+            "latency_seconds": 3.41
+          },
+          {
+            "observation_id": "poss_p2_e12",
+            "status": "ok",
+            "latency_seconds": 3.17
+          },
+          {
+            "observation_id": "poss_p3_e15",
+            "status": "ok",
+            "latency_seconds": 3.44
+          },
+          {
+            "observation_id": "poss_p3_e16",
+            "status": "ok",
+            "latency_seconds": 3.28
+          },
+          {
+            "observation_id": "poss_p4_e17",
+            "status": "ok",
+            "latency_seconds": 4.52
+          },
+          {
+            "observation_id": "poss_p4_e18",
+            "status": "ok",
+            "latency_seconds": 3.75
+          },
+          {
+            "observation_id": "poss_p4_e19",
+            "status": "ok",
+            "latency_seconds": 3.69
+          }
+        ]
+      },
+      {
+        "step": "step_3_full_analysis",
+        "model": "deepseek-chat",
+        "status": "ok",
+        "latency_seconds": 16.55,
+        "tokens": {
+          "prompt_tokens": 8080,
+          "completion_tokens": 1210,
+          "total_tokens": 9290
+        },
+        "fallback_reason": "",
+        "details": []
+      },
+      {
+        "step": "step_4_mvp_and_profiles",
+        "model": "deepseek-chat",
+        "status": "ok",
+        "latency_seconds": 8.17,
+        "tokens": {
+          "prompt_tokens": 4931,
+          "completion_tokens": 586,
+          "total_tokens": 5517
+        },
+        "fallback_reason": "",
+        "details": []
+      }
+    ],
+    "use_reasoning_model_requested": false
+  }
+}

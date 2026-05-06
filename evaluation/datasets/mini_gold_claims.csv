@@ -1,0 +1,12 @@
+scenario_id,claim_text,label
+1,L. James 25' 3PT Jump Shot Made,correct
+1,S. Curry 26' 3PT Jump Shot Made,correct
+1,D. Green Turnover Bad Pass,correct
+1,K. Thompson 24' 3PT Jump Shot Made,correct
+1,L. James Turnover Lost Ball,correct
+1,K. Thompson 25' 3PT Jump Shot Made,correct
+1,S. Curry Turnover Traveling,correct
+1,L. James 26' 3PT Jump Shot Made,correct
+1,S. Curry 28' 3PT Jump Shot Made (clutch),correct
+1,S. Curry 34分 22投12中 三分5/13,incorrect
+
