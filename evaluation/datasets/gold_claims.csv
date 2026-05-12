@@ -1,0 +1,31 @@
+scenario_id,claim_text,label
+1,L. James 在第一节11分42秒命中25英尺三分球,correct
+1,S. Curry 在第一节11分20秒命中26英尺三分球,correct
+1,A. Davis 在第一节10分58秒完成空切扣篮,correct
+1,D. Green 在第一节10分31秒出现传球失误,correct
+1,K. Thompson 在第一节9分48秒命中24英尺三分球,correct
+1,A. Davis 在第二节8分15秒勾手投篮不中,correct
+1,D. Green 在第二节8分12秒抢到防守篮板,correct
+1,S. Curry 在第二节7分55秒完成突破上篮,correct
+1,L. James 在第二节7分20秒出现丢球失误,correct
+1,K. Thompson 在第二节6分58秒命中25英尺三分球,correct
+1,S. Curry 在第三节4分50秒出现走步违例,correct
+1,A. Davis 在第三节4分20秒完成空接扣篮,correct
+1,L. James 在第四节2分10秒命中26英尺三分,correct
+1,D. Green 在第四节最后35秒出现出界失误,correct
+1,S. Curry 在比赛最后8秒命中28英尺三分,correct
+1,最终比分为勇士113比湖人110,correct
+1,S. Curry 全场三分13投7中,correct
+1,K. Thompson 全场三分9投4中,correct
+1,L. James 全场得到29分9助攻4失误,correct
+1,A. Davis 全场得到24分12篮板,correct
+1,詹姆斯首节三分迫使勇士防守外扩,unverifiable
+1,戴维斯第一节扣篮来自勒布朗弧顶持球吸引防守后的传球,unverifiable
+1,格林传球失误说明湖人防守压迫奏效,unverifiable
+1,库里第二节突破上篮来自格林篮板后的转换推进,unverifiable
+1,汤普森第一节三分来自无球掩护跑位,unverifiable
+1,S. Curry 本场三分2投2中,incorrect
+1,K. Thompson 本场三分2投2中,incorrect
+1,L. James 第四节三分是本场绝杀,incorrect
+1,S. Curry 的走步失误发生在比赛最后时刻,incorrect
+1,L. James 本场三分2投2中,incorrect

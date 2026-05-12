@@ -35,11 +35,13 @@ def run_video_scout_demo(
     use_reasoner: bool = False,
     auto_observations: bool = False,
     video_total_seconds: float | None = None,
+    auto_periods: set[int] | None = None,
     clip_before_seconds: float = 14.0,
     clip_after_seconds: float = 5.0,
     generate_gifs: bool = True,
     gif_fps: int = 10,
     gif_width: int = 480,
+    video_period_windows: dict[int, tuple[float, float]] | None = None,
 ) -> dict[str, Any]:
     """Run the scouting pipeline and write report artifacts."""
     game_context: dict[str, Any] = {}
@@ -78,6 +80,8 @@ def run_video_scout_demo(
             replay_path,
             court_report_path=court_report_path or None,
             video_total_seconds=video_total_seconds,
+            video_period_windows=video_period_windows,
+            periods=auto_periods,
         )
         save_auto_observations(DEFAULT_AUTO_OBSERVATIONS_PATH, observations)
         observations_source = "auto_pbp"
@@ -144,6 +148,11 @@ def run_video_scout_demo(
         "clip_count": len(clip_manifest.get("clips", [])),
         "clip_status": clip_manifest.get("status", ""),
         "gif_enabled": generate_gifs,
+        "video_period_windows": {
+            str(period): [round(window[0], 2), round(window[1], 2)]
+            for period, window in (video_period_windows or {}).items()
+        },
+        "auto_periods": sorted(auto_periods) if auto_periods else [],
         "llm_used_successfully": bool(report.metadata.get("llm_used_successfully", False)),
         "llm_steps_summary": llm_steps_summary,
         "output_dir": str(output_base.resolve()),
@@ -179,10 +188,18 @@ def _build_tactical_clips(
     for index, observation in enumerate(observations, start=1):
         start = observation.clip_start_seconds
         end = observation.clip_end_seconds
-        if start is None:
+        if start is None and end is None:
             start = max(0.0, observation.timecode_seconds - before_seconds)
-        if end is None:
             end = max(start + 1.0, observation.timecode_seconds + after_seconds)
+        elif start is None:
+            end = float(end)
+            start = max(0.0, end - before_seconds)
+        elif end is None:
+            start = max(0.0, float(start) - before_seconds)
+            end = max(start + 1.0, observation.timecode_seconds + after_seconds)
+        else:
+            start = max(0.0, float(start) - before_seconds)
+            end = float(end) + after_seconds
         duration = max(1.0, end - start)
         label = observation.clip_label or observation.observation_id or f"clip_{index:03d}"
         safe_label = _safe_filename(label)
@@ -564,6 +581,44 @@ def _sanitize_markdown_body(text: str) -> str:
     return "\n".join(cleaned).strip()
 
 
+def _parse_period_video_windows(value: str) -> dict[int, tuple[float, float]]:
+    """Parse period-to-video-time anchors from the CLI."""
+    windows: dict[int, tuple[float, float]] = {}
+    text = str(value or "").strip()
+    if not text:
+        return windows
+    for chunk in text.split(","):
+        item = chunk.strip()
+        if not item:
+            continue
+        if ":" not in item or "-" not in item:
+            raise ValueError(
+                "Invalid --period-video-windows item. Expected format like 1:900-2300."
+            )
+        period_text, range_text = item.split(":", 1)
+        start_text, end_text = range_text.split("-", 1)
+        period = int(period_text)
+        start = float(start_text)
+        end = float(end_text)
+        if period <= 0 or end <= start:
+            raise ValueError(
+                "Invalid --period-video-windows values. Period must be positive and end must be greater than start."
+            )
+        windows[period] = (start, end)
+    return windows
+
+
+def _parse_periods(value: str) -> set[int] | None:
+    """Parse optional comma-separated period filters."""
+    text = str(value or "").strip()
+    if not text:
+        return None
+    periods = {int(item.strip()) for item in text.split(",") if item.strip()}
+    if any(period <= 0 for period in periods):
+        raise ValueError("--auto-periods values must be positive integers.")
+    return periods
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run Video Scout tactical analysis.")
     parser.add_argument("--video", default="", help="Optional full-game or highlight video path.")
@@ -575,7 +630,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--use-llm", action="store_true", help="Use DeepSeek for tactical report.")
     parser.add_argument("--use-vision", action="store_true", help="Use configured vision model for frames.")
     parser.add_argument("--auto-observations", action="store_true", help="Build observations from --replay automatically.")
+    parser.add_argument("--auto-periods", default="", help="Optional comma-separated periods for auto observations, e.g. 1 or 1,2.")
     parser.add_argument("--video-total-seconds", type=float, default=0.0, help="Optional source video duration for PBP-to-video mapping.")
+    parser.add_argument(
+        "--period-video-windows",
+        default="",
+        help="Optional per-period video windows, e.g. 1:900-2300,2:2500-3900,3:4300-5700,4:5900-7100.",
+    )
     parser.add_argument("--target-chars", type=int, default=2000, help="Target Chinese character count for the report.")
     parser.add_argument("--use-reasoner", action="store_true", help="Use the slower reasoning model for deeper analysis.")
     parser.add_argument("--clip-before", type=float, default=14.0, help="Seconds before each event to include in tactical clips.")
@@ -601,11 +662,13 @@ def main() -> None:
         use_reasoner=args.use_reasoner,
         auto_observations=args.auto_observations,
         video_total_seconds=args.video_total_seconds or None,
+        auto_periods=_parse_periods(args.auto_periods),
         clip_before_seconds=args.clip_before,
         clip_after_seconds=args.clip_after,
         generate_gifs=not args.no_gif,
         gif_fps=args.gif_fps,
         gif_width=args.gif_width,
+        video_period_windows=_parse_period_video_windows(args.period_video_windows),
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     _print_llm_pipeline_status(summary)

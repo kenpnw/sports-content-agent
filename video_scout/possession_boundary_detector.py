@@ -121,6 +121,7 @@ class PossessionBoundaryDetector:
         events: list[dict[str, Any]],
         *,
         video_total_seconds: float | None = None,
+        video_period_windows: dict[int, tuple[float, float]] | None = None,
     ) -> list[PossessionBoundary]:
         boundaries: list[PossessionBoundary] = []
         active_start: int | None = None
@@ -141,6 +142,7 @@ class PossessionBoundaryDetector:
                             end_reason=self.END_REASON_GAME_END if _is_game_end(event) else self.END_REASON_PERIOD_END,
                             recent_points=recent_points,
                             video_total_seconds=video_total_seconds,
+                            video_period_windows=video_period_windows,
                         )
                     )
                     active_start = None
@@ -158,6 +160,7 @@ class PossessionBoundaryDetector:
                         end_reason=self.END_REASON_PERIOD_END,
                         recent_points=recent_points,
                         video_total_seconds=video_total_seconds,
+                        video_period_windows=video_period_windows,
                     )
                 )
                 active_start = None
@@ -175,6 +178,7 @@ class PossessionBoundaryDetector:
                             end_reason=self.END_REASON_PERIOD_END,
                             recent_points=recent_points,
                             video_total_seconds=video_total_seconds,
+                            video_period_windows=video_period_windows,
                         )
                     )
                     active_start = None
@@ -214,6 +218,7 @@ class PossessionBoundaryDetector:
                     end_reason=end_reason,
                     recent_points=recent_points,
                     video_total_seconds=video_total_seconds,
+                    video_period_windows=video_period_windows,
                 )
                 boundaries.append(boundary)
                 if _points(event) > 0 and team:
@@ -232,6 +237,7 @@ class PossessionBoundaryDetector:
                     end_reason=self.END_REASON_GAME_END,
                     recent_points=recent_points,
                     video_total_seconds=video_total_seconds,
+                    video_period_windows=video_period_windows,
                 )
             )
         return [item for item in boundaries if item.period > 0]
@@ -246,6 +252,7 @@ class PossessionBoundaryDetector:
         end_reason: str,
         recent_points: Iterable[tuple[str, int]],
         video_total_seconds: float | None,
+        video_period_windows: dict[int, tuple[float, float]] | None,
     ) -> PossessionBoundary:
         window = events[start : end + 1]
         start_event = window[0]
@@ -271,7 +278,9 @@ class PossessionBoundaryDetector:
         start_seconds, end_seconds = _map_to_video_seconds(
             start_seconds,
             end_seconds,
+            period=_period(start_event),
             video_total_seconds=video_total_seconds,
+            video_period_windows=video_period_windows,
         )
         return PossessionBoundary(
             possession_id=f"poss_p{_period(end_event)}_e{_event_id(end_event)}",
@@ -413,8 +422,18 @@ def _map_to_video_seconds(
     start_seconds: float,
     end_seconds: float,
     *,
+    period: int,
     video_total_seconds: float | None,
+    video_period_windows: dict[int, tuple[float, float]] | None,
 ) -> tuple[float, float]:
+    if video_period_windows and period in video_period_windows:
+        video_start, video_end = video_period_windows[period]
+        period_len = 720.0 if period <= 4 else 300.0
+        period_abs_start = sum(720.0 if p <= 4 else 300.0 for p in range(1, period))
+        elapsed_start = max(0.0, min(period_len, start_seconds - period_abs_start))
+        elapsed_end = max(0.0, min(period_len, end_seconds - period_abs_start))
+        ratio = max(0.01, (video_end - video_start) / period_len)
+        return video_start + elapsed_start * ratio, video_start + elapsed_end * ratio
     if not video_total_seconds:
         return start_seconds, end_seconds
     regulation_seconds = 48 * 60

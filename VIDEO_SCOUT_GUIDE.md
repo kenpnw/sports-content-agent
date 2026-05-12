@@ -197,3 +197,57 @@ Do not describe this as a fully trained NBA video model yet. The honest and stro
 ```text
 A modular video-scouting pipeline with pluggable vision models and evidence-grounded tactical generation.
 ```
+
+## OCR 时间对齐：第一步 ROI 标定
+
+广播视频经常包含热身、采访、广告、暂停和中场内容，导致官方 PBP 的比赛时间无法直接线性映射到视频秒数。OCR 时间对齐会先读取比分牌上的节次和比赛计时，再把视频画面与 PBP 时间轴对齐；第一步就是人工标定比分牌 ROI，让后续 OCR 只识别稳定的文字区域。
+
+运行交互式 ROI 标定：
+
+```powershell
+.\.venv\Scripts\python.exe -m video_scout.scoreboard_roi_picker `
+  --video data\videos\nba_demo.mkv `
+  --frame-at-seconds 120 `
+  --output data\videos\nba_demo.scoreboard_roi.json `
+  --visualize
+```
+
+ROI 选择技巧：
+
+- 拖选范围比比分牌文字区域略大 5-10px，给 OCR 留余量。
+- 不要包含台标、球队 logo、转播装饰条或无关图形，只圈节次、时间、比分等文字区域。
+- 如果比分牌位置在视频中跳动，使用 `--frame-at-seconds` 找一个比分牌最稳定、遮挡最少的时刻重新标定。
+
+标定完成后，打开生成的 `*.scoreboard_roi_preview.png`，确认红框完整包住比分牌文字区域。确认无误后，后续 OCR 阶段会复用同一个 `*.scoreboard_roi.json`。
+
+## OCR 时间对齐：第二步 单帧 OCR 测试
+
+完成 T-OCR-1 的 ROI 标定后，先不要立刻跑全视频采样。应该用单帧 OCR 工具验证：当前 ROI 是否能稳定读出比分牌文字，并且能把文字解析成结构化的节次和比赛剩余时间。
+
+运行单帧 OCR 测试：
+
+```powershell
+.\.venv\Scripts\python.exe -m video_scout.scoreboard_ocr `
+  --video data\videos\nba_demo.mkv `
+  --roi data\videos\nba_demo.scoreboard_roi.json `
+  --frame-at-seconds 1033
+```
+
+预期输出是 JSON，包含：
+
+```json
+{
+  "raw_text": "Q1 11:42",
+  "period": 1,
+  "clock_remaining_seconds": 702.0,
+  "confidence": 0.82,
+  "error_reason": "",
+  "ocr_box_count": 1
+}
+```
+
+结果解读：
+
+- 如果能读出文字，且 `period` / `clock_remaining_seconds` 正确，说明 ROI 可用，可以进入 T-OCR-3。
+- 如果 `raw_text` 乱码或 `error_reason` 是 `no_text_detected`，通常是 ROI 偏了，回到 T-OCR-1 重新标定。
+- 如果文字读到了但 `error_reason` 是 `parse_failed: ...`，把 `raw_text` 贴给协作者，需要新增解析规则。

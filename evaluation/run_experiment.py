@@ -13,6 +13,7 @@ from evaluation.baselines import GPTOnlyAnalyzer, HighlightOnlyAnalyzer
 from evaluation.metrics import (
     boundary_recall_precision_f1,
     claim_fact_accuracy,
+    claim_match_diagnostics,
     latency_stats,
     read_gold_boundaries,
 )
@@ -33,6 +34,7 @@ def run_experiment(
     systems: list[str],
     runs: int,
     output_dir: str | Path | None = None,
+    debug: bool = False,
 ) -> dict[str, Any]:
     """Run selected systems and write all evaluation artifacts."""
     _ensure_eval_llm_defaults()
@@ -44,6 +46,7 @@ def run_experiment(
     boundary_metrics: dict[str, Any] = {}
     claim_metrics: dict[str, Any] = {}
     latency_metrics: dict[str, Any] = {}
+    match_diagnostics: dict[str, Any] = {}
 
     for system in systems:
         if system not in SYSTEM_ORDER:
@@ -67,9 +70,12 @@ def run_experiment(
             "runs": runs_payload,
             "fallback": any(bool(item.get("fallback", False)) for item in runs_payload),
         }
-        boundary_metrics[system] = boundary_recall_precision_f1(predicted_boundaries, gold_boundaries)
+        predicted_for_boundary_metric = None if system == "gpt_only" else predicted_boundaries
+        boundary_metrics[system] = boundary_recall_precision_f1(predicted_for_boundary_metric, gold_boundaries)
         claim_metrics[system] = claim_fact_accuracy(first_report, gold_claims_path)
         latency_metrics[system] = latency_stats(latencies)
+        if debug:
+            match_diagnostics[system] = claim_match_diagnostics(first_report, gold_claims_path)
 
     summary = _summary_table(boundary_metrics, claim_metrics, latency_metrics, per_system_outputs)
     write_json(output_base / "per_system_outputs.json", per_system_outputs)
@@ -77,11 +83,17 @@ def run_experiment(
     write_json(output_base / "claim_metrics.json", claim_metrics)
     write_json(output_base / "latency_metrics.json", latency_metrics)
     write_text(output_base / "summary_table.md", summary)
+    diagnostics_path = ""
+    if debug:
+        diagnostics_path = str((output_base / "match_diagnostics.json").resolve())
+        write_json(output_base / "match_diagnostics.json", match_diagnostics)
 
     return {
         "output_dir": str(output_base.resolve()),
         "systems": systems,
         "runs": runs,
+        "debug": debug,
+        "match_diagnostics_path": diagnostics_path,
         "summary_table": summary,
         "boundary_metrics": boundary_metrics,
         "claim_metrics": claim_metrics,
@@ -203,11 +215,18 @@ def _summary_table(
         latency = latency_metrics[system]
         fallback = "yes" if per_system_outputs.get(system, {}).get("fallback") else "no"
         lines.append(
-            f"| {system} | {boundary['precision']:.4f} | {boundary['recall']:.4f} | {boundary['f1']:.4f} | "
+            f"| {system} | {_format_optional(boundary['precision'])} | "
+            f"{_format_optional(boundary['recall'])} | {_format_optional(boundary['f1'])} | "
             f"{claim['accuracy']:.4f} | {claim['coverage']:.4f} | {claim['hallucination_rate']:.4f} | "
             f"{latency['p50']:.2f} | {latency['p95']:.2f} | {fallback} |"
         )
     return "\n".join(lines) + "\n"
+
+
+def _format_optional(value: Any) -> str:
+    if value is None:
+        return "—"
+    return f"{float(value):.4f}"
 
 
 def _ensure_eval_llm_defaults() -> None:
@@ -228,6 +247,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gold-claims", required=True, help="Gold claim CSV path.")
     parser.add_argument("--systems", default="main,highlight_only,gpt_only", help="Comma-separated systems.")
     parser.add_argument("--runs", type=int, default=1, help="Runs per system for latency stats.")
+    parser.add_argument("--debug", action="store_true", help="Write match_diagnostics.json for claim matching.")
     parser.add_argument("--output", default="", help="Output folder.")
     return parser.parse_args()
 
@@ -243,6 +263,7 @@ def main() -> None:
         systems=systems,
         runs=max(1, args.runs),
         output_dir=args.output or None,
+        debug=args.debug,
     )
     print(json.dumps({key: value for key, value in result.items() if key != "summary_table"}, ensure_ascii=False, indent=2))
     print("\nsummary_table.md")
@@ -252,4 +273,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

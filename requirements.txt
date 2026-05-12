@@ -12,3 +12,8 @@ pydantic>=2.0
 # ---- New: evaluation experiments ----
 pandas>=2.0
 numpy>=1.24
+
+# ---- 视频 OCR 时间对齐（T-OCR 五阶段使用）----
+opencv-python>=4.5
+easyocr>=1.7.0
+# torch / torchvision 已通过 PyTorch CPU 索引手动安装

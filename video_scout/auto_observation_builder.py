@@ -31,13 +31,21 @@ def build_observations_from_pbp(
     *,
     court_report_path: str | Path | None = None,
     video_total_seconds: float | None = None,
+    video_period_windows: dict[int, tuple[float, float]] | None = None,
+    periods: set[int] | None = None,
     min_salience: float = 0.45,
     max_count: int = 12,
 ) -> list[VisualObservation]:
     """Create observations from PBP and optionally enrich with court stats."""
     events = load_replay_events(pbp_path)
     detector = PossessionBoundaryDetector()
-    boundaries = detector.detect(events, video_total_seconds=video_total_seconds)
+    boundaries = detector.detect(
+        events,
+        video_total_seconds=video_total_seconds,
+        video_period_windows=video_period_windows,
+    )
+    if periods:
+        boundaries = [item for item in boundaries if item.period in periods]
     observations = boundaries_to_observations(
         boundaries,
         min_salience=min_salience,
@@ -185,6 +193,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--replay", default="data/samples/nba_replay_sample.json", help="Replay JSON path.")
     parser.add_argument("--court-report", default="", help="Optional smart-court report JSON.")
     parser.add_argument("--video-total-seconds", type=float, default=0.0, help="Optional source video duration.")
+    parser.add_argument("--periods", default="", help="Optional comma-separated periods, e.g. 1 or 1,2.")
     parser.add_argument("--output", default=str(DEFAULT_AUTO_OBSERVATIONS_PATH), help="Output observation JSON path.")
     parser.add_argument("--min-salience", type=float, default=0.45, help="Minimum salience for selected observations.")
     parser.add_argument("--max-count", type=int, default=12, help="Maximum selected observations.")
@@ -197,6 +206,7 @@ def _self_test() -> None:
         args.replay,
         court_report_path=args.court_report or None,
         video_total_seconds=args.video_total_seconds or None,
+        periods=_parse_periods(args.periods),
         min_salience=args.min_salience,
         max_count=args.max_count,
     )
@@ -218,6 +228,17 @@ def _self_test() -> None:
             indent=2,
         )
     )
+
+
+def _parse_periods(value: str) -> set[int] | None:
+    """Parse optional comma-separated period filters."""
+    text = str(value or "").strip()
+    if not text:
+        return None
+    periods = {int(item.strip()) for item in text.split(",") if item.strip()}
+    if any(period <= 0 for period in periods):
+        raise ValueError("--periods values must be positive integers.")
+    return periods
 
 
 if __name__ == "__main__":

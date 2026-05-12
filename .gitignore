@@ -11,7 +11,11 @@ __pycache__/
 
 data/generated/
 data/outputs/
+data/videos/
 data/knowledge/*.sqlite3
 data/knowledge/*.db
+
+# Full experiment runs are reproducible and can be regenerated locally.
+evaluation/results/real_gold_*/
 
 *.log
