@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>战术复盘</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='tactical_review.css') }}">
+</head>
+<body>
+  <main class="review-shell">
+    <aside class="timeline-panel" aria-label="clip 时间轴">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Tactical Review</p>
+          <h1>战术复盘</h1>
+        </div>
+        <select id="reportSelect" aria-label="选择已生成的 report 目录">
+          <option value="">加载报告中...</option>
+        </select>
+      </header>
+      <div id="reportMeta" class="report-meta"></div>
+      <section id="clipTimeline" class="clip-timeline"></section>
+    </aside>
+
+    <section class="analysis-panel" aria-label="战术分析">
+      <header class="analysis-header">
+        <div>
+          <p class="eyebrow">Full Analysis</p>
+          <h2 id="reportTitle">请选择一份战术报告</h2>
+        </div>
+        <div id="analysisStats" class="analysis-stats"></div>
+      </header>
+      <article id="fullAnalysis" class="full-analysis empty-state">
+        左侧选择 report 后，这里会展示 2000+ 字长文分析和 key segments。
+      </article>
+      <section>
+        <div class="section-title">Key Segments</div>
+        <div id="segmentList" class="segment-list"></div>
+      </section>
+    </section>
+
+    <aside class="evidence-panel" aria-label="证据展开和 GIF 预览">
+      <header class="panel-header compact">
+        <div>
+          <p class="eyebrow">Evidence</p>
+          <h2>证据链</h2>
+        </div>
+      </header>
+      <section id="clipPreview" class="clip-preview empty-state">
+        点击左侧 clip 或中间 segment 后，这里会显示 GIF 预览。
+      </section>
+      <section class="evidence-section">
+        <div class="section-title">Evidence List</div>
+        <div id="evidenceList" class="evidence-list empty-state">
+          尚未选中 segment。
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <script src="{{ url_for('static', filename='tactical_review.js') }}"></script>
+</body>
+</html>
