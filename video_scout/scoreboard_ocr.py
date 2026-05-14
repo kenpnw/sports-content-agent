@@ -28,6 +28,7 @@ class ScoreboardReading:
     confidence: float
     error_reason: str
     ocr_box_count: int
+    extraction_mode: str
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -58,12 +59,21 @@ class ScoreboardOCR:
         crop = _crop_roi(frame_bgr_numpy, self.roi)
         if crop is None:
             return _error_reading("invalid_or_empty_roi")
-        prepared = _prepare_for_ocr(cv2, crop)
+        processed = _preprocess(cv2, crop)
+        processed_reading = self._read_crop(processed)
+        if processed_reading.confidence >= 0.6:
+            return processed_reading
+        color_reading = self._read_crop(crop)
+        return color_reading if color_reading.confidence > processed_reading.confidence else processed_reading
+
+    def _read_crop(self, crop_image: Any) -> ScoreboardReading:
+        """Run EasyOCR on one cropped image and parse its text."""
         results = self._reader.readtext(
-            prepared,
+            crop_image,
             detail=1,
+            allowlist="0123456789:QSTNDRHO",
+            text_threshold=0.5,
             paragraph=False,
-            allowlist="0123456789QqTtRrSsNnDdHhOo:. ",
         )
         if not results:
             return _error_reading("no_text_detected")
@@ -72,8 +82,8 @@ class ScoreboardOCR:
         confidences = [float(item[2]) for item in results if len(item) >= 3]
         raw_text = " ".join(texts).strip()
         raw_confidence = _mean(confidences)
-        period, clock_seconds = parse_scoreboard_text(raw_text)
-        if period is None or clock_seconds is None:
+        period, clock_seconds, extraction_mode = parse_scoreboard_text(raw_text)
+        if period is None and clock_seconds is None:
             return ScoreboardReading(
                 raw_text=raw_text,
                 period=None,
@@ -81,14 +91,16 @@ class ScoreboardOCR:
                 confidence=raw_confidence,
                 error_reason=f"parse_failed: {raw_text}",
                 ocr_box_count=len(results),
+                extraction_mode="failed",
             )
         return ScoreboardReading(
             raw_text=raw_text,
             period=period,
             clock_remaining_seconds=clock_seconds,
             confidence=raw_confidence,
-            error_reason="",
+            error_reason="" if period is not None and clock_seconds is not None else f"partial_parse: {raw_text}",
             ocr_box_count=len(results),
+            extraction_mode=extraction_mode,
         )
 
     def read_video_at(self, video_path: str | Path, video_seconds: float) -> ScoreboardReading:
@@ -116,7 +128,20 @@ class ScoreboardOCR:
         return cls._reader_cache[key]
 
 
-def parse_scoreboard_text(raw_text: str) -> tuple[int | None, float | None]:
+@dataclass
+class _ClockCandidate:
+    """Candidate clock recovered from noisy OCR text."""
+
+    seconds: float
+    start: int
+    end: int
+    used_positions: set[int]
+    minute: int
+    second: int
+    priority: int
+
+
+def parse_scoreboard_text(raw_text: str) -> tuple[int | None, float | None, str]:
     """Parse common NBA scoreboard period-clock formats."""
     text = _normalize_ocr_text(raw_text)
     parsers: list[Callable[[str], tuple[int | None, float | None]]] = [
@@ -128,12 +153,139 @@ def parse_scoreboard_text(raw_text: str) -> tuple[int | None, float | None]:
     for parser in parsers:
         period, seconds = parser(text)
         if period is not None and seconds is not None:
-            return period, seconds
-    return None, None
+            return period, seconds, "strict"
+    clock_candidate = _extract_clock_candidate_from_garbled(text)
+    clock_seconds = clock_candidate.seconds if clock_candidate else None
+    period = _extract_period_from_garbled(text, clock_candidate=clock_candidate)
+    if period is not None or clock_seconds is not None:
+        return period, clock_seconds, "smart"
+    return None, None, "failed"
+
+
+def _extract_clock_from_garbled(text: str) -> float | None:
+    """Recover MM:SS from OCR strings where the colon may be missing."""
+    candidate = _extract_clock_candidate_from_garbled(_normalize_ocr_text(text))
+    return candidate.seconds if candidate else None
+
+
+def _extract_clock_candidate_from_garbled(text: str) -> _ClockCandidate | None:
+    candidates: list[_ClockCandidate] = []
+    for match in re.finditer(r"\d+", text):
+        digits = match.group(0)
+        base = match.start()
+        for offset in range(0, max(0, len(digits) - 4 + 1)):
+            chunk = digits[offset : offset + 4]
+            candidate = _clock_candidate_from_digits(
+                chunk,
+                start=base + offset,
+                used_positions={base + offset + index for index in range(4)},
+                priority=0,
+            )
+            if candidate:
+                candidates.append(candidate)
+        if len(digits) >= 5:
+            for offset in range(0, len(digits) - 5 + 1):
+                chunk = digits[offset : offset + 5]
+                for drop_index in range(5):
+                    repaired = chunk[:drop_index] + chunk[drop_index + 1 :]
+                    used = {
+                        base + offset + index
+                        for index in range(5)
+                        if index != drop_index
+                    }
+                    candidate = _clock_candidate_from_digits(
+                        repaired,
+                        start=base + offset,
+                        used_positions=used,
+                        priority=-2 if drop_index == 2 else -1,
+                    )
+                    if candidate:
+                        candidates.append(candidate)
+        for offset in range(0, max(0, len(digits) - 3 + 1)):
+            chunk = digits[offset : offset + 3]
+            minute = int(chunk[0])
+            second = int(chunk[1:])
+            if 0 <= minute <= 9 and 0 <= second < 60:
+                candidates.append(
+                    _ClockCandidate(
+                        seconds=float(minute * 60 + second),
+                        start=base + offset,
+                        end=base + offset + 3,
+                        used_positions={base + offset + index for index in range(3)},
+                        minute=minute,
+                        second=second,
+                        priority=1,
+                    )
+                )
+    if not candidates:
+        return None
+    candidates.sort(
+        key=lambda item: (
+            item.start,
+            item.priority,
+            0 if 1 <= item.minute <= 12 else 1,
+            item.second,
+        )
+    )
+    return candidates[0]
+
+
+def _clock_candidate_from_digits(
+    digits: str,
+    *,
+    start: int,
+    used_positions: set[int],
+    priority: int,
+) -> _ClockCandidate | None:
+    if len(digits) != 4:
+        return None
+    minute = int(digits[:2])
+    second = int(digits[2:])
+    if 0 <= minute <= 12 and 0 <= second < 60:
+        return _ClockCandidate(
+            seconds=float(minute * 60 + second),
+            start=start,
+            end=start + len(digits),
+            used_positions=used_positions,
+            minute=minute,
+            second=second,
+            priority=priority,
+        )
+    return None
+
+
+def _extract_period_from_garbled(
+    text: str,
+    *,
+    clock_candidate: _ClockCandidate | None = None,
+) -> int | None:
+    normalized = _normalize_ocr_text(text)
+    strict_patterns = [
+        r"\bQ\s*([1-6])\b",
+        r"\b([1-4])\s*(?:ST|ND|RD|TH)\b",
+        r"\b([1-3])\s*OT\b",
+    ]
+    for pattern in strict_patterns:
+        match = re.search(pattern, normalized)
+        if match:
+            value = int(match.group(1))
+            return 4 + value if "OT" in pattern else value
+    if re.search(r"\bOT\b|0T|O7", normalized):
+        return 5
+    if re.search(r"\b(?:T8R|T8|78|7B)\b", normalized):
+        return 1
+
+    excluded = clock_candidate.used_positions if clock_candidate else set()
+    for match in re.finditer(r"[1-4]", normalized):
+        index = match.start()
+        if any(abs(index - used) <= 1 for used in excluded):
+            continue
+        return int(match.group(0))
+    return None
 
 
 def _parse_q_period_clock(text: str) -> tuple[int | None, float | None]:
-    match = re.search(r"\bQ\s*([1-4])\s+([0-9]{1,2}[:.][0-9]{2}(?:\.[0-9])?)\b", text)
+    match = re.search(r"\bQ\s*([1-4])\s*([0-9]{1,2}[:.][0-9]{2}(?:\.[0-9])?)\b", text)
     if not match:
         return None, None
     return int(match.group(1)), _clock_to_seconds(match.group(2))
@@ -154,7 +306,7 @@ def _parse_qtr_period_clock(text: str) -> tuple[int | None, float | None]:
 
 
 def _parse_overtime_clock(text: str) -> tuple[int | None, float | None]:
-    match = re.search(r"\b([2-9])?\s*OT\s+([0-9]{1,2}[:.][0-9]{2}(?:\.[0-9])?)\b", text)
+    match = re.search(r"\b([2-9])?\s*OT\s*([0-9]{1,2}[:.][0-9]{2}(?:\.[0-9])?)\b", text)
     if not match:
         return None, None
     overtime_number = int(match.group(1) or 1)
@@ -212,6 +364,14 @@ def _crop_roi(frame: Any, roi: dict[str, int]) -> Any | None:
     return frame[y:y2, x:x2]
 
 
+def _preprocess(cv2: Any, crop_bgr: Any) -> Any:
+    """Enhance scoreboard clock text before EasyOCR reads the ROI."""
+    gray = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2GRAY)
+    enlarged = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    _, binary = cv2.threshold(enlarged, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return binary
+
+
 def _prepare_for_ocr(cv2: Any, crop: Any) -> Any:
     gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
     scale = 3 if min(gray.shape[:2]) < 120 else 2
@@ -231,6 +391,7 @@ def _error_reading(reason: str) -> ScoreboardReading:
         confidence=0.0,
         error_reason=reason,
         ocr_box_count=0,
+        extraction_mode="failed",
     )
 
 
@@ -269,6 +430,21 @@ def _self_test() -> None:
     from PIL import Image, ImageDraw, ImageFont
     import numpy as np
 
+    parser_cases = [
+        ("11853 78 T8r", 1, 713.0, "smart"),
+        ("Q4 0:08 24", 4, 8.0, "strict"),
+        ("OT 4:30 14", 5, 270.0, "strict"),
+        ("", None, None, "failed"),
+    ]
+    for raw_text, expected_period, expected_clock, expected_mode in parser_cases:
+        period, clock, mode = parse_scoreboard_text(raw_text)
+        assert period == expected_period, (raw_text, period, expected_period)
+        assert mode == expected_mode, (raw_text, mode, expected_mode)
+        if expected_clock is None:
+            assert clock is None, (raw_text, clock)
+        else:
+            assert clock is not None and abs(clock - expected_clock) <= 0.1, (raw_text, clock, expected_clock)
+
     roi_payload = {
         "video_path": "synthetic_scoreboard.mp4",
         "video_resolution": [1920, 1080],
@@ -290,11 +466,13 @@ def _self_test() -> None:
         assert reading.period == expected_period, reading
         assert reading.clock_remaining_seconds is not None, reading
         assert abs(reading.clock_remaining_seconds - expected_clock) <= 0.6, reading
+        assert reading.extraction_mode in {"strict", "smart"}, reading
 
     blank = np.zeros((1080, 1920, 3), dtype=np.uint8)
     blank_reading = ocr.read_frame(blank)
     assert blank_reading.error_reason == "no_text_detected", blank_reading
-    print("[T-OCR-2] self-test passed")
+    assert blank_reading.extraction_mode == "failed", blank_reading
+    print("[T-OCR-2.5] self-test passed")
 
 
 def _synthetic_scoreboard_frame(

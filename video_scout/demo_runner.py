@@ -21,6 +21,11 @@ from video_scout.tactic_analyzer import VideoScoutAnalyzer
 from video_scout.vision_client import VisionClient
 
 
+REGULATION_PERIOD_SECONDS = 720.0
+DEFAULT_CLIP_BEFORE_SECONDS = 22.0
+DEFAULT_CLIP_AFTER_SECONDS = 4.0
+
+
 def run_video_scout_demo(
     *,
     video_path: str | None = None,
@@ -36,12 +41,14 @@ def run_video_scout_demo(
     auto_observations: bool = False,
     video_total_seconds: float | None = None,
     auto_periods: set[int] | None = None,
-    clip_before_seconds: float = 14.0,
-    clip_after_seconds: float = 5.0,
+    clip_before_seconds: float = DEFAULT_CLIP_BEFORE_SECONDS,
+    clip_after_seconds: float = DEFAULT_CLIP_AFTER_SECONDS,
     generate_gifs: bool = True,
     gif_fps: int = 10,
     gif_width: int = 480,
     video_period_windows: dict[int, tuple[float, float]] | None = None,
+    time_map_path: str | None = None,
+    apply_time_map: bool = False,
 ) -> dict[str, Any]:
     """Run the scouting pipeline and write report artifacts."""
     game_context: dict[str, Any] = {}
@@ -101,6 +108,25 @@ def run_video_scout_demo(
             "--frame-manifest with --use-vision after configuring VISION_API_KEY."
         )
 
+    time_map_summary = _empty_time_map_summary(time_map_path=time_map_path, requested=apply_time_map)
+    if time_map_path and apply_time_map:
+        try:
+            time_map = read_json(Path(time_map_path))
+            observations, time_map_summary = _apply_time_map(
+                observations,
+                time_map,
+                time_map_path=time_map_path,
+                clip_before_seconds=clip_before_seconds,
+                clip_after_seconds=clip_after_seconds,
+            )
+        except Exception as exc:
+            print(f"[warning] Failed to apply time map, keeping original clip times: {exc}")
+            time_map_summary = _empty_time_map_summary(
+                time_map_path=time_map_path,
+                requested=apply_time_map,
+                error=str(exc),
+            )
+
     analyzer = VideoScoutAnalyzer(enable_llm=use_llm)
     report = analyzer.analyze(
         observations,
@@ -122,6 +148,13 @@ def run_video_scout_demo(
         generate_gifs=generate_gifs,
         gif_fps=gif_fps,
         gif_width=gif_width,
+    )
+    clip_manifest.update(
+        {
+            "time_map_applied": bool(time_map_summary.get("applied", False)),
+            "time_map_path": str(time_map_summary.get("path", "")),
+            "period_anchors_used": time_map_summary.get("period_anchors_used", {}),
+        }
     )
     write_json(output_base / "observations.normalized.json", [item.to_dict() for item in observations])
     write_json(output_base / "clip_manifest.json", clip_manifest)
@@ -152,6 +185,7 @@ def run_video_scout_demo(
             str(period): [round(window[0], 2), round(window[1], 2)]
             for period, window in (video_period_windows or {}).items()
         },
+        "time_map": time_map_summary,
         "auto_periods": sorted(auto_periods) if auto_periods else [],
         "llm_used_successfully": bool(report.metadata.get("llm_used_successfully", False)),
         "llm_steps_summary": llm_steps_summary,
@@ -198,8 +232,8 @@ def _build_tactical_clips(
             start = max(0.0, float(start) - before_seconds)
             end = max(start + 1.0, observation.timecode_seconds + after_seconds)
         else:
-            start = max(0.0, float(start) - before_seconds)
-            end = float(end) + after_seconds
+            start = max(0.0, float(start))
+            end = float(end)
         duration = max(1.0, end - start)
         label = observation.clip_label or observation.observation_id or f"clip_{index:03d}"
         safe_label = _safe_filename(label)
@@ -290,6 +324,96 @@ def _build_tactical_clips(
     }
 
 
+def _apply_time_map(
+    observations: list[VisualObservation],
+    time_map_dict: dict[str, Any],
+    *,
+    time_map_path: str,
+    clip_before_seconds: float,
+    clip_after_seconds: float,
+) -> tuple[list[VisualObservation], dict[str, Any]]:
+    """Remap observation clip windows from game time to real video seconds."""
+    anchors = _extract_reliable_period_anchors(time_map_dict)
+    adjusted = 0
+    fallback = 0
+    warnings: list[str] = []
+    for observation in observations:
+        period = int(observation.period or 0)
+        anchor = anchors.get(period)
+        if anchor is None:
+            fallback += 1
+            warning = (
+                f"Time map fallback for {observation.observation_id or '<unknown>'}: "
+                f"period {period} anchor missing or unreliable."
+            )
+            warnings.append(warning)
+            print(f"[warning] {warning}")
+            continue
+        period_elapsed_seconds = float(observation.timecode_seconds) - (period - 1) * REGULATION_PERIOD_SECONDS
+        if period_elapsed_seconds < 0:
+            fallback += 1
+            warning = (
+                f"Time map fallback for {observation.observation_id or '<unknown>'}: "
+                f"timecode_seconds={observation.timecode_seconds} is outside period {period}."
+            )
+            warnings.append(warning)
+            print(f"[warning] {warning}")
+            continue
+        video_event_seconds = float(anchor) + period_elapsed_seconds
+        observation.clip_start_seconds = max(0.0, video_event_seconds - clip_before_seconds)
+        observation.clip_end_seconds = max(
+            observation.clip_start_seconds + 1.0,
+            video_event_seconds + clip_after_seconds,
+        )
+        adjusted += 1
+    return observations, {
+        "requested": True,
+        "applied": adjusted > 0,
+        "path": str(time_map_path),
+        "period_anchors_used": {str(period): round(value, 3) for period, value in sorted(anchors.items())},
+        "adjusted_clips": adjusted,
+        "fallback_clips": fallback,
+        "warnings": warnings,
+        "error": "",
+    }
+
+
+def _extract_reliable_period_anchors(time_map_dict: dict[str, Any]) -> dict[int, float]:
+    anchors_payload = time_map_dict.get("period_anchors", {})
+    reliability_payload = time_map_dict.get("period_anchors_reliability", {})
+    anchors: dict[int, float] = {}
+    if not isinstance(anchors_payload, dict):
+        return anchors
+    for raw_period, raw_anchor in anchors_payload.items():
+        try:
+            period = int(raw_period)
+            reliability = str(reliability_payload.get(str(raw_period), reliability_payload.get(raw_period, "")))
+            if reliability and reliability != "reliable":
+                continue
+            anchors[period] = float(raw_anchor)
+        except (TypeError, ValueError):
+            continue
+    return anchors
+
+
+def _empty_time_map_summary(
+    *,
+    time_map_path: str | None,
+    requested: bool,
+    error: str = "",
+) -> dict[str, Any]:
+    return {
+        "requested": bool(requested),
+        "applied": False,
+        "path": str(time_map_path or ""),
+        "period_anchors_used": {},
+        "adjusted_clips": 0,
+        "fallback_clips": 0,
+        "warnings": [],
+        "error": error,
+    }
+
+
 def _safe_filename(value: str) -> str:
     keep = []
     for char in value.strip():
@@ -346,6 +470,29 @@ def _print_llm_pipeline_status(summary: dict[str, Any]) -> None:
             f"| latency={float(item.get('latency_seconds', 0.0) or 0.0):.2f}s"
             f"{suffix}"
         )
+
+
+def _print_time_map_status(summary: dict[str, Any]) -> None:
+    time_map = summary.get("time_map", {})
+    if not isinstance(time_map, dict) or not time_map.get("requested"):
+        return
+    anchors = {
+        int(period): float(anchor)
+        for period, anchor in time_map.get("period_anchors_used", {}).items()
+    }
+    print("\n" + "=" * 60)
+    print("Time Map Applied")
+    print("-" * 60)
+    print(f"Source:           {time_map.get('path', '')}")
+    print(f"Anchors used:     {anchors}")
+    print(
+        f"Adjusted clips:   {int(time_map.get('adjusted_clips', 0) or 0)} / "
+        f"{int(summary.get('observation_count', 0) or 0)}"
+    )
+    print(f"Fallback clips:   {int(time_map.get('fallback_clips', 0) or 0)}")
+    if time_map.get("error"):
+        print(f"Error:            {time_map.get('error')}")
+    print("=" * 60)
 
 
 def _observations_from_frame_manifest(
@@ -632,6 +779,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--auto-observations", action="store_true", help="Build observations from --replay automatically.")
     parser.add_argument("--auto-periods", default="", help="Optional comma-separated periods for auto observations, e.g. 1 or 1,2.")
     parser.add_argument("--video-total-seconds", type=float, default=0.0, help="Optional source video duration for PBP-to-video mapping.")
+    parser.add_argument("--time-map", default="", help="Optional video_time_map.json path from T-OCR-3.")
+    parser.add_argument("--apply-time-map", action="store_true", help="Explicitly remap clip windows using --time-map anchors.")
     parser.add_argument(
         "--period-video-windows",
         default="",
@@ -639,8 +788,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--target-chars", type=int, default=2000, help="Target Chinese character count for the report.")
     parser.add_argument("--use-reasoner", action="store_true", help="Use the slower reasoning model for deeper analysis.")
-    parser.add_argument("--clip-before", type=float, default=14.0, help="Seconds before each event to include in tactical clips.")
-    parser.add_argument("--clip-after", type=float, default=5.0, help="Seconds after each event to include in tactical clips.")
+    parser.add_argument("--clip-before", type=float, default=DEFAULT_CLIP_BEFORE_SECONDS, help="Seconds before each event to include in tactical clips.")
+    parser.add_argument("--clip-after", type=float, default=DEFAULT_CLIP_AFTER_SECONDS, help="Seconds after each event to include in tactical clips.")
     parser.add_argument("--no-gif", action="store_true", help="Disable GIF generation for tactical clips.")
     parser.add_argument("--gif-fps", type=int, default=10, help="GIF frame rate when ffmpeg is available.")
     parser.add_argument("--gif-width", type=int, default=480, help="GIF output width when ffmpeg is available.")
@@ -669,9 +818,12 @@ def main() -> None:
         gif_fps=args.gif_fps,
         gif_width=args.gif_width,
         video_period_windows=_parse_period_video_windows(args.period_video_windows),
+        time_map_path=args.time_map or None,
+        apply_time_map=args.apply_time_map,
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     _print_llm_pipeline_status(summary)
+    _print_time_map_status(summary)
 
 
 if __name__ == "__main__":

@@ -251,3 +251,19 @@ ROI 选择技巧：
 - 如果能读出文字，且 `period` / `clock_remaining_seconds` 正确，说明 ROI 可用，可以进入 T-OCR-3。
 - 如果 `raw_text` 乱码或 `error_reason` 是 `no_text_detected`，通常是 ROI 偏了，回到 T-OCR-1 重新标定。
 - 如果文字读到了但 `error_reason` 是 `parse_failed: ...`，把 `raw_text` 贴给协作者，需要新增解析规则。
+## OCR 时间对齐：第四步 端到端切片
+
+完成 `video_time_map.json` 后，可以把 OCR 检测出的每节开场锚点接入 `demo_runner`。这样自动 PBP observation 的全场累计比赛秒数会被重新映射到真实广播视频秒数，再用默认 22 秒 before / 4 秒 after 窗口切出战术回合 mp4 和 GIF。
+
+```powershell
+python -m video_scout.demo_runner ^
+  --video data\videos\nba_demo.MKV ^
+  --replay data\samples\nba_replay_sample.json ^
+  --court-report data\samples\court_ai_report_sample.json ^
+  --auto-observations ^
+  --time-map data\videos\nba_demo.time_map.json ^
+  --apply-time-map ^
+  --use-llm
+```
+
+注意：`--apply-time-map` 必须显式开启，避免手动标注 observation 的 clip 时间被意外覆盖。如果某一节 anchor 缺失或标记为不可靠，系统会保留该 observation 原有 clip 时间并打印 warning。

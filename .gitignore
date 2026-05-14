@@ -12,6 +12,8 @@ __pycache__/
 data/generated/
 data/outputs/
 data/videos/
+data/replays/
+data/court_reports/
 data/knowledge/*.sqlite3
 data/knowledge/*.db
 
