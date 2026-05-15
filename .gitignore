@@ -1,23 +1,56 @@
-.env
-.venv/
-venv/
-
+# ---- Python ----
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.Python
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
 
-.DS_Store
+# ---- Secrets ----
+.env
+.env.local
+*.key
+*.pem
 
+# ---- 大文件：视频、模型 ----
+data/videos/
+*.mkv
+*.mp4
+*.avi
+*.mov
+~/.EasyOCR/
+.EasyOCR/
+
+# ---- 生成产物（可重新生成）----
 data/generated/
 data/outputs/
-data/videos/
 data/replays/
 data/court_reports/
+data/videos/*.scoreboard_roi*.json
+data/videos/*.score_roi.json
+data/videos/*.time_map*.json
+data/videos/*.score_events*.json
+data/videos/*.reconciliation_report.json
+data/videos/*.preview.png
+data/videos/frame_at_*.png
+data/videos/roi_crop_*.png
+evaluation/results/
 data/knowledge/*.sqlite3
 data/knowledge/*.db
-
-# Full experiment runs are reproducible and can be regenerated locally.
-evaluation/results/real_gold_*/
-
 *.log
+
+# ---- IDE / OS ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---- Node ----
+node_modules/
+package-lock.json
