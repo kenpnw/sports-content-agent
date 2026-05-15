@@ -345,6 +345,26 @@ Do not depend on the old PDF workflow for the new MVP path.
 
 ## Platform Publishing Status
 
+## Social Packager
+
+`social_packager` turns a Video Scout tactical report plus GIF clip manifest into platform-native content packages for Hupu, Douyin, Weibo, and Xiaohongshu. It does not publish to any real account; it writes Markdown plus `package.json` for manual review.
+
+```powershell
+.\.venv\Scripts\python.exe -m social_packager.demo_runner ^
+  --report data\generated\video_scout\real_okc_lal_g1_v3_neighbor\report.json ^
+  --clip-manifest data\generated\video_scout\real_okc_lal_g1_v3_neighbor\clip_manifest.json ^
+  --platforms hupu,douyin,weibo,xiaohongshu ^
+  --use-llm
+```
+
+Output:
+
+- `data\generated\social\<timestamp>\hupu\post.md`
+- `data\generated\social\<timestamp>\douyin\script.md`
+- `data\generated\social\<timestamp>\weibo\post.md`
+- `data\generated\social\<timestamp>\xiaohongshu\post.md`
+- `data\generated\social\<timestamp>\summary.json`
+
 ### Hupu
 
 - content generation is ready
