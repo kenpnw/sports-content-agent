@@ -54,3 +54,7 @@ Thumbs.db
 # ---- Node ----
 node_modules/
 package-lock.json
+
+# ---- Production process docs (kept local only) ----
+ROADMAP.md
+audit_report.md
