@@ -506,6 +506,38 @@
     .frame-thumb:nth-child(5) { animation-delay: 0.20s; }
     .frame-thumb:nth-child(6) { animation-delay: 0.24s; }
 
+    /* Quality score badge */
+    .quality-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      font-size: 9px;
+      font-weight: 800;
+      border-radius: 3px;
+      margin-left: 4px;
+      vertical-align: 1px;
+      letter-spacing: 0.5px;
+    }
+    .quality-badge.high {
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.25), rgba(56, 189, 248, 0.15));
+      color: var(--accent);
+      border: 1px solid rgba(110, 231, 183, 0.5);
+      box-shadow: 0 0 6px rgba(110, 231, 183, 0.3);
+    }
+    .quality-badge.mid {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+    .quality-badge.low {
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+    /* High-quality clip card glow */
+    .clip-card.quality-high::before {
+      background: linear-gradient(120deg, transparent 30%, rgba(110, 231, 183, 0.12) 50%, transparent 70%) !important;
+    }
+
     /* Selection checkbox on clip cards */
     .clip-checkbox {
       width: 16px;
@@ -1219,7 +1251,43 @@
 
     // ---------- Components ----------
 
-    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect }) {
+    // Compute a 0-100 quality score for a clip based on:
+    //  - snap status (UNCHANGED = best, TRIMMED = mid, SHIFTED = good but uncertain)
+    //  - clip duration (closer to 26s = better, very short = worse)
+    //  - tactic tag importance (key_shot/lead_change > made_shot > turnover > period_end)
+    //  - player count (more named players = richer context)
+    function computeQualityScore(clip, snapInfo) {
+      let score = 50;
+      // Snap component
+      if (snapInfo) {
+        const o = snapInfo.original, a = snapInfo.adjusted;
+        if (o && a) {
+          if (o[0] === a[0] && o[1] === a[1]) score += 20;        // UNCHANGED: confident
+          else if (o[0] !== a[0]) score += 15;                    // SHIFTED: rescued from bad spot
+          else score += 5;                                         // TRIMMED: window smaller but in play
+        }
+      }
+      // Duration component
+      const dur = (clip.end_seconds - clip.start_seconds) || 26;
+      if (dur >= 22 && dur <= 28) score += 15;
+      else if (dur >= 15) score += 5;
+      else score -= 10;                                            // very short clip = less context
+      // Tactic importance
+      const tags = clip.tactic_tags || [];
+      const tagStr = tags.join(",");
+      if (tagStr.includes("lead_change") || tagStr.includes("late_game_execution")) score += 10;
+      else if (tagStr.includes("key_shot") || tagStr.includes("three_point_creation")) score += 8;
+      else if (tagStr.includes("rim_pressure")) score += 6;
+      else if (tagStr.includes("turnover") || tagStr.includes("ball_security")) score += 3;
+      else if (tagStr.includes("period_end") || tagStr.includes("game_end")) score -= 5;
+      // Players count
+      const playerCount = (clip.players || []).length;
+      if (playerCount >= 2) score += 5;
+      else if (playerCount === 1) score += 2;
+      return Math.max(0, Math.min(100, score));
+    }
+
+    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect, snapByObs }) {
       if (!clips.length) {
         return <Empty description="该 report 没有 clips" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
       }
@@ -1231,10 +1299,12 @@
             const tag = (clip.tactic_tags || [])[0] || "";
             const player = (clip.players || []).join(", ");
             const isChecked = selectedSet?.has(clip.observation_id);
+            const quality = computeQualityScore(clip, snapByObs?.[clip.observation_id]);
+            const qualityClass = quality >= 70 ? "high" : quality >= 50 ? "mid" : "low";
             return (
               <div
                 key={clip.observation_id || idx}
-                className={`clip-card ${idx === selectedIdx ? "active" : ""}`}
+                className={`clip-card ${idx === selectedIdx ? "active" : ""} quality-${qualityClass}`}
                 onClick={() => onSelect(idx)}
               >
                 <div
@@ -1247,7 +1317,10 @@
                 />
                 {gifUrl ? <img className="clip-thumb" src={gifUrl} alt="" /> : <div className="clip-thumb" />}
                 <div className="clip-info">
-                  <div className="clip-time">Q{clip.period} {fmtClock(clip.clock)}</div>
+                  <div className="clip-time">
+                    Q{clip.period} {fmtClock(clip.clock)}
+                    <span className={`quality-badge ${qualityClass}`} title={`质量分 ${quality}/100`}>{quality}</span>
+                  </div>
                   <div className="clip-desc">{clip.event_description || clip.label}</div>
                   <div>
                     {tag && <span className="clip-tag">{tag}</span>}
@@ -1686,6 +1759,7 @@
                       onSelect={handleClipSelect}
                       selectedSet={pickedSet}
                       onToggleSelect={togglePicked}
+                      snapByObs={snapDetails}
                     />
                   )}
                 </div>
