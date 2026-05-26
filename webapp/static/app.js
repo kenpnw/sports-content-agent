@@ -7,6 +7,138 @@ const sampleInput = document.body.dataset.sampleInput;
 const sampleReplay = document.body.dataset.sampleReplay;
 const sampleVideoScout = document.body.dataset.sampleVideoScout;
 
+// ============ Toast notification system ============
+let toastContainer = null;
+function showToast(message, type = "info", duration = 2800) {
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.className = "toast-container";
+    document.body.appendChild(toastContainer);
+  }
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px)";
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+// Add live data-flow bar + tabs + game picker
+window.addEventListener("DOMContentLoaded", () => {
+  const bar = document.createElement("div");
+  bar.className = "data-flow-bar";
+  document.body.appendChild(bar);
+
+  // Tab switching
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+      document.querySelectorAll(".tab-pane").forEach((p) => p.classList.toggle("active", p.dataset.tab === tab));
+    });
+  });
+
+  // Game picker
+  const refreshBtn = document.getElementById("refresh-games");
+  const gamesList = document.getElementById("games-list");
+  const pickedInfo = document.getElementById("picked-game-info");
+  const pickedHidden = document.getElementById("picked-game-id");
+
+  function formatTeam(g, side) {
+    const tri = side === "home" ? g.home_tricode : g.away_tricode;
+    const name = side === "home" ? g.home_name : g.away_name;
+    return tri || name || "?";
+  }
+
+  function renderGames(games) {
+    gamesList.innerHTML = "";
+    if (!games.length) {
+      gamesList.innerHTML = '<div class="games-list-empty">没有近期完赛数据</div>';
+      return;
+    }
+
+    // Group by date
+    const byDate = {};
+    for (const g of games) {
+      (byDate[g.game_date] = byDate[g.game_date] || []).push(g);
+    }
+    const dates = Object.keys(byDate).sort().reverse();
+
+    for (const date of dates) {
+      const header = document.createElement("div");
+      header.className = "games-list-date-header";
+      header.textContent = `${date}  ·  ${byDate[date].length} 场`;
+      gamesList.appendChild(header);
+
+      for (const g of byDate[date]) {
+        const row = document.createElement("div");
+        row.className = "game-row";
+        row.dataset.gameId = g.game_id;
+        const homeWon = g.winner === g.home_tricode;
+        const awayWon = g.winner === g.away_tricode;
+        const labelText = g.is_playoff
+          ? (g.game_label || g.game_sublabel || "Playoff")
+          : "Regular";
+        const labelClass = g.is_playoff ? "" : "regular";
+        row.innerHTML = `
+          <span class="label-badge ${labelClass}">${labelText}</span>
+          <span class="matchup">
+            ${awayWon ? '<span class="winner-mark">●</span>' : ""}
+            <span>${formatTeam(g, "away")}</span>
+            <span style="color: var(--muted)">@</span>
+            <span>${formatTeam(g, "home")}</span>
+            ${homeWon ? '<span class="winner-mark">●</span>' : ""}
+          </span>
+          <span class="score">${g.away_score} - ${g.home_score}</span>
+        `;
+        row.addEventListener("click", () => {
+          document.querySelectorAll(".game-row").forEach((r) => r.classList.remove("picked"));
+          row.classList.add("picked");
+          pickedHidden.value = g.game_id;
+          pickedInfo.classList.add("has-pick");
+          pickedInfo.innerHTML = `
+            <div class="picked-title">${formatTeam(g, "away")} @ ${formatTeam(g, "home")} (${g.away_score}-${g.home_score})</div>
+            <div class="picked-meta">${g.game_date} · ${labelText} · game_id ${g.game_id}</div>
+          `;
+          // Make sure source is fetch_today
+          document.getElementById("source").value = "fetch_today";
+          showToast(`已选 ${formatTeam(g, "away")} @ ${formatTeam(g, "home")}`, "success");
+        });
+        gamesList.appendChild(row);
+      }
+    }
+  }
+
+  async function refreshGames() {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "拉取中...";
+    gamesList.innerHTML = '<div class="games-list-loading">正在拉取近 30 天比赛列表...</div>';
+    try {
+      const res = await fetch("/api/nba/recent_games?days=30");
+      const data = await res.json();
+      if (data.error) {
+        gamesList.innerHTML = `<div class="games-list-empty">拉取失败：${data.error}</div>`;
+        showToast(`拉取失败：${data.error}`, "error", 4500);
+      } else {
+        renderGames(data.games || []);
+        showToast(`拉到 ${data.count} 场比赛`, "success");
+      }
+    } catch (err) {
+      gamesList.innerHTML = `<div class="games-list-empty">网络错误：${err.message}</div>`;
+      showToast(`网络错误：${err.message}`, "error", 4500);
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = "↻ 拉取近 30 天";
+    }
+  }
+
+  if (refreshBtn) refreshBtn.addEventListener("click", refreshGames);
+});
+
 const statusBanner = document.getElementById("job-status-banner");
 const stepsEl = document.getElementById("steps");
 const logsEl = document.getElementById("logs");
@@ -742,34 +874,62 @@ document.getElementById("job-form").addEventListener("submit", async (event) => 
   const source = document.getElementById("source").value;
   const team = document.getElementById("team").value.trim();
   const inputPath = document.getElementById("input-path").value.trim();
+  const pickedGameId = document.getElementById("picked-game-id")?.value || "";
   const payload = { source, team, input_path: inputPath };
+  if (pickedGameId && source === "fetch_today") {
+    payload.game_id = pickedGameId;
+  }
 
-  const res = await fetch("/api/jobs", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  const job = await res.json();
-  state.activeJobId = job.id;
-  setBanner("running", "任务已启动，正在拉起后台流程。");
-  await fetchJobs();
-  await fetchJob(job.id);
-  startPolling();
+  const submitBtn = event.target.querySelector(".primary-button");
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Starting...";
+  }
+  showToast(pickedGameId ? `跑指定比赛 ${pickedGameId}...` : "正在提交任务...", "info");
+
+  try {
+    const res = await fetch("/api/jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      throw new Error(`API ${res.status}: ${res.statusText}`);
+    }
+    const job = await res.json();
+    state.activeJobId = job.id;
+    setBanner("running", "任务已启动，正在拉起后台流程。");
+    showToast(`任务 ${job.id ? job.id.slice(0, 8) : ""} 已启动`, "success");
+    await fetchJobs();
+    await fetchJob(job.id);
+    startPolling();
+  } catch (err) {
+    setBanner("error", `任务启动失败：${err.message}`);
+    showToast(`启动失败：${err.message}`, "error", 4500);
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Run Control Room";
+    }
+  }
 });
 
 document.getElementById("use-sample").addEventListener("click", () => {
   document.getElementById("source").value = "input";
   document.getElementById("input-path").value = sampleInput;
+  showToast("已切换到示例输入路径", "success");
 });
 
 document.getElementById("use-replay-sample").addEventListener("click", () => {
   document.getElementById("source").value = "replay_demo";
   document.getElementById("input-path").value = sampleReplay;
+  showToast("已切换到 Replay Demo", "success");
 });
 
 document.getElementById("use-video-scout-sample").addEventListener("click", () => {
   document.getElementById("source").value = "video_scout_demo";
   document.getElementById("input-path").value = sampleVideoScout;
+  showToast("已切换到 Video Scout Demo", "success");
 });
 
 window.addEventListener("load", async () => {

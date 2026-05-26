@@ -172,7 +172,18 @@ class VideoScoutAnalyzer:
         return (
             "You are a senior NBA video scout and Chinese sports editor. "
             "Use only the supplied observations, play-by-play, and court report. "
-            "Return strict JSON only. Write user-facing content in Simplified Chinese."
+            "Return strict JSON only. Write user-facing content in Simplified Chinese.\n\n"
+            "篮球战术术语库（生成 decision_analysis 时，若能从观察证据辨认出以下任一战术，"
+            "必须在该字段开头明确命名「本回合属于『XXX』战术」，再展开分析。中英对照写法：『中文名』(English Name) ）：\n"
+            "・挡拆类：一五挡拆 (1-5 PnR)、一四挡拆 (1-4 PnR)、西班牙挡拆 (Spain PnR)、Drag 挡拆、Ghost 假掩护、翼侧挡拆 (Wing PnR)、双高位挡拆 (Double-Drag)；\n"
+            "・传切类：手递手 (Hand-off / DHO)、Iverson 切入、Zipper 拉链、Floppy 双底掩护、Stagger 连续掩护、STS (Screen-the-Screener)、Hammer 锤子战术；\n"
+            "・阵型类：Horns 牛角、Box 盒子站位、5-out、4-out 1-in、1-3-1、Delay/Chicago 动作；\n"
+            "・组合类：Pistol 手枪、Spread PnR 拉开挡拆、Wide PnR 大跨度挡拆、ATO (After Time-Out) 战术、Get 动作 (传球后跑掩护)；\n"
+            "・空切/掩护类：反跑 (Back-cut)、弱侧空切 (Weak-side cutting)、Flare 外拉掩护、Pin-down 下掩护、Cross-screen 横掩护、Flex 灵活掩护；\n"
+            "・防守破解类：Switch (换防)、Drop (沉退)、Hedge (延误)、Ice (导边)、Show-and-recover (硬挤回)、Tag-and-recover (轮转回归)。\n\n"
+            "命名原则：（1）证据足够清晰才命名，模糊不强命名；（2）写战术名时必须中英对照；"
+            "（3）紧接战术名后用 30-80 字解释为什么是这个战术（关键球员动作、掩护角度、防守反应）。"
+            "若该回合是 made_shot / turnover 等结果型事件而非战术发起，可直接描述执行细节，不必硬套战术名。"
         )
 
     def _generate_step_json(
@@ -272,6 +283,8 @@ class VideoScoutAnalyzer:
                 "Analyze exactly one tactical observation and return JSON with one key `segment`. "
                 "`segment` must contain: timecode, period, clock, tactic_type, observation, "
                 "decision_analysis, win_loss_impact, evidence, confidence.\n"
+                "decision_analysis 写作要求：若证据支持识别明确战术，开头用『本回合属于「中文战术名」(English Name) 战术』格式命名（参考 system prompt 战术术语库），"
+                "再用 30-80 字解释为什么是这个战术。若是单一结果型事件（孤立单打/抢板/罚球）且无战术铺垫，则跳过命名，直接描述执行细节即可。\n"
                 f"Game context: {json.dumps(game_context, ensure_ascii=False)}\n"
                 f"Court report: {json.dumps(court_report_context, ensure_ascii=False)}\n"
                 f"Observation: {json.dumps(observation.to_dict(), ensure_ascii=False)}"

@@ -82,8 +82,25 @@ def create_job():
     source = payload.get("source", "fetch_today")
     team = payload.get("team") or ""
     input_path = payload.get("input_path") or ""
-    job = job_manager.start_job(source=source, team=team, input_path=input_path)
+    game_id = payload.get("game_id") or ""
+    job = job_manager.start_job(source=source, team=team, input_path=input_path, game_id=game_id)
     return jsonify(job), 202
+
+
+@app.get("/api/nba/recent_games")
+def list_recent_nba_games():
+    """Return finished NBA games from the last N days (default 30) for UI picker."""
+    from ingestion.nba_live import list_recent_finals
+    try:
+        days = int(request.args.get("days", "30"))
+    except ValueError:
+        days = 30
+    days = max(1, min(days, 90))
+    try:
+        games = list_recent_finals(lookback_days=days)
+        return jsonify({"games": games, "lookback_days": days, "count": len(games)})
+    except RuntimeError as exc:
+        return jsonify({"games": [], "lookback_days": days, "count": 0, "error": str(exc)}), 200
 
 
 @app.get("/api/files")
@@ -184,5 +201,86 @@ def get_tactical_clip(report_id: str, clip_filename: str):
     return send_file(clip_path)
 
 
+def _clip_basename_from_filename(clip_filename: str) -> str:
+    """Get the basename without extension for frame folder lookup.
+
+    Frames are stored next to the MP4 in a sibling `<basename>_frames/` directory,
+    where `<basename>` is the MP4/GIF filename without extension.
+    """
+    return Path(clip_filename).stem
+
+
+@app.get("/api/tactical/clip/<report_id>/<path:clip_filename>/frames")
+def list_clip_frames(report_id: str, clip_filename: str):
+    """Return the list of pre-extracted keyframes for a given clip.
+
+    Frames live at: <report_dir>/clips/<basename>_frames/frame_XX.jpg
+    """
+    try:
+        report_dir = _safe_tactical_report_dir(report_id)
+    except PermissionError:
+        abort(403)
+
+    clips_dir = (report_dir / "clips").resolve()
+    basename = _clip_basename_from_filename(clip_filename)
+    frames_dir = (clips_dir / f"{basename}_frames").resolve()
+
+    # Defensive: ensure frames_dir is inside clips_dir
+    try:
+        frames_dir.relative_to(clips_dir)
+    except ValueError:
+        abort(403)
+
+    if not frames_dir.exists() or not frames_dir.is_dir():
+        return jsonify({"frames": [], "basename": basename, "frames_dir_exists": False})
+
+    frames = sorted(
+        p.name for p in frames_dir.glob("frame_*.jpg") if p.is_file()
+    )
+    return jsonify(
+        {
+            "frames": frames,
+            "basename": basename,
+            "frames_dir_exists": True,
+        }
+    )
+
+
+@app.get("/static-frames/<report_id>/<basename>/<frame_filename>")
+def get_tactical_frame(report_id: str, basename: str, frame_filename: str):
+    """Serve a single pre-extracted keyframe image."""
+    try:
+        report_dir = _safe_tactical_report_dir(report_id)
+    except PermissionError:
+        abort(403)
+
+    # basename and frame_filename must not contain path separators
+    if "/" in basename or "\\" in basename or ".." in basename:
+        abort(403)
+    if "/" in frame_filename or "\\" in frame_filename or ".." in frame_filename:
+        abort(403)
+
+    clips_dir = (report_dir / "clips").resolve()
+    frames_dir = (clips_dir / f"{basename}_frames").resolve()
+    try:
+        frames_dir.relative_to(clips_dir)
+    except ValueError:
+        abort(403)
+
+    frame_path = (frames_dir / frame_filename).resolve()
+    try:
+        frame_path.relative_to(frames_dir)
+    except ValueError:
+        abort(403)
+
+    if not frame_path.exists() or not frame_path.is_file():
+        abort(404)
+    return send_file(frame_path)
+
+
 def run() -> None:
     app.run(host=APP_HOST, port=APP_PORT, debug=False)
+
+
+if __name__ == "__main__":
+    run()

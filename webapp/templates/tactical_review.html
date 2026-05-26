@@ -3,61 +3,1593 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>战术复盘</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='tactical_review.css') }}">
+  <title>战术复盘 · Tactical Review</title>
+
+  <!-- Ant Design CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.21.6/dist/reset.css">
+
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --panel: #131826;
+      --panel-2: #1a2032;
+      --line: #232a3d;
+      --text: #e8eaed;
+      --muted: #9aa3b8;
+      --accent: #6ee7b7;
+      --accent-2: #34d399;
+      --fact: rgba(52, 211, 153, 0.18);
+      --spec: rgba(251, 191, 36, 0.18);
+      --narrative: rgba(148, 163, 184, 0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body, #root { height: 100%; margin: 0; padding: 0; }
+    body {
+      font-family: "Inter", "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      position: relative;
+    }
+    /* Ambient background glow blobs — brighter, multi-color */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      background: radial-gradient(circle, #34d399 0%, rgba(110, 231, 183, 0.5) 30%, transparent 65%);
+      opacity: 0.40;
+      top: -250px;
+      left: -200px;
+      animation: float-blob-1 18s ease-in-out infinite;
+    }
+    body::after {
+      background: radial-gradient(circle, #a855f7 0%, rgba(168, 85, 247, 0.5) 30%, transparent 65%);
+      opacity: 0.32;
+      bottom: -250px;
+      right: -200px;
+      animation: float-blob-2 22s ease-in-out infinite;
+    }
+    /* Third blob — pink accent */
+    body {
+      background-image:
+        radial-gradient(at 80% 20%, rgba(236, 72, 153, 0.10) 0%, transparent 40%),
+        radial-gradient(at 20% 80%, rgba(56, 189, 248, 0.10) 0%, transparent 40%);
+    }
+    /* Grid pattern overlay (tech feel) */
+    body {
+      background-color: var(--bg);
+    }
+    #root::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(110, 231, 183, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(110, 231, 183, 0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 1;
+      mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+    }
+    @keyframes float-blob-1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(200px, 80px) scale(1.15); }
+      66% { transform: translate(80px, 200px) scale(0.9); }
+    }
+    @keyframes float-blob-2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-180px, -100px) scale(1.2); }
+      66% { transform: translate(-60px, -180px) scale(0.85); }
+    }
+
+    /* ============ KEYFRAMES ============ */
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade-in-left {
+      from { opacity: 0; transform: translateX(-16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fade-in-scale {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(110, 231, 183, 0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(110, 231, 183, 0); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(110, 231, 183, 0.7), 0 0 8px rgba(110, 231, 183, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(110, 231, 183, 0), 0 0 20px rgba(110, 231, 183, 0.8);
+      }
+    }
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes rotate-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes border-flow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #3a4458; border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4a5468; }
+
+    /* Ant Design dark overrides */
+    .ant-layout, .ant-layout-sider, .ant-layout-header, .ant-layout-content {
+      background: transparent !important;
+    }
+    .ant-card {
+      background: var(--panel) !important;
+      border-color: var(--line) !important;
+      color: var(--text) !important;
+    }
+    .ant-card-head {
+      border-bottom-color: var(--line) !important;
+      color: var(--text) !important;
+      min-height: 44px !important;
+    }
+    .ant-card-head-title { color: var(--text) !important; }
+    .ant-card-body { color: var(--text) !important; }
+    .ant-select-selector {
+      background: var(--panel-2) !important;
+      border-color: var(--line) !important;
+      color: var(--text) !important;
+    }
+    .ant-select-selection-item { color: var(--text) !important; }
+    .ant-empty-description { color: var(--muted) !important; }
+    .ant-typography { color: var(--text) !important; }
+    .ant-divider { border-color: var(--line) !important; }
+    .ant-tag { font-weight: 500; }
+    .ant-btn-default {
+      background: var(--panel-2) !important;
+      border-color: var(--line) !important;
+      color: var(--text) !important;
+    }
+    .ant-btn-default:hover {
+      border-color: var(--accent) !important;
+      color: var(--accent) !important;
+    }
+    .ant-tabs-tab { color: var(--muted) !important; }
+    .ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--accent) !important; }
+    .ant-tabs-ink-bar { background: var(--accent) !important; }
+    .ant-tabs-nav::before { border-bottom-color: var(--line) !important; }
+    .ant-modal-content, .ant-modal-header { background: var(--panel) !important; }
+    .ant-modal-title { color: var(--text) !important; }
+    .ant-modal-close { color: var(--muted) !important; }
+
+    /* Custom components */
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+      height: 56px;
+      background: rgba(19, 24, 38, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      z-index: 10;
+      animation: fade-in 0.5s ease;
+    }
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.5px;
+    }
+    .app-title strong {
+      background: linear-gradient(135deg, #6ee7b7 0%, #38bdf8 50%, #a855f7 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: gradient-shift 6s ease infinite;
+      font-weight: 800;
+    }
+    .app-title .accent {
+      color: var(--accent);
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2.2s ease-in-out infinite;
+    }
+    .app-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: linear-gradient(135deg, rgba(110,231,183,0.1), rgba(99,102,241,0.1));
+      border-radius: 999px;
+      border: 1px solid rgba(110,231,183,0.2);
+    }
+    /* Layout panels — glassmorphism */
+    .ant-layout-sider {
+      background: rgba(19, 24, 38, 0.55) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      position: relative;
+      z-index: 2;
+    }
+    .ant-layout-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .clip-card {
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(.4,0,.2,1),
+                  border-color 0.25s ease,
+                  background 0.25s ease,
+                  box-shadow 0.3s ease;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(26, 32, 50, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      animation: fade-in-left 0.4s ease backwards;
+      position: relative;
+      overflow: hidden;
+    }
+    .clip-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(110,231,183,0.06) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+      pointer-events: none;
+    }
+    .clip-card:hover {
+      border-color: rgba(110, 231, 183, 0.4);
+      background: rgba(36, 44, 64, 0.85);
+      transform: translateX(3px) translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(110, 231, 183, 0.15);
+    }
+    .clip-card:hover::before { transform: translateX(100%); }
+    .clip-card.active {
+      border-color: transparent;
+      background:
+        linear-gradient(135deg, rgba(26, 32, 50, 0.95), rgba(36, 44, 64, 0.9)) padding-box,
+        linear-gradient(135deg, #34d399, #38bdf8, #a855f7, #34d399) border-box;
+      background-size: 100% 100%, 300% 300%;
+      border: 2px solid transparent;
+      animation: gradient-shift 4s ease infinite;
+      box-shadow:
+        0 8px 32px rgba(110, 231, 183, 0.25),
+        0 0 0 1px rgba(110, 231, 183, 0.4),
+        inset 0 0 20px rgba(110, 231, 183, 0.08);
+      transform: translateX(4px);
+    }
+    .clip-card.active::after {
+      content: "▶";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-size: 14px;
+      animation: pulse-glow 1.6s ease infinite;
+      text-shadow: 0 0 12px rgba(110, 231, 183, 0.8);
+    }
+    /* stagger entrance: child index drives delay (max 12 entries handled) */
+    .clip-card:nth-child(1) { animation-delay: 0.02s; }
+    .clip-card:nth-child(2) { animation-delay: 0.06s; }
+    .clip-card:nth-child(3) { animation-delay: 0.10s; }
+    .clip-card:nth-child(4) { animation-delay: 0.14s; }
+    .clip-card:nth-child(5) { animation-delay: 0.18s; }
+    .clip-card:nth-child(6) { animation-delay: 0.22s; }
+    .clip-card:nth-child(7) { animation-delay: 0.26s; }
+    .clip-card:nth-child(8) { animation-delay: 0.30s; }
+    .clip-card:nth-child(9) { animation-delay: 0.34s; }
+    .clip-card:nth-child(10) { animation-delay: 0.38s; }
+    .clip-card:nth-child(11) { animation-delay: 0.42s; }
+    .clip-card:nth-child(12) { animation-delay: 0.46s; }
+    .clip-thumb {
+      width: 64px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 5px;
+      background: #000;
+      flex-shrink: 0;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .clip-card:hover .clip-thumb {
+      transform: scale(1.06);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .clip-card.active .clip-thumb {
+      box-shadow: 0 0 0 2px var(--accent), 0 0 12px rgba(110, 231, 183, 0.4);
+    }
+    .clip-info {
+      flex: 1;
+      min-width: 0;
+      font-size: 12px;
+    }
+    .clip-time {
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .clip-desc {
+      color: var(--text);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .clip-tag {
+      display: inline-block;
+      padding: 1px 6px;
+      background: rgba(110, 231, 183, 0.12);
+      color: var(--accent);
+      font-size: 10px;
+      border-radius: 3px;
+      margin-top: 4px;
+      margin-right: 4px;
+    }
+
+    .analysis-text {
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .sentence {
+      display: inline;
+      padding: 2px 5px;
+      border-radius: 4px;
+      margin: 0 1px;
+      transition: filter 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      cursor: default;
+    }
+    .sentence.fact { background: var(--fact); }
+    .sentence.spec { background: var(--spec); }
+    .sentence.narrative { background: var(--narrative); }
+    .sentence:hover {
+      filter: brightness(1.45);
+      box-shadow: 0 0 12px currentColor;
+    }
+    .sentence.fact:hover { background: rgba(52, 211, 153, 0.32); }
+    .sentence.spec:hover { background: rgba(251, 191, 36, 0.32); }
+    .sentence.narrative:hover { background: rgba(148, 163, 184, 0.22); }
+
+    .segment-card {
+      background: rgba(26, 32, 50, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(.4,0,.2,1),
+                  border-color 0.25s ease,
+                  background 0.25s ease,
+                  box-shadow 0.3s ease;
+      animation: fade-in-up 0.4s ease backwards;
+      position: relative;
+      overflow: hidden;
+    }
+    .segment-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      padding: 1px;
+      background: linear-gradient(135deg, transparent, rgba(110, 231, 183, 0), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .segment-card:hover {
+      border-color: rgba(110, 231, 183, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    .segment-card:hover::after {
+      opacity: 1;
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.4), rgba(99, 102, 241, 0.3), rgba(110, 231, 183, 0.4));
+      background-size: 200% 200%;
+      animation: gradient-shift 3s ease infinite;
+    }
+    .segment-card.active {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.08), rgba(26, 32, 50, 0.7));
+      box-shadow: 0 0 0 1px var(--accent),
+                  0 8px 28px rgba(110, 231, 183, 0.18);
+    }
+    .segment-card:nth-child(1) { animation-delay: 0.02s; }
+    .segment-card:nth-child(2) { animation-delay: 0.06s; }
+    .segment-card:nth-child(3) { animation-delay: 0.10s; }
+    .segment-card:nth-child(4) { animation-delay: 0.14s; }
+    .segment-card:nth-child(5) { animation-delay: 0.18s; }
+    .segment-card:nth-child(6) { animation-delay: 0.22s; }
+    .segment-card:nth-child(7) { animation-delay: 0.26s; }
+    .segment-card:nth-child(8) { animation-delay: 0.30s; }
+    .segment-card:nth-child(9) { animation-delay: 0.34s; }
+    .segment-card:nth-child(10) { animation-delay: 0.38s; }
+    .segment-card:nth-child(11) { animation-delay: 0.42s; }
+    .segment-card:nth-child(12) { animation-delay: 0.46s; }
+    .segment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .segment-time {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .segment-field {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 6px 0;
+    }
+    .segment-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding-top: 2px;
+    }
+
+    .frames-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .frame-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.25s cubic-bezier(.4,0,.2,1),
+                  border-color 0.25s ease,
+                  box-shadow 0.3s ease;
+      background: #000;
+      animation: fade-in-scale 0.4s ease backwards;
+    }
+    .frame-thumb:nth-child(1) { animation-delay: 0.04s; }
+    .frame-thumb:nth-child(2) { animation-delay: 0.08s; }
+    .frame-thumb:nth-child(3) { animation-delay: 0.12s; }
+    .frame-thumb:nth-child(4) { animation-delay: 0.16s; }
+    .frame-thumb:nth-child(5) { animation-delay: 0.20s; }
+    .frame-thumb:nth-child(6) { animation-delay: 0.24s; }
+
+    /* Snap status badge */
+    .snap-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      margin-left: 6px;
+      text-transform: uppercase;
+    }
+    .snap-badge.unchanged {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+    .snap-badge.trimmed {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+    .snap-badge.shifted {
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.2), rgba(56, 189, 248, 0.15));
+      color: var(--accent);
+      border: 1px solid rgba(110, 231, 183, 0.5);
+      box-shadow: 0 0 8px rgba(110, 231, 183, 0.3);
+    }
+    .frame-thumb:hover {
+      border-color: var(--accent);
+      transform: scale(1.08) translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5),
+                  0 0 0 1px rgba(110, 231, 183, 0.4),
+                  0 0 24px rgba(110, 231, 183, 0.25);
+      z-index: 10;
+      position: relative;
+    }
+
+    .copy-btn {
+      font-size: 11px;
+      padding: 2px 8px;
+      height: 22px;
+      line-height: 1;
+    }
+
+    .evidence-item {
+      padding: 8px 10px;
+      background: var(--panel-2);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .evidence-source {
+      color: var(--accent);
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .evidence-value {
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .loading-state {
+      padding: 24px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .scrollable {
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .panel-content {
+      padding: 16px;
+    }
+
+    /* ============ Hupu-style timeline (main content) ============ */
+    .hupu-timeline {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px 32px 80px;
+    }
+    .hupu-intro {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.06), rgba(56, 189, 248, 0.04));
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      margin-bottom: 32px;
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: var(--text);
+      animation: fade-in-up 0.5s ease;
+    }
+    .hupu-intro .label {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .clip-block {
+      position: relative;
+      padding: 24px 0 32px;
+      border-top: 1px dashed rgba(110, 231, 183, 0.15);
+      animation: fade-in-up 0.5s ease backwards;
+      scroll-margin-top: 80px;
+    }
+    .clip-block:first-of-type { border-top: 0; padding-top: 8px; }
+    .clip-block:nth-of-type(1) { animation-delay: 0.04s; }
+    .clip-block:nth-of-type(2) { animation-delay: 0.08s; }
+    .clip-block:nth-of-type(3) { animation-delay: 0.12s; }
+    .clip-block:nth-of-type(4) { animation-delay: 0.16s; }
+    .clip-block:nth-of-type(5) { animation-delay: 0.20s; }
+    .clip-block:nth-of-type(6) { animation-delay: 0.24s; }
+
+    .clip-block-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .clip-block-num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(110, 231, 183, 0.1);
+      border: 1px solid rgba(110, 231, 183, 0.3);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+    .clip-block-time {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6ee7b7, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .clip-block-title {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .clip-block-copy {
+      font-size: 11px !important;
+      height: 26px !important;
+      padding: 0 12px !important;
+    }
+
+    .clip-block-narrative {
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--text);
+      margin: 0 0 16px 0;
+      padding: 14px 18px;
+      background: rgba(26, 32, 50, 0.5);
+      border-radius: 10px;
+      border-left: 3px solid rgba(110, 231, 183, 0.4);
+    }
+    .clip-block-narrative .narr-label {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--accent);
+      background: rgba(110, 231, 183, 0.12);
+      padding: 1px 7px;
+      border-radius: 4px;
+      margin-right: 8px;
+      vertical-align: 2px;
+    }
+    .clip-block-narrative + .clip-block-narrative {
+      margin-top: -8px;
+    }
+
+    .clip-block-gif-wrap {
+      position: relative;
+      margin: 16px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4),
+                  0 0 0 1px rgba(110, 231, 183, 0.12);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .clip-block-gif-wrap:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5),
+                  0 0 0 1px rgba(110, 231, 183, 0.3),
+                  0 0 32px rgba(110, 231, 183, 0.15);
+    }
+    .clip-block-gif {
+      width: 100%;
+      display: block;
+    }
+    .clip-block-gif-actions {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .clip-block-gif-wrap:hover .clip-block-gif-actions { opacity: 1; }
+    .clip-block-gif-actions button {
+      background: rgba(10, 14, 26, 0.85) !important;
+      backdrop-filter: blur(8px);
+      border-color: rgba(110, 231, 183, 0.3) !important;
+      color: var(--text) !important;
+      font-size: 11px !important;
+      height: 24px !important;
+      padding: 0 10px !important;
+    }
+
+    .clip-block-frames {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .clip-block-frames .frame-thumb {
+      aspect-ratio: 16 / 9;
+      border-radius: 4px;
+      border-width: 1.5px;
+    }
+
+    .clip-block-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .clip-block-meta .meta-tag {
+      padding: 2px 8px;
+      background: rgba(36, 44, 64, 0.6);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+    .clip-block-meta .meta-tag.accent {
+      color: var(--accent);
+      border-color: rgba(110, 231, 183, 0.3);
+    }
+
+    /* Sticky left nav for clip jumps */
+    .clip-nav {
+      padding: 0;
+    }
+    .nav-item {
+      cursor: pointer;
+      padding: 8px 14px;
+      margin: 2px 0;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+    .nav-item:hover {
+      background: rgba(110, 231, 183, 0.06);
+      color: var(--text);
+    }
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(110, 231, 183, 0.15), transparent);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+    .nav-item-time {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      opacity: 0.9;
+      min-width: 50px;
+    }
+    .nav-item-tag {
+      font-size: 10px;
+      opacity: 0.7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .section-title {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin: 16px 0 8px;
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    .preview-image {
+      width: 100%;
+      border-radius: 8px;
+      background: #000;
+      animation: fade-in-scale 0.4s ease;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* ============ Commentary card (right panel) ============ */
+    .commentary-card {
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.06), rgba(56, 189, 248, 0.04));
+      border: 1px solid rgba(110, 231, 183, 0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      animation: fade-in-up 0.35s ease;
+    }
+    .commentary-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .commentary-row {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.7;
+      padding: 5px 0;
+      color: var(--text);
+    }
+    .commentary-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      height: 18px;
+      display: inline-block;
+      text-align: center;
+      align-self: start;
+      margin-top: 2px;
+    }
+    .commentary-label.fact {
+      background: rgba(52, 211, 153, 0.2);
+      color: var(--accent);
+    }
+    .commentary-label.spec {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+    }
+    .commentary-label.narrative {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--muted);
+    }
+    .preview-image:hover {
+      transform: scale(1.01);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(110, 231, 183, 0.18);
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .stats-row .stat {
+      padding: 4px 10px;
+      background: linear-gradient(135deg, rgba(26, 32, 50, 0.8), rgba(19, 24, 38, 0.8));
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+    .stats-row .stat:hover {
+      border-color: rgba(110, 231, 183, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .stats-row .stat strong {
+      background: linear-gradient(135deg, #6ee7b7, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      font-weight: 800;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      margin-right: 4px;
+    }
+    .evidence-item {
+      animation: fade-in-up 0.35s ease backwards;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .evidence-item:hover {
+      transform: translateX(2px);
+      border-color: rgba(110, 231, 183, 0.3);
+    }
+    .evidence-item:nth-child(1) { animation-delay: 0.04s; }
+    .evidence-item:nth-child(2) { animation-delay: 0.08s; }
+    .evidence-item:nth-child(3) { animation-delay: 0.12s; }
+    .evidence-item:nth-child(4) { animation-delay: 0.16s; }
+    .evidence-item:nth-child(5) { animation-delay: 0.20s; }
+    .evidence-item:nth-child(6) { animation-delay: 0.24s; }
+
+    /* Custom modal animation */
+    .ant-modal-mask {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(10, 14, 26, 0.6) !important;
+    }
+    .ant-modal-content {
+      border: 1px solid var(--line) !important;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6),
+                  0 0 0 1px rgba(110, 231, 183, 0.1) !important;
+    }
+
+    /* Button refinements */
+    .ant-btn {
+      transition: all 0.2s ease !important;
+    }
+    .ant-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+    .ant-btn-primary {
+      background: linear-gradient(135deg, #34d399, #6ee7b7) !important;
+      border: 0 !important;
+      color: #0a0e1a !important;
+      font-weight: 600 !important;
+    }
+    .ant-btn-primary:hover {
+      box-shadow: 0 4px 16px rgba(110, 231, 183, 0.4) !important;
+    }
+
+    /* Smooth scroll */
+    .scrollable {
+      scroll-behavior: smooth;
+    }
+
+    /* Loading shimmer */
+    .shimmer {
+      background: linear-gradient(90deg, var(--panel) 0%, var(--panel-2) 50%, var(--panel) 100%);
+      background-size: 1000px 100%;
+      animation: shimmer 1.6s linear infinite;
+      border-radius: 8px;
+    }
+    .shimmer-card {
+      height: 56px;
+      margin-bottom: 8px;
+    }
+
+    /* Headings & section labels */
+    .section-title {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 14px;
+      background: linear-gradient(180deg, #6ee7b7, #38bdf8);
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(110, 231, 183, 0.6);
+    }
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(110, 231, 183, 0.4), transparent);
+    }
+
+    /* Scrollbar with glow */
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #6ee7b7, #34d399);
+      box-shadow: 0 0 8px rgba(110, 231, 183, 0.4);
+    }
+
+    /* Select dropdown — gradient border on focus */
+    .ant-select-focused .ant-select-selector {
+      box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.3),
+                  0 0 20px rgba(110, 231, 183, 0.2) !important;
+      border-color: var(--accent) !important;
+    }
+
+    /* Tag gradient */
+    .ant-tag {
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.15), rgba(56, 189, 248, 0.15)) !important;
+      border: 1px solid rgba(110, 231, 183, 0.3) !important;
+      color: var(--accent) !important;
+    }
+
+    /* clip-tag enhancement */
+    .clip-tag {
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.2), rgba(56, 189, 248, 0.15));
+      border: 1px solid rgba(110, 231, 183, 0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Three.js-like "live" indicator that's always animating */
+    @keyframes data-flow {
+      0% { transform: translateX(-100%); opacity: 0; }
+      40%, 60% { opacity: 1; }
+      100% { transform: translateX(400px); opacity: 0; }
+    }
+    .live-bar {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(110, 231, 183, 0.05);
+      overflow: hidden;
+      z-index: 99;
+      pointer-events: none;
+    }
+    .live-bar::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #34d399, #38bdf8, transparent);
+      animation: data-flow 3.5s linear infinite;
+      box-shadow: 0 0 20px rgba(110, 231, 183, 0.6);
+    }
+  </style>
+
+  <!-- React + Babel + AntD scripts -->
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.13/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/antd@5.21.6/dist/antd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
 </head>
 <body>
-  <main class="review-shell">
-    <aside class="timeline-panel" aria-label="clip 时间轴">
-      <header class="panel-header">
-        <div>
-          <p class="eyebrow">Tactical Review</p>
-          <h1>战术复盘</h1>
-        </div>
-        <select id="reportSelect" aria-label="选择已生成的 report 目录">
-          <option value="">加载报告中...</option>
-        </select>
-      </header>
-      <div id="reportMeta" class="report-meta"></div>
-      <section id="clipTimeline" class="clip-timeline"></section>
-    </aside>
+  <div id="root"></div>
+  <div class="live-bar"></div>
 
-    <section class="analysis-panel" aria-label="战术分析">
-      <header class="analysis-header">
-        <div>
-          <p class="eyebrow">Full Analysis</p>
-          <h2 id="reportTitle">请选择一份战术报告</h2>
-        </div>
-        <div id="analysisStats" class="analysis-stats"></div>
-      </header>
-      <article id="fullAnalysis" class="full-analysis empty-state">
-        左侧选择 report 后，这里会展示 2000+ 字长文分析和 key segments。
-      </article>
-      <section>
-        <div class="section-title">Key Segments</div>
-        <div id="segmentList" class="segment-list"></div>
-      </section>
-    </section>
+  {% raw %}
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect, useMemo, useCallback } = React;
+    const {
+      Layout, Card, Select, Tag, Empty, Spin, Button, Modal, message,
+      Tabs, Tooltip, ConfigProvider, theme, Divider, Typography
+    } = antd;
+    const { Header, Sider, Content } = Layout;
 
-    <aside class="evidence-panel" aria-label="证据展开和 GIF 预览">
-      <header class="panel-header compact">
-        <div>
-          <p class="eyebrow">Evidence</p>
-          <h2>证据链</h2>
-        </div>
-      </header>
-      <section id="clipPreview" class="clip-preview empty-state">
-        点击左侧 clip 或中间 segment 后，这里会显示 GIF 预览。
-      </section>
-      <section class="evidence-section">
-        <div class="section-title">Evidence List</div>
-        <div id="evidenceList" class="evidence-list empty-state">
-          尚未选中 segment。
-        </div>
-      </section>
-    </aside>
-  </main>
+    // ---------- helpers ----------
+    const fileBase = (path) => {
+      if (!path) return "";
+      const norm = String(path).replace(/\\/g, "/");
+      return norm.split("/").filter(Boolean).pop() || "";
+    };
+    const stripExt = (name) => String(name || "").replace(/\.[^.]+$/, "");
+    const fmtClock = (s) => String(s || "").replace(/PT(\d+)M([\d.]+)S/, "$1:$2").replace(/\.\d+$/, "");
 
-  <script src="{{ url_for('static', filename='tactical_review.js') }}"></script>
+    const provenanceClass = (text) => {
+      const v = String(text || "").toLowerCase();
+      if (v.includes("可能") || v.includes("或许") || v.includes("需要") || v.includes("应") || v.includes("将"))
+        return "spec";
+      if (/\d/.test(v) || v.includes("命中") || v.includes("篮板") || v.includes("助攻") || v.includes("失误"))
+        return "fact";
+      return "narrative";
+    };
+
+    const splitSentences = (text) =>
+      String(text || "")
+        .replace(/\r\n/g, "\n")
+        .split(/(?<=[。！？.!?])\s*/u)
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+    // Animated count-up
+    function CountUp({ value, duration = 700 }) {
+      const [display, setDisplay] = useState(0);
+      useEffect(() => {
+        const target = Number(value) || 0;
+        const start = performance.now();
+        let raf;
+        const tick = (now) => {
+          const t = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - t, 3);
+          setDisplay(Math.round(target * eased));
+          if (t < 1) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(raf);
+      }, [value]);
+      return <>{display}</>;
+    }
+
+    // ---------- API ----------
+    const api = {
+      list: () => fetch("/api/tactical/list").then((r) => r.json()),
+      report: (id) => fetch(`/api/tactical/report/${encodeURIComponent(id)}`).then((r) => r.json()),
+      frames: (id, clipFile) =>
+        fetch(`/api/tactical/clip/${encodeURIComponent(id)}/${encodeURIComponent(clipFile)}/frames`).then((r) => r.json()),
+    };
+
+    // ---------- Components ----------
+
+    function ClipTimeline({ clips, reportId, selectedIdx, onSelect }) {
+      if (!clips.length) {
+        return <Empty description="该 report 没有 clips" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+      }
+      return (
+        <div>
+          {clips.map((clip, idx) => {
+            const gifName = fileBase(clip.gif_path);
+            const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}` : "";
+            const tag = (clip.tactic_tags || [])[0] || "";
+            const player = (clip.players || []).join(", ");
+            return (
+              <div
+                key={clip.observation_id || idx}
+                className={`clip-card ${idx === selectedIdx ? "active" : ""}`}
+                onClick={() => onSelect(idx)}
+              >
+                {gifUrl ? <img className="clip-thumb" src={gifUrl} alt="" /> : <div className="clip-thumb" />}
+                <div className="clip-info">
+                  <div className="clip-time">Q{clip.period} {fmtClock(clip.clock)}</div>
+                  <div className="clip-desc">{clip.event_description || clip.label}</div>
+                  <div>
+                    {tag && <span className="clip-tag">{tag}</span>}
+                    {player && <span style={{ color: "var(--muted)", fontSize: 10 }}>{player}</span>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    function FullAnalysis({ text }) {
+      if (!text) return <Empty description="report 没有 full_analysis" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+      const sentences = splitSentences(text);
+      return (
+        <div className="analysis-text">
+          {sentences.map((s, i) => (
+            <span key={i} className={`sentence ${provenanceClass(s)}`}>{s} </span>
+          ))}
+        </div>
+      );
+    }
+
+    function SegmentCards({ segments, selectedIdx, onSelect }) {
+      if (!segments.length) return <Empty description="没有 key_segments" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+      return (
+        <div>
+          {segments.map((seg, idx) => {
+            const obs = seg.observation || "";
+            const dec = seg.decision_analysis || seg.decision || "";
+            const win = seg.win_loss_impact || seg.win_loss || "";
+            const conf = Number(seg.confidence);
+            return (
+              <div
+                key={idx}
+                className={`segment-card ${idx === selectedIdx ? "active" : ""}`}
+                onClick={() => onSelect(idx)}
+              >
+                <div className="segment-head">
+                  <div>
+                    <span className="segment-time">Q{seg.period} {fmtClock(seg.clock)}</span>
+                    <Tag color="cyan" style={{ marginLeft: 8, fontSize: 10 }}>
+                      {seg.tactic_type || "tactic"}
+                    </Tag>
+                  </div>
+                  <Button
+                    className="copy-btn"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const text = `Q${seg.period} ${fmtClock(seg.clock)}\n【观察】${obs}\n【决策】${dec}\n【影响】${win}`;
+                      navigator.clipboard.writeText(text);
+                      message.success("已复制到剪贴板");
+                    }}
+                  >
+                    复制
+                  </Button>
+                </div>
+                {obs && <div className="segment-field"><span className="segment-label">观察</span><span>{obs}</span></div>}
+                {dec && <div className="segment-field"><span className="segment-label">决策</span><span>{dec}</span></div>}
+                {win && <div className="segment-field"><span className="segment-label">影响</span><span>{win}</span></div>}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    function EvidenceList({ segment, clip }) {
+      const items = [];
+      if (clip?.observation_id) items.push({ source: "observation_id", value: clip.observation_id });
+      if (clip?.event_description) items.push({ source: "PBP event", value: clip.event_description });
+      const evidence = Array.isArray(segment?.evidence) ? segment.evidence : [];
+      for (const e of evidence) {
+        const text = String(e);
+        let source = "evidence";
+        if (/^event:\d+/i.test(text)) source = "PBP row";
+        else if (/^poss_/i.test(text)) source = "possession_id";
+        else if (/\d/.test(text)) source = "stat";
+        items.push({ source, value: text });
+      }
+      if (!items.length) {
+        return <div className="empty-state">当前 segment 没有 evidence。</div>;
+      }
+      return (
+        <div>
+          {items.map((item, idx) => (
+            <div className="evidence-item" key={idx}>
+              <div className="evidence-source">{item.source}</div>
+              <div className="evidence-value">{item.value}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // ---------- Enhanced ClipPreview with frames + tactical commentary ----------
+    function ClipPreview({ clip, segment, reportId, snapInfo }) {
+      const [frames, setFrames] = useState([]);
+      const [framesBase, setFramesBase] = useState("");
+      const [enlarged, setEnlarged] = useState(null);
+
+      useEffect(() => {
+        setFrames([]);
+        if (!clip || !reportId) return;
+        const clipFile = fileBase(clip.output_path) || fileBase(clip.gif_path);
+        if (!clipFile) return;
+        api.frames(reportId, clipFile).then((data) => {
+          setFrames(data.frames || []);
+          setFramesBase(data.basename || stripExt(clipFile));
+        });
+      }, [clip, reportId]);
+
+      if (!clip) {
+        return <Empty description="点击左侧 clip 查看详情" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+      }
+
+      const gifName = fileBase(clip.gif_path);
+      const mp4Name = fileBase(clip.output_path);
+      const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}` : "";
+      const mp4Url = mp4Name ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(mp4Name)}` : "";
+
+      const obs = segment?.observation || "";
+      const dec = segment?.decision_analysis || segment?.decision || "";
+      const win = segment?.win_loss_impact || segment?.win_loss || "";
+      const tactic = segment?.tactic_type || clip.tactic_tags?.[0] || "";
+
+      // Determine snap badge type
+      let snapBadge = null;
+      if (snapInfo) {
+        const o = snapInfo.original, a = snapInfo.adjusted;
+        if (!o || !a) {
+          // no badge
+        } else if (o[0] === a[0] && o[1] === a[1]) {
+          snapBadge = { type: "unchanged", label: "对齐稳定", tip: "事件原始时间已在 play_segment 内，无需调整" };
+        } else if (o[0] !== a[0]) {
+          snapBadge = { type: "shifted", label: `SHIFTED ${(a[0]-o[0]).toFixed(0)}s`, tip: `事件原始时间在非播放段，已迁移到最近的 play_segment 内 (从 ${o[0]}s → ${a[0]}s)` };
+        } else {
+          snapBadge = { type: "trimmed", label: `TRIMMED ${((o[1]-o[0])-(a[1]-a[0])).toFixed(0)}s`, tip: `clip 窗口被截短以保持在 play_segment 内` };
+        }
+      }
+
+      const copyCommentary = () => {
+        const parts = [`【Q${clip.period} ${fmtClock(clip.clock)}】${clip.event_description || ""}`];
+        if (obs) parts.push(`观察｜${obs}`);
+        if (dec) parts.push(`决策｜${dec}`);
+        if (win) parts.push(`影响｜${win}`);
+        navigator.clipboard.writeText(parts.join("\n"));
+        message.success("本回合战术解说已复制");
+      };
+
+      return (
+        <div>
+          <div style={{ marginBottom: 8 }}>
+            <strong style={{ color: "var(--accent)" }}>Q{clip.period} {fmtClock(clip.clock)}</strong>
+            {snapBadge && (
+              <Tooltip title={snapBadge.tip}>
+                <span className={`snap-badge ${snapBadge.type}`}>{snapBadge.label}</span>
+              </Tooltip>
+            )}
+            <div style={{ color: "var(--muted)", fontSize: 12, marginTop: 2 }}>
+              {clip.event_description || clip.label}
+            </div>
+          </div>
+
+          {gifUrl && (
+            <img
+              src={gifUrl}
+              className="preview-image"
+              alt="clip preview"
+              style={{ marginBottom: 8 }}
+            />
+          )}
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+            {gifUrl && (
+              <Button
+                size="small"
+                onClick={() => {
+                  const img = document.querySelector(".preview-image");
+                  if (img && gifUrl) img.src = gifUrl + "?t=" + Date.now();
+                }}
+              >
+                重播 GIF
+              </Button>
+            )}
+            {mp4Url && (
+              <Button size="small" onClick={() => window.open(mp4Url, "_blank")}>
+                打开 MP4
+              </Button>
+            )}
+          </div>
+
+          {(obs || dec || win) && (
+            <div className="commentary-card">
+              <div className="commentary-head">
+                <div className="section-title" style={{ margin: 0, fontSize: 11 }}>本回合战术解说</div>
+                <Button className="copy-btn" type="primary" size="small" onClick={copyCommentary}>
+                  复制
+                </Button>
+              </div>
+              {tactic && (
+                <div style={{ marginBottom: 8 }}>
+                  <Tag color="cyan" style={{ fontSize: 10 }}>{tactic}</Tag>
+                </div>
+              )}
+              {obs && (
+                <div className="commentary-row">
+                  <span className="commentary-label fact">观察</span>
+                  <span>{obs}</span>
+                </div>
+              )}
+              {dec && (
+                <div className="commentary-row">
+                  <span className="commentary-label spec">决策</span>
+                  <span>{dec}</span>
+                </div>
+              )}
+              {win && (
+                <div className="commentary-row">
+                  <span className="commentary-label narrative">影响</span>
+                  <span>{win}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="section-title" style={{ fontSize: 11, marginTop: 16, marginBottom: 8 }}>
+            候选截图（{frames.length} 张）
+          </div>
+          {frames.length === 0 ? (
+            <div className="empty-state">
+              <div>该 clip 没有预抽帧。</div>
+              <div style={{ marginTop: 4, fontSize: 11 }}>
+                跑：<code>python -m video_scout.extract_clip_frames --all</code>
+              </div>
+            </div>
+          ) : (
+            <div className="frames-grid">
+              {frames.map((fname) => {
+                const url = `/static-frames/${encodeURIComponent(reportId)}/${encodeURIComponent(framesBase)}/${encodeURIComponent(fname)}`;
+                return (
+                  <img
+                    key={fname}
+                    src={url}
+                    className="frame-thumb"
+                    alt={fname}
+                    onClick={() => setEnlarged(url)}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          <Modal
+            open={!!enlarged}
+            onCancel={() => setEnlarged(null)}
+            footer={null}
+            width={1100}
+            centered
+            title="右键即可保存图片"
+          >
+            {enlarged && <img src={enlarged} style={{ width: "100%", borderRadius: 6 }} />}
+          </Modal>
+        </div>
+      );
+    }
+
+    // ---------- main App ----------
+    function App() {
+      const [reports, setReports] = useState([]);
+      const [reportId, setReportId] = useState("");
+      const [loadingList, setLoadingList] = useState(true);
+      const [loadingReport, setLoadingReport] = useState(false);
+      const [report, setReport] = useState(null);
+      const [manifest, setManifest] = useState(null);
+      const [selectedClipIdx, setSelectedClipIdx] = useState(0);
+      const [selectedSegIdx, setSelectedSegIdx] = useState(0);
+
+      useEffect(() => {
+        api.list().then((data) => {
+          setReports(data);
+          setLoadingList(false);
+          if (data.length) {
+            const preferred = data.find((r) => r.report_id.includes("real_okc_lal_g1_v3")) || data[0];
+            setReportId(preferred.report_id);
+          }
+        });
+      }, []);
+
+      useEffect(() => {
+        if (!reportId) return;
+        setLoadingReport(true);
+        api.report(reportId).then((payload) => {
+          setReport(payload.report || {});
+          setManifest(payload.clip_manifest || {});
+          setSelectedClipIdx(0);
+          setSelectedSegIdx(0);
+          setLoadingReport(false);
+        });
+      }, [reportId]);
+
+      const clips = useMemo(() => manifest?.clips || [], [manifest]);
+      const segments = useMemo(() => report?.key_segments || [], [report]);
+      const selectedClip = clips[selectedClipIdx] || null;
+      const selectedSeg = segments[selectedSegIdx] || null;
+      const snapDetails = useMemo(() => {
+        const list = manifest?.play_segment_snap?.details || [];
+        const map = {};
+        for (const d of list) map[d.observation_id] = d;
+        return map;
+      }, [manifest]);
+      const selectedSnap = selectedClip ? snapDetails[selectedClip.observation_id] : null;
+
+      const handleClipSelect = useCallback((idx) => {
+        setSelectedClipIdx(idx);
+        const clip = clips[idx];
+        if (!clip) return;
+        const segIdx = segments.findIndex((s) =>
+          (s.evidence || []).some((e) => String(e) === String(clip.observation_id))
+        );
+        if (segIdx >= 0) setSelectedSegIdx(segIdx);
+        else if (idx < segments.length) setSelectedSegIdx(idx);
+      }, [clips, segments]);
+
+      const handleSegSelect = useCallback((idx) => {
+        setSelectedSegIdx(idx);
+        const seg = segments[idx];
+        if (!seg) return;
+        const evidence = (seg.evidence || []).map(String);
+        const clipIdx = clips.findIndex((c) => evidence.includes(String(c.observation_id)));
+        if (clipIdx >= 0) setSelectedClipIdx(clipIdx);
+      }, [clips, segments]);
+
+      const copyAnalysis = () => {
+        if (!report?.full_analysis) return;
+        navigator.clipboard.writeText(report.full_analysis);
+        message.success("整篇分析已复制");
+      };
+
+      return (
+        <ConfigProvider theme={{ algorithm: theme.darkAlgorithm, token: { colorPrimary: "#34d399" } }}>
+          <Layout style={{ height: "100vh" }}>
+            <Header className="app-header">
+              <div className="app-title">
+                <span className="accent"></span>
+                <strong>战术复盘</strong>
+                <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: 14 }}>· Tactical Review</span>
+              </div>
+              <div style={{ flex: 1 }} />
+              <Select
+                value={reportId}
+                onChange={setReportId}
+                loading={loadingList}
+                style={{ minWidth: 360 }}
+                options={reports.map((r) => ({
+                  value: r.report_id,
+                  label: `${r.report_id} · ${r.title || ""}`,
+                }))}
+                placeholder="选择 report"
+              />
+            </Header>
+            <Layout style={{ height: "calc(100vh - 56px)" }}>
+              {/* Left: clip timeline */}
+              <Sider width={340} style={{ background: "var(--panel)", borderRight: "1px solid var(--line)" }}>
+                <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--line)" }}>
+                  <div className="section-title" style={{ margin: 0 }}>回合时间轴</div>
+                  <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 4 }}>
+                    {clips.length} 个 clips
+                  </div>
+                </div>
+                <div className="scrollable" style={{ height: "calc(100% - 64px)", padding: "12px" }}>
+                  {loadingReport ? (
+                    <Spin tip="加载中..." style={{ display: "block", margin: "40px auto" }} />
+                  ) : (
+                    <ClipTimeline
+                      clips={clips}
+                      reportId={reportId}
+                      selectedIdx={selectedClipIdx}
+                      onSelect={handleClipSelect}
+                    />
+                  )}
+                </div>
+              </Sider>
+
+              {/* Middle: full analysis + key segments */}
+              <Content style={{ background: "#0f1421", borderRight: "1px solid var(--line)" }}>
+                <div style={{ padding: "14px 24px", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div className="section-title" style={{ margin: 0 }}>战术分析 · Full Analysis</div>
+                    <div style={{ color: "var(--text)", fontSize: 15, fontWeight: 600, marginTop: 4 }}>
+                      {report?.title || reportId || "加载中..."}
+                    </div>
+                  </div>
+                  <div className="stats-row">
+                    <div className="stat"><strong><CountUp value={clips.length} /></strong> clips</div>
+                    <div className="stat"><strong><CountUp value={segments.length} /></strong> segments</div>
+                    {report?.full_analysis && (
+                      <div className="stat"><strong><CountUp value={report.full_analysis.length} duration={1000} /></strong> 字</div>
+                    )}
+                    <Button className="copy-btn" size="small" type="primary" onClick={copyAnalysis}>复制整篇</Button>
+                  </div>
+                </div>
+                <div className="scrollable" style={{ height: "calc(100% - 80px)", padding: "16px 24px" }}>
+                  {loadingReport ? (
+                    <Spin tip="加载中..." style={{ display: "block", margin: "60px auto" }} />
+                  ) : (
+                    <>
+                      <FullAnalysis text={report?.full_analysis} />
+                      <Divider style={{ margin: "24px 0 16px" }} />
+                      <div className="section-title">Key Segments</div>
+                      <SegmentCards
+                        segments={segments}
+                        selectedIdx={selectedSegIdx}
+                        onSelect={handleSegSelect}
+                      />
+                    </>
+                  )}
+                </div>
+              </Content>
+
+              {/* Right: clip preview + commentary + frames + evidence */}
+              <Sider width={420} style={{ background: "var(--panel)" }}>
+                <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--line)" }}>
+                  <div className="section-title" style={{ margin: 0 }}>预览 · 战术解说 · 证据</div>
+                </div>
+                <div className="scrollable" style={{ height: "calc(100% - 49px)", padding: "16px" }}>
+                  <ClipPreview clip={selectedClip} segment={selectedSeg} reportId={reportId} snapInfo={selectedSnap} />
+                  <Divider style={{ margin: "20px 0 12px" }} />
+                  <div className="section-title">证据链</div>
+                  <EvidenceList segment={selectedSeg} clip={selectedClip} />
+                </div>
+              </Sider>
+            </Layout>
+          </Layout>
+        </ConfigProvider>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+  {% endraw %}
 </body>
 </html>

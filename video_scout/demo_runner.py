@@ -55,7 +55,19 @@ def run_video_scout_demo(
     apply_time_map: bool = False,
     refine_events: bool = False,
     roi_path: str | None = None,
+    play_segments_path: str | None = None,
 ) -> dict[str, Any]:
+    # Load play_segments early so it's available later
+    play_segments_payload: dict[str, Any] | None = None
+    if play_segments_path:
+        try:
+            from video_scout.play_segment_detector import load_play_segments_payload
+            play_segments_payload = load_play_segments_payload(play_segments_path)
+            print(f"[demo_runner] loaded play_segments: {len(play_segments_payload.get('play_segments', []))} play segments, "
+                  f"{len(play_segments_payload.get('non_play_segments', []))} non-play")
+        except Exception as exc:
+            print(f"[demo_runner] WARNING: could not load play_segments from {play_segments_path}: {exc}")
+            play_segments_payload = None
     """Run the scouting pipeline and write report artifacts."""
     game_context: dict[str, Any] = {}
     play_by_play_context: list[dict[str, Any]] = []
@@ -192,6 +204,7 @@ def run_video_scout_demo(
         generate_gifs=generate_gifs,
         gif_fps=gif_fps,
         gif_width=gif_width,
+        play_segments_payload=play_segments_payload,
     )
     clip_manifest.update(
         {
@@ -264,6 +277,7 @@ def _build_tactical_clips(
     generate_gifs: bool,
     gif_fps: int,
     gif_width: int,
+    play_segments_payload: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     clips = []
     ffmpeg_path = shutil.which("ffmpeg")
@@ -277,6 +291,9 @@ def _build_tactical_clips(
         reason = f"Video file not found: {video_path}; generated a tactical clip plan only."
     elif not ffmpeg_path:
         reason = "ffmpeg is not installed or not on PATH; generated a tactical clip plan only."
+
+    # Stats for play-segment snapping
+    snap_stats = {"applied": play_segments_payload is not None, "snapped": 0, "kept": 0, "no_nearby": 0, "details": []}
 
     ensure_dir(output_dir)
     for index, observation in enumerate(observations, start=1):
@@ -294,6 +311,32 @@ def _build_tactical_clips(
         else:
             start = max(0.0, float(start))
             end = float(end)
+
+        # ---- play-segment snap ----
+        if play_segments_payload is not None:
+            from video_scout.play_segment_detector import snap_clip_window
+            orig_start, orig_end = start, end
+            start, end, snap_info = snap_clip_window(
+                play_segments_payload, start, end, max_snap_distance=30.0, min_clip_seconds=8.0,
+            )
+            if snap_info["snapped"]:
+                if "inside_play" in snap_info["reason"]:
+                    snap_stats["snapped"] += 1
+                else:
+                    snap_stats["snapped"] += 1
+            else:
+                snap_stats["no_nearby"] += 1
+            snap_stats["details"].append({
+                "index": index,
+                "observation_id": observation.observation_id,
+                "original": snap_info["original"],
+                "adjusted": snap_info["adjusted"],
+                "reason": snap_info["reason"],
+            })
+            # Update observation so downstream metadata reflects the actual clip window
+            observation.clip_start_seconds = start
+            observation.clip_end_seconds = end
+
         duration = max(1.0, end - start)
         label = observation.clip_label or observation.observation_id or f"clip_{index:03d}"
         safe_label = _safe_filename(label)
@@ -390,6 +433,7 @@ def _build_tactical_clips(
         "gif_fps": gif_fps,
         "gif_width": gif_width,
         "clips": clips,
+        "play_segment_snap": snap_stats,
     }
 
 
@@ -935,7 +979,12 @@ def _safe_filename(value: str) -> str:
 
 def _load_observations(path: str) -> list[VisualObservation]:
     payload = read_json(Path(path))
-    raw_items = payload.get("observations", payload if isinstance(payload, list) else [])
+    if isinstance(payload, list):
+        raw_items = payload
+    elif isinstance(payload, dict):
+        raw_items = payload.get("observations", [])
+    else:
+        raise ValueError("Observations file must be a list or a dict with an `observations` key.")
     if not isinstance(raw_items, list):
         raise ValueError("Observations file must be a list or contain an `observations` list.")
     return [VisualObservation.from_dict(item) for item in raw_items if isinstance(item, dict)]
@@ -1342,6 +1391,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--apply-time-map", action="store_true", help="Explicitly remap clip windows using --time-map anchors.")
     parser.add_argument("--refine-events", action="store_true", help="OCR-refine each event around its seeded clip timestamp.")
     parser.add_argument("--roi", default="", help="Optional scoreboard ROI JSON for --refine-events.")
+    parser.add_argument("--play-segments", default="", help="Optional play_segments.json from play_segment_detector; if provided, clip windows snap to play segments.")
     parser.add_argument(
         "--period-video-windows",
         default="",
@@ -1383,6 +1433,7 @@ def main() -> None:
         apply_time_map=args.apply_time_map,
         refine_events=args.refine_events,
         roi_path=args.roi or None,
+        play_segments_path=args.play_segments or None,
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     _print_llm_pipeline_status(summary)

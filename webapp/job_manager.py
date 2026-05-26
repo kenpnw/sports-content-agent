@@ -35,7 +35,7 @@ class JobManager:
                 return None
             return self._public_job(job)
 
-    def start_job(self, source: str, team: str | None, input_path: str | None) -> dict[str, Any]:
+    def start_job(self, source: str, team: str | None, input_path: str | None, game_id: str | None = None) -> dict[str, Any]:
         job_id = uuid.uuid4().hex[:10]
         job = {
             "id": job_id,
@@ -45,6 +45,7 @@ class JobManager:
             "source": source,
             "team": team or "",
             "input_path": input_path or "",
+            "game_id": game_id or "",
             "logs": [],
             "steps": [],
             "result": None,
@@ -175,12 +176,18 @@ class JobManager:
                 return
 
             if source == "fetch_today":
-                self._step(job_id, "fetch_live", "running", "Fetching official NBA finals and ranking candidates.")
-                self._log(job_id, f"Fetching live NBA input for team filter: {team or 'none'}")
+                game_id = job.get("game_id") or None
+                if game_id:
+                    self._step(job_id, "fetch_live", "running", f"Fetching specific game {game_id}.")
+                    self._log(job_id, f"Fetching specific game_id={game_id}")
+                else:
+                    self._step(job_id, "fetch_live", "running", "Fetching official NBA finals and ranking candidates.")
+                    self._log(job_id, f"Fetching live NBA input for team filter: {team or 'none'}")
                 fetch_result = fetch_today_nba_postgame_data(
                     output_dir=OUTPUT_DIR,
                     team_filter=team,
                     save_input=True,
+                    game_id=game_id,
                 )
                 input_path = fetch_result["input_path"]
                 selection_context = fetch_result.get("selection")

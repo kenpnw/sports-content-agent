@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -17,11 +17,23 @@ from storage.knowledge_store import FactStore
 
 
 SCOREBOARD_URL = "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json"
+SCHEDULE_URL = "https://cdn.nba.com/static/json/staticData/scheduleLeagueV2_1.json"
 BOXSCORE_URL_TEMPLATE = "https://cdn.nba.com/static/json/liveData/boxscore/boxscore_{game_id}.json"
 REQUEST_HEADERS = {
-    "User-Agent": "sports-content-agent/0.2",
-    "Accept": "application/json",
+    # Pretend we're a real Chrome visitor coming from www.nba.com
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+    "Origin": "https://www.nba.com",
+    "Referer": "https://www.nba.com/",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "cross-site",
 }
+
+# How many days back to scan when today has no finals
+DEFAULT_LOOKBACK_DAYS = 7
 
 
 def _http_get_json(url: str) -> dict[str, Any]:
@@ -100,6 +112,137 @@ def _pick_finals(games: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not finals:
         raise RuntimeError("No final NBA games are available from today's NBA scoreboard feed yet.")
     return finals
+
+
+def _normalize_schedule_game(raw_game: dict[str, Any]) -> dict[str, Any]:
+    """Convert a scheduleLeagueV2 game record into the same shape as todaysScoreboard games."""
+    home = raw_game.get("homeTeam", {}) or {}
+    away = raw_game.get("awayTeam", {}) or {}
+    return {
+        "gameId": str(raw_game.get("gameId", "")),
+        "gameCode": raw_game.get("gameCode", ""),
+        "gameStatus": int(raw_game.get("gameStatus", 0) or 0),
+        "gameStatusText": raw_game.get("gameStatusText", ""),
+        "gameEt": raw_game.get("gameDateTimeEst", "") or raw_game.get("gameDateTimeUTC", ""),
+        "homeTeam": {
+            "teamId": home.get("teamId"),
+            "teamTricode": home.get("teamTricode", ""),
+            "teamName": home.get("teamName", ""),
+            "teamCity": home.get("teamCity", ""),
+            "score": home.get("score", 0),
+        },
+        "awayTeam": {
+            "teamId": away.get("teamId"),
+            "teamTricode": away.get("teamTricode", ""),
+            "teamName": away.get("teamName", ""),
+            "teamCity": away.get("teamCity", ""),
+            "score": away.get("score", 0),
+        },
+    }
+
+
+def list_recent_finals(lookback_days: int = 30) -> list[dict[str, Any]]:
+    """Lightweight list of finished games for UI display (no boxscore fetch).
+
+    Returns list of dicts with: game_id, game_date, home_team, away_team,
+    home_score, away_score, status_text, gameLabel (if available, e.g., 'WCF G3').
+    Sorted by date descending (newest first).
+    """
+    payload = _http_get_json(SCHEDULE_URL)
+    schedule = payload.get("leagueSchedule", {}) or {}
+    game_dates = schedule.get("gameDates", []) or []
+
+    today = datetime.now().date()
+    cutoff = today - timedelta(days=lookback_days)
+
+    rows: list[dict[str, Any]] = []
+    for block in game_dates:
+        date_str = str(block.get("gameDate", "")).split("T")[0]
+        if not date_str:
+            continue
+        try:
+            if "/" in date_str:
+                parts = date_str.split(" ")[0].split("/")
+                date_obj = datetime(int(parts[2]), int(parts[0]), int(parts[1])).date()
+            else:
+                date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except (ValueError, IndexError):
+            continue
+        if date_obj < cutoff or date_obj > today:
+            continue
+        for raw in block.get("games", []) or []:
+            if int(raw.get("gameStatus", 0) or 0) != 3:
+                continue  # only finals
+            home = raw.get("homeTeam", {}) or {}
+            away = raw.get("awayTeam", {}) or {}
+            home_score = int(home.get("score", 0) or 0)
+            away_score = int(away.get("score", 0) or 0)
+            winner_tri = (
+                home.get("teamTricode") if home_score > away_score
+                else away.get("teamTricode") if away_score > home_score
+                else ""
+            )
+            game_label = raw.get("gameLabel", "") or ""
+            game_sublabel = raw.get("gameSubLabel", "") or ""
+            rows.append({
+                "game_id": str(raw.get("gameId", "")),
+                "game_date": date_obj.isoformat(),
+                "home_tricode": home.get("teamTricode", ""),
+                "home_name": home.get("teamName", ""),
+                "home_city": home.get("teamCity", ""),
+                "home_score": home_score,
+                "away_tricode": away.get("teamTricode", ""),
+                "away_name": away.get("teamName", ""),
+                "away_city": away.get("teamCity", ""),
+                "away_score": away_score,
+                "winner": winner_tri,
+                "status_text": raw.get("gameStatusText", "Final"),
+                "game_label": game_label,        # e.g., "West Conference Finals"
+                "game_sublabel": game_sublabel,  # e.g., "Game 3"
+                "is_playoff": bool(str(raw.get("gameId", "")).startswith("004")),
+            })
+
+    rows.sort(key=lambda r: (r["game_date"], r["game_id"]), reverse=True)
+    return rows
+
+
+def _scan_schedule_for_recent_finals(lookback_days: int = DEFAULT_LOOKBACK_DAYS) -> list[dict[str, Any]]:
+    """Pull NBA's full season schedule and return Final games from the last N days.
+
+    Returns games sorted by date (newest first). Each game has the same shape as
+    items returned by `todaysScoreboard_00.json` so downstream code is identical.
+    """
+    payload = _http_get_json(SCHEDULE_URL)
+    schedule = payload.get("leagueSchedule", {}) or {}
+    game_dates = schedule.get("gameDates", []) or []
+
+    today = datetime.now().date()
+    cutoff = today - timedelta(days=lookback_days)
+
+    candidates: list[tuple[str, dict[str, Any]]] = []
+    for game_date_block in game_dates:
+        date_str = str(game_date_block.get("gameDate", "")).split("T")[0]
+        if not date_str:
+            continue
+        try:
+            # NBA date format is "MM/DD/YYYY 00:00:00" usually
+            if "/" in date_str:
+                parts = date_str.split(" ")[0].split("/")
+                date_obj = datetime(int(parts[2]), int(parts[0]), int(parts[1])).date()
+            else:
+                date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except (ValueError, IndexError):
+            continue
+        if date_obj < cutoff or date_obj > today:
+            continue
+        for raw_game in game_date_block.get("games", []) or []:
+            if int(raw_game.get("gameStatus", 0) or 0) != 3:
+                continue
+            candidates.append((date_obj.isoformat(), _normalize_schedule_game(raw_game)))
+
+    # newest first
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    return [g for _, g in candidates]
 
 
 def _pick_top_players(boxscore_game: dict[str, Any]) -> list[dict[str, Any]]:
@@ -366,11 +509,35 @@ def fetch_today_nba_postgame_data(
     output_dir: str = OUTPUT_DIR,
     team_filter: str | None = None,
     save_input: bool = False,
+    lookback_days: int = DEFAULT_LOOKBACK_DAYS,
+    game_id: str | None = None,
 ) -> dict[str, Any]:
     try:
-        scoreboard_payload = _http_get_json(SCOREBOARD_URL)
-        scoreboard = scoreboard_payload.get("scoreboard", {})
-        finals = _pick_finals(scoreboard.get("games", []))
+        finals: list[dict[str, Any]] = []
+
+        if game_id:
+            # Explicit game pick — scan the schedule with a wide window for that one game
+            print(f"[nba_live] fetching specific game_id={game_id} via schedule…")
+            all_recent = _scan_schedule_for_recent_finals(lookback_days=60)
+            finals = [g for g in all_recent if str(g.get("gameId", "")) == str(game_id)]
+            if not finals:
+                raise RuntimeError(f"game_id={game_id} not found in recent schedule (60 days).")
+        else:
+            # Step 1: try today's live scoreboard (fast path)
+            try:
+                scoreboard_payload = _http_get_json(SCOREBOARD_URL)
+                scoreboard = scoreboard_payload.get("scoreboard", {})
+                finals = _pick_finals(scoreboard.get("games", []))
+                print(f"[nba_live] found {len(finals)} final games in today's live scoreboard")
+            except RuntimeError as exc:
+                # Step 2: today has no finals, scan recent days via league schedule
+                print(f"[nba_live] today has no finals ({exc}); scanning last {lookback_days} days via schedule…")
+                finals = _scan_schedule_for_recent_finals(lookback_days=lookback_days)
+                if not finals:
+                    raise RuntimeError(
+                        f"No final NBA games found today or in the past {lookback_days} days via the official feed."
+                    )
+                print(f"[nba_live] found {len(finals)} final games in the last {lookback_days} days")
 
         fact_store = FactStore()
         fact_store.initialize()
