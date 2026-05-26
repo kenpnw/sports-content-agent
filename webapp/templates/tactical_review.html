@@ -506,6 +506,98 @@
     .frame-thumb:nth-child(5) { animation-delay: 0.20s; }
     .frame-thumb:nth-child(6) { animation-delay: 0.24s; }
 
+    /* Selection checkbox on clip cards */
+    .clip-checkbox {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--line);
+      border-radius: 3px;
+      background: rgba(10, 14, 26, 0.6);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      margin-right: 6px;
+    }
+    .clip-checkbox:hover { border-color: var(--accent); }
+    .clip-checkbox.checked {
+      background: linear-gradient(135deg, #34d399, #6ee7b7);
+      border-color: var(--accent);
+      box-shadow: 0 0 8px rgba(110, 231, 183, 0.4);
+    }
+    .clip-checkbox.checked::after {
+      content: "✓";
+      color: #0a0e1a;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    /* Floating export bar */
+    .export-bar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: rgba(19, 24, 38, 0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(110, 231, 183, 0.4);
+      border-radius: 999px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
+                  0 0 24px rgba(110, 231, 183, 0.25);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    .export-bar.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+    .export-bar .count {
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 800;
+      font-size: 18px;
+      background: linear-gradient(135deg, #6ee7b7, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      min-width: 28px;
+      text-align: center;
+    }
+    .export-bar .label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .export-bar button {
+      padding: 6px 14px;
+      font-size: 12.5px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      border: 0;
+      transition: all 0.2s ease;
+    }
+    .export-bar .btn-primary {
+      background: linear-gradient(135deg, #34d399, #6ee7b7);
+      color: #0a0e1a;
+    }
+    .export-bar .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(110, 231, 183, 0.4);
+    }
+    .export-bar .btn-ghost {
+      background: rgba(36, 44, 64, 0.6);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    .export-bar .btn-ghost:hover {
+      border-color: var(--accent);
+    }
+
     /* Snap status badge */
     .snap-badge {
       display: inline-block;
@@ -1127,7 +1219,7 @@
 
     // ---------- Components ----------
 
-    function ClipTimeline({ clips, reportId, selectedIdx, onSelect }) {
+    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect }) {
       if (!clips.length) {
         return <Empty description="该 report 没有 clips" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
       }
@@ -1138,12 +1230,21 @@
             const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}` : "";
             const tag = (clip.tactic_tags || [])[0] || "";
             const player = (clip.players || []).join(", ");
+            const isChecked = selectedSet?.has(clip.observation_id);
             return (
               <div
                 key={clip.observation_id || idx}
                 className={`clip-card ${idx === selectedIdx ? "active" : ""}`}
                 onClick={() => onSelect(idx)}
               >
+                <div
+                  className={`clip-checkbox ${isChecked ? "checked" : ""}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSelect(clip.observation_id);
+                  }}
+                  title={isChecked ? "已选中（再点取消）" : "勾选此回合加入虎扑草稿"}
+                />
                 {gifUrl ? <img className="clip-thumb" src={gifUrl} alt="" /> : <div className="clip-thumb" />}
                 <div className="clip-info">
                   <div className="clip-time">Q{clip.period} {fmtClock(clip.clock)}</div>
@@ -1470,6 +1571,53 @@
       }, [manifest]);
       const selectedSnap = selectedClip ? snapDetails[selectedClip.observation_id] : null;
 
+      // Selected-for-export state
+      const [pickedSet, setPickedSet] = useState(new Set());
+      useEffect(() => { setPickedSet(new Set()); }, [reportId]);
+      const togglePicked = useCallback((obsId) => {
+        setPickedSet((prev) => {
+          const next = new Set(prev);
+          if (next.has(obsId)) next.delete(obsId); else next.add(obsId);
+          return next;
+        });
+      }, []);
+      const clearPicked = () => setPickedSet(new Set());
+
+      const exportHupuDraft = () => {
+        if (pickedSet.size === 0) return;
+        const picked = clips.filter((c) => pickedSet.has(c.observation_id));
+        const segByObs = {};
+        for (const s of segments) {
+          for (const e of s.evidence || []) {
+            const eStr = String(e);
+            if (eStr.includes("poss_p")) { segByObs[eStr] = s; break; }
+          }
+        }
+        const lines = [];
+        lines.push(`# ${report?.title || "战术复盘"}`);
+        lines.push("");
+        lines.push(`> ${picked.length} 个回合精选 · 自动生成自 ${reportId}`);
+        lines.push("");
+        picked.forEach((c, i) => {
+          const seg = segByObs[c.observation_id];
+          lines.push(`## #${i+1} · Q${c.period} ${fmtClock(c.clock)} · ${c.event_description || ""}`);
+          lines.push("");
+          if (seg) {
+            if (seg.observation) lines.push(`**观察｜** ${seg.observation}`);
+            if (seg.decision_analysis || seg.decision) lines.push(`**决策｜** ${seg.decision_analysis || seg.decision}`);
+            if (seg.win_loss_impact || seg.win_loss) lines.push(`**影响｜** ${seg.win_loss_impact || seg.win_loss}`);
+          }
+          lines.push("");
+          lines.push(`[在此插入 GIF / 截图 — 文件位置: ${c.gif_path}]`);
+          lines.push("");
+          lines.push("---");
+          lines.push("");
+        });
+        const markdown = lines.join("\n");
+        navigator.clipboard.writeText(markdown);
+        message.success(`${picked.length} 个回合的虎扑草稿已复制到剪贴板`);
+      };
+
       const handleClipSelect = useCallback((idx) => {
         setSelectedClipIdx(idx);
         const clip = clips[idx];
@@ -1536,6 +1684,8 @@
                       reportId={reportId}
                       selectedIdx={selectedClipIdx}
                       onSelect={handleClipSelect}
+                      selectedSet={pickedSet}
+                      onToggleSelect={togglePicked}
                     />
                   )}
                 </div>
@@ -1590,6 +1740,12 @@
                 </div>
               </Sider>
             </Layout>
+            <div className={`export-bar ${pickedSet.size > 0 ? "visible" : ""}`}>
+              <span className="count">{pickedSet.size}</span>
+              <span className="label">个回合已选 · 准备导出为虎扑草稿</span>
+              <button className="btn-ghost" onClick={clearPicked}>清空</button>
+              <button className="btn-primary" onClick={exportHupuDraft}>📋 复制虎扑草稿</button>
+            </div>
           </Layout>
         </ConfigProvider>
       );
