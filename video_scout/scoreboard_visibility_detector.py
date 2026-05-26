@@ -288,17 +288,28 @@ def merge_into_segments(
     return merged
 
 
-def auto_reference_times(time_map_path: str | None, duration: float) -> list[float]:
-    """Pick reference times for the templates: prefer period anchors, fallback to evenly spaced."""
+def auto_reference_times(time_map_path: str | None, duration: float, dense: bool = True) -> list[float]:
+    """Pick reference times for templates.
+
+    If `dense`, sample 3 reference times per quarter for more robust matching
+    (scoreboard graphics evolve through a quarter; multi-template improves recall).
+    """
     if time_map_path:
         try:
             tm = json.loads(Path(time_map_path).read_text(encoding="utf-8"))
             anchors = tm.get("period_anchors", {})
-            refs = []
-            for p in sorted(anchors):
-                t = float(anchors[p])
-                # Sample 1 second after the anchor to skip score-graphic animation
-                refs.append(t + 1.0)
+            sorted_anchors = sorted(anchors.items(), key=lambda kv: int(kv[0]))
+            refs: list[float] = []
+            for i, (p, t) in enumerate(sorted_anchors):
+                t = float(t)
+                # find next anchor or end of game
+                next_t = float(sorted_anchors[i + 1][1]) if i + 1 < len(sorted_anchors) else min(duration, t + 1500.0)
+                quarter_dur = next_t - t
+                if dense:
+                    # 3 references per quarter: ~10%, ~50%, ~85% through
+                    refs.extend([t + 0.10 * quarter_dur, t + 0.50 * quarter_dur, t + 0.85 * quarter_dur])
+                else:
+                    refs.append(t + 1.0)
             if refs:
                 return refs
         except Exception:
@@ -307,6 +318,25 @@ def auto_reference_times(time_map_path: str | None, duration: float) -> list[flo
     a = duration * 0.2
     b = duration * 0.8
     return [a, a + (b - a) / 3.0, a + 2 * (b - a) / 3.0, b]
+
+
+def game_window_from_time_map(time_map_path: str | None, duration: float) -> tuple[float, float] | None:
+    """Return (start, end) of the active game window if time_map gives quarter anchors."""
+    if not time_map_path:
+        return None
+    try:
+        tm = json.loads(Path(time_map_path).read_text(encoding="utf-8"))
+        anchors = tm.get("period_anchors", {})
+        if not anchors:
+            return None
+        starts = sorted(float(t) for t in anchors.values())
+        game_start = starts[0]
+        # Estimate game end as last anchor + 15 minutes (NBA quarter ≈ 12 min + breaks)
+        last = starts[-1]
+        game_end = min(duration, last + 900.0)
+        return (game_start, game_end)
+    except Exception:
+        return None
 
 
 def run(
@@ -318,6 +348,7 @@ def run(
     match_threshold: float = DEFAULT_MATCH_THRESHOLD,
     min_segment_seconds: float = DEFAULT_MIN_SEGMENT_SECONDS,
     reference_times: list[float] | None = None,
+    force_non_play_outside_game_window: bool = True,
 ) -> dict[str, Any]:
     # Probe duration via OpenCV (faster than ffprobe; we already need cv2 anyway)
     cap = cv2.VideoCapture(str(video_path))
@@ -327,7 +358,12 @@ def run(
     cap.release()
 
     if reference_times is None:
-        reference_times = auto_reference_times(time_map_path, duration)
+        reference_times = auto_reference_times(time_map_path, duration, dense=True)
+
+    game_window = game_window_from_time_map(time_map_path, duration) if force_non_play_outside_game_window else None
+    if game_window:
+        print(f"[visibility] game window: {game_window[0]:.0f}s - {game_window[1]:.0f}s "
+              f"(everything outside forced non-play)")
 
     samples, meta = detect_visibility(
         video_path=video_path,
@@ -338,6 +374,19 @@ def run(
     )
 
     sample_interval = 1.0 / sample_fps
+
+    # Optionally force samples outside the game window to non-visible
+    if game_window:
+        game_start, game_end = game_window
+        forced_count = 0
+        for i, (t, score, vis) in enumerate(samples):
+            if t < game_start or t > game_end:
+                if vis:
+                    samples[i] = (t, score, False)
+                    forced_count += 1
+        if forced_count:
+            print(f"[visibility] forced {forced_count} samples outside game window to non-play")
+
     segments = merge_into_segments(samples, sample_interval, min_segment_seconds)
 
     play_segments = [s.to_dict() for s in segments if s.label == "visible"]
