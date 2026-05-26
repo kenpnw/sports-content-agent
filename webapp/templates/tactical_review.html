@@ -1433,7 +1433,14 @@
           setReports(data);
           setLoadingList(false);
           if (data.length) {
-            const preferred = data.find((r) => r.report_id.includes("real_okc_lal_g1_v3")) || data[0];
+            // Prefer newer versions in this order
+            const preferred =
+              data.find((r) => r.report_id.includes("v11_v2detector")) ||
+              data.find((r) => r.report_id.includes("v10_smoothed")) ||
+              data.find((r) => r.report_id.includes("v9")) ||
+              data.find((r) => r.report_id.includes("v8")) ||
+              data.find((r) => r.report_id.includes("real_okc_lal_g1_v3")) ||
+              data[0];
             setReportId(preferred.report_id);
           }
         });
