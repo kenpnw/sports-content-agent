@@ -1609,6 +1609,7 @@
           if (data.length) {
             // Prefer newer versions in this order
             const preferred =
+              data.find((r) => r.report_id.includes("v12_normalized")) ||
               data.find((r) => r.report_id.includes("v11_v2detector")) ||
               data.find((r) => r.report_id.includes("v10_smoothed")) ||
               data.find((r) => r.report_id.includes("v9")) ||
