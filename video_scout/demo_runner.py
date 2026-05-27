@@ -283,6 +283,19 @@ def _build_tactical_clips(
     ffmpeg_path = shutil.which("ffmpeg")
     source_video = Path(video_path).resolve() if video_path else None
     can_cut = bool(ffmpeg_path and source_video and source_video.is_file())
+
+    # Probe video duration to clamp clip windows
+    video_duration = 0.0
+    if can_cut and ffmpeg_path:
+        try:
+            probe = subprocess.run(
+                ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                 "-of", "default=noprint_wrappers=1:nokey=1", str(source_video)],
+                capture_output=True, text=True, check=False, timeout=10,
+            )
+            video_duration = float(probe.stdout.strip()) if probe.stdout.strip() else 0.0
+        except Exception:
+            pass
     status = "cut" if can_cut else "plan_only"
     reason = ""
     if not video_path:
@@ -312,10 +325,101 @@ def _build_tactical_clips(
             start = max(0.0, float(start))
             end = float(end)
 
+        # Clamp clip window to actual video duration (prevents empty clips when
+        # time_map extrapolates past end-of-video for late Q4 / period_end events)
+        if video_duration > 0:
+            if end > video_duration:
+                shift = end - video_duration
+                start = max(0.0, start - shift)
+                end = video_duration
+            if start >= video_duration:
+                start = max(0.0, video_duration - 12.0)
+                end = video_duration
+
         # ---- play-segment snap ----
         if play_segments_payload is not None:
             from video_scout.play_segment_detector import snap_clip_window, normalize_event_position
             orig_start, orig_end = start, end
+            # For period_end / game_end events (clock very close to 0), the linear
+            # extrapolation can land past available OCR data. Snap would then drag
+            # the clip 100-300s backwards. Skip snap and keep the extrapolated
+            # window — better to show approximate timing than completely wrong play.
+            tactic_tags = list(getattr(observation, 'tactic_tags', []) or [])
+            event_desc = (getattr(observation, 'event_description', '') or '').lower()
+            is_period_boundary = (
+                'period_end' in tactic_tags or 'game_end' in tactic_tags
+                or 'period end' in event_desc or 'game end' in event_desc
+            )
+            # Also skip snap for events very close to clock 0 (end of period chaos)
+            try:
+                clock_remaining = float(observation.timecode_seconds or 0) % 720
+                clock_remaining = 720 - clock_remaining
+                is_late_quarter = clock_remaining < 15
+            except (TypeError, ValueError):
+                is_late_quarter = False
+            if is_period_boundary or is_late_quarter:
+                snap_stats['no_nearby'] += 1
+                snap_info = {
+                    'snapped': False, 'original': [round(orig_start, 2), round(orig_end, 2)],
+                    'adjusted': [round(start, 2), round(end, 2)],
+                    'reason': 'skip_snap_for_period_boundary' if is_period_boundary else 'skip_snap_late_quarter',
+                    'segment': None,
+                }
+                snap_stats['details'].append({
+                    'index': index, 'observation_id': observation.observation_id,
+                    'original': snap_info['original'], 'adjusted': snap_info['adjusted'],
+                    'reason': snap_info['reason'],
+                })
+                observation.clip_start_seconds = start
+                observation.clip_end_seconds = end
+                # Build the clip metadata and continue without applying snap_clip_window
+                duration = max(1.0, end - start)
+                label = observation.clip_label or observation.observation_id or f"clip_{index:03d}"
+                safe_label = _safe_filename(label)
+                output_path = output_dir / f"{index:03d}_{safe_label}.mp4"
+                gif_path = output_dir / f"{index:03d}_{safe_label}.gif"
+                clip = {
+                    "index": index,
+                    "observation_id": observation.observation_id,
+                    "label": label,
+                    "period": observation.period,
+                    "clock": observation.clock,
+                    "event_description": observation.event_description,
+                    "tactic_tags": observation.tactic_tags,
+                    "players": observation.players,
+                    "start_seconds": round(start, 3),
+                    "end_seconds": round(end, 3),
+                    "duration_seconds": round(duration, 3),
+                    "output_path": str(output_path.resolve()),
+                    "gif_path": str(gif_path.resolve()),
+                    "status": status,
+                    "gif_status": "skipped" if not generate_gifs else "pending",
+                    "snap_skipped": True,
+                }
+                if can_cut and start >= 0:
+                    completed = subprocess.run([
+                        str(ffmpeg_path), "-y", "-ss", f"{start:.2f}",
+                        "-i", str(source_video), "-t", f"{duration:.2f}",
+                        "-c", "copy", str(output_path),
+                    ], capture_output=True, text=True, timeout=120)
+                    if completed.returncode == 0 and output_path.exists():
+                        clip["status"] = "cut"
+                        if generate_gifs:
+                            gif_command = [
+                                str(ffmpeg_path), "-y", "-i", str(output_path),
+                                "-vf", f"fps={gif_fps},scale={gif_width}:-1:flags=lanczos",
+                                "-loop", "0", str(gif_path),
+                            ]
+                            try:
+                                gc = subprocess.run(gif_command, capture_output=True, text=True, timeout=90)
+                                clip["gif_status"] = "generated" if gc.returncode == 0 and gif_path.exists() else "failed"
+                            except Exception as exc:
+                                clip["gif_status"] = "failed"
+                                clip["gif_error"] = str(exc)
+                    else:
+                        clip["status"] = "failed"
+                clips.append(clip)
+                continue
             start, end, snap_info = snap_clip_window(
                 play_segments_payload, start, end, max_snap_distance=30.0, min_clip_seconds=8.0,
             )
