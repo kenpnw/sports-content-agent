@@ -382,9 +382,6 @@ Output:
 
 ## Related Docs
 
-- [BEHAVIOR.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/BEHAVIOR.md)
-- [ROADMAP.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/ROADMAP.md)
-- [CONTENT_STYLE_GUIDE.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/CONTENT_STYLE_GUIDE.md)
-- [PROMPT_CONTRACT.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/PROMPT_CONTRACT.md)
-- [RAG_REFERENCE_STANDARD.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/RAG_REFERENCE_STANDARD.md)
-- [AGENT_SUPERVISION.md](/C:/Users/Administrator/Desktop/sports-content-agent/sports-content-agent/sports_agent/AGENT_SUPERVISION.md)
+- [README_DEMO_DATA.md](README_DEMO_DATA.md) — sample data + replay walkthrough
+- [VIDEO_SCOUT_GUIDE.md](VIDEO_SCOUT_GUIDE.md) — video pipeline (OCR, scoreboard, time map, clip alignment)
+- [evaluation/README.md](evaluation/README.md) — ablation harness and gold sets

@@ -55,6 +55,28 @@ Thumbs.db
 node_modules/
 package-lock.json
 
+# ---- Sample / reference PDFs (kept local only) ----
+data/pdfs/
+
 # ---- Production process docs (kept local only) ----
 ROADMAP.md
 audit_report.md
+THESIS_OUTLINE.md
+CODEX_BRIEF.md
+MANUAL_ACTIONS.md
+STEP_BY_STEP_TODAY.md
+
+# ---- Local notes / drafts (kept local only) ----
+T-OCR-5_论文章节素材.md
+今晚优化战报*.md
+答辩*.md
+虎扑发帖*.md
+虎扑发帖*.docx
+Paradoox*.docx
+Paradoox*.md
+AI_Agent_Interview*.docx
+interview_prep/
+thesis/
+
+# ---- macOS metadata ----
+__MACOSX/
