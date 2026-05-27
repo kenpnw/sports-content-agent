@@ -467,8 +467,37 @@ def _apply_time_map(
     clip_before_seconds: float,
     clip_after_seconds: float,
 ) -> tuple[list[VisualObservation], dict[str, Any]]:
-    """Remap observation clip windows from game time to real video seconds."""
+    """Remap observation clip windows from game time to real video seconds.
+
+    Critical detail: NBA video does NOT play 1s video = 1s game time. A single
+    quarter (720 game sec) typically takes 1200-1500 video sec because of
+    timeouts, free throws, replays, etc. So we must scale period_elapsed game
+    seconds by the period's actual video-to-game ratio.
+
+    Per-period video duration estimation:
+      - Q1: q2_anchor - q1_anchor   (reliable, no halftime in between)
+      - Q2: use Q1's duration (Q2→Q3 gap inflated by halftime)
+      - Q3: q4_anchor - q3_anchor   (reliable, no big break)
+      - Q4: use Q3's duration (or fallback)
+    """
     anchors = _extract_reliable_period_anchors(time_map_dict)
+    # Estimate per-period video duration
+    period_video_dur: dict[int, float] = {}
+    if 1 in anchors and 2 in anchors:
+        period_video_dur[1] = float(anchors[2] - anchors[1])
+    if 3 in anchors and 4 in anchors:
+        period_video_dur[3] = float(anchors[4] - anchors[3])
+    # Q2 takes ~same as Q1 (no halftime); Q4 takes ~same as Q3
+    if 1 in period_video_dur:
+        period_video_dur[2] = period_video_dur[1]
+    if 3 in period_video_dur:
+        period_video_dur[4] = period_video_dur[3]
+    # Fallback if Q3 unknown
+    for p in (1, 2, 3, 4):
+        if p not in period_video_dur:
+            # default: assume game-time pace
+            period_video_dur[p] = float(REGULATION_PERIOD_SECONDS)
+
     adjusted = 0
     fallback = 0
     warnings: list[str] = []
@@ -494,7 +523,9 @@ def _apply_time_map(
             warnings.append(warning)
             print(f"[warning] {warning}")
             continue
-        video_event_seconds = float(anchor) + period_elapsed_seconds
+        # Scale game-time elapsed to video-time elapsed using period's actual video duration
+        video_dur = period_video_dur.get(period, float(REGULATION_PERIOD_SECONDS))
+        video_event_seconds = float(anchor) + period_elapsed_seconds * (video_dur / float(REGULATION_PERIOD_SECONDS))
         observation.clip_start_seconds = max(0.0, video_event_seconds - clip_before_seconds)
         observation.clip_end_seconds = max(
             observation.clip_start_seconds + 1.0,
