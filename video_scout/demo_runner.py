@@ -469,69 +469,130 @@ def _apply_time_map(
 ) -> tuple[list[VisualObservation], dict[str, Any]]:
     """Remap observation clip windows from game time to real video seconds.
 
-    Critical detail: NBA video does NOT play 1s video = 1s game time. A single
-    quarter (720 game sec) typically takes 1200-1500 video sec because of
-    timeouts, free throws, replays, etc. So we must scale period_elapsed game
-    seconds by the period's actual video-to-game ratio.
-
-    Per-period video duration estimation:
-      - Q1: q2_anchor - q1_anchor   (reliable, no halftime in between)
-      - Q2: use Q1's duration (Q2→Q3 gap inflated by halftime)
-      - Q3: q4_anchor - q3_anchor   (reliable, no big break)
-      - Q4: use Q3's duration (or fallback)
+    Strategy: use the 240 OCR-sampled (video_sec, period, clock) data points
+    from time_map.json as ground truth, and interpolate piecewise-linearly
+    in each period. Falls back to period-anchor-based linear scaling for
+    events outside the sampled range.
     """
     anchors = _extract_reliable_period_anchors(time_map_dict)
-    # Estimate per-period video duration
+
+    # Build per-period samples: list of (video_seconds, clock_remaining_seconds)
+    samples_by_period: dict[int, list[tuple[float, float]]] = {}
+    for s in time_map_dict.get("samples", []) or []:
+        p = s.get("period")
+        clock = s.get("clock_remaining_seconds")
+        if p is None or clock is None:
+            continue
+        try:
+            p = int(p)
+            v = float(s.get("video_seconds", 0))
+            c = float(clock)
+        except (TypeError, ValueError):
+            continue
+        if p not in samples_by_period:
+            samples_by_period[p] = []
+        samples_by_period[p].append((v, c))
+    # Sort each period's samples by video_seconds ascending (clock should be descending)
+    for p in samples_by_period:
+        samples_by_period[p].sort(key=lambda t: t[0])
+
+    # Fallback period video duration estimates (for events outside sample range)
     period_video_dur: dict[int, float] = {}
     if 1 in anchors and 2 in anchors:
         period_video_dur[1] = float(anchors[2] - anchors[1])
     if 3 in anchors and 4 in anchors:
         period_video_dur[3] = float(anchors[4] - anchors[3])
-    # Q2 takes ~same as Q1 (no halftime); Q4 takes ~same as Q3
     if 1 in period_video_dur:
         period_video_dur[2] = period_video_dur[1]
     if 3 in period_video_dur:
         period_video_dur[4] = period_video_dur[3]
-    # Fallback if Q3 unknown
     for p in (1, 2, 3, 4):
         if p not in period_video_dur:
-            # default: assume game-time pace
             period_video_dur[p] = float(REGULATION_PERIOD_SECONDS)
+
+    def interp_video_time(period: int, target_clock_remaining: float) -> tuple[float, str]:
+        """Return (video_seconds, source) for the event.
+
+        source: "sample_interp" if interpolated between OCR samples,
+                "sample_extrap_anchor" if extrapolated outside sampled range,
+                "anchor_only" if no samples available for this period.
+        """
+        samples = samples_by_period.get(period, [])
+        # Need at least 2 samples to interpolate
+        if len(samples) >= 2:
+            # Samples are (video_sec, clock_remaining). Clock decreases as video increases.
+            # Find two samples whose clock_remaining bracket target_clock_remaining.
+            # Specifically: lower_clock < target <= upper_clock OR vice versa
+            # Sort by clock_remaining descending (matches chronological order)
+            sorted_by_clock = sorted(samples, key=lambda t: -t[1])
+            # sorted_by_clock now goes from earliest event (high clock) to latest (low clock)
+            for i in range(len(sorted_by_clock) - 1):
+                v1, c1 = sorted_by_clock[i]
+                v2, c2 = sorted_by_clock[i + 1]
+                # We want c2 <= target_clock_remaining <= c1
+                if c2 <= target_clock_remaining <= c1:
+                    if c1 == c2:
+                        return (v1 + v2) / 2.0, "sample_interp"
+                    ratio = (c1 - target_clock_remaining) / (c1 - c2)
+                    return v1 + ratio * (v2 - v1), "sample_interp"
+            # Outside bracketed range — extrapolate using nearest pair
+            if target_clock_remaining > sorted_by_clock[0][1]:
+                # Before first sample (event in opening seconds of period)
+                v1, c1 = sorted_by_clock[0]
+                v2, c2 = sorted_by_clock[1] if len(sorted_by_clock) > 1 else sorted_by_clock[0]
+                if c1 != c2:
+                    ratio = (c1 - target_clock_remaining) / (c1 - c2)
+                    return v1 + ratio * (v2 - v1), "sample_extrap_anchor"
+            else:
+                # After last sample (event near end of period)
+                v1, c1 = sorted_by_clock[-2] if len(sorted_by_clock) > 1 else sorted_by_clock[-1]
+                v2, c2 = sorted_by_clock[-1]
+                if c1 != c2:
+                    ratio = (c1 - target_clock_remaining) / (c1 - c2)
+                    return v1 + ratio * (v2 - v1), "sample_extrap_anchor"
+        # No samples — use anchor-based linear scaling
+        anchor = anchors.get(period)
+        if anchor is None:
+            return -1.0, "no_anchor"
+        elapsed = REGULATION_PERIOD_SECONDS - target_clock_remaining
+        video_dur = period_video_dur.get(period, float(REGULATION_PERIOD_SECONDS))
+        return float(anchor) + elapsed * (video_dur / float(REGULATION_PERIOD_SECONDS)), "anchor_only"
 
     adjusted = 0
     fallback = 0
+    extrap_count = 0
+    anchor_only_count = 0
     warnings: list[str] = []
     for observation in observations:
         period = int(observation.period or 0)
-        anchor = anchors.get(period)
-        if anchor is None:
+        # Parse clock_remaining from PT MMmin SS sec
+        clock_str = str(observation.clock or "")
+        import re
+        cm = re.match(r"PT(\d+)M([\d.]+)S", clock_str)
+        if not cm:
             fallback += 1
-            warning = (
-                f"Time map fallback for {observation.observation_id or '<unknown>'}: "
-                f"period {period} anchor missing or unreliable."
-            )
-            warnings.append(warning)
-            print(f"[warning] {warning}")
+            warnings.append(f"Time map fallback for {observation.observation_id}: bad clock {clock_str}")
             continue
-        period_elapsed_seconds = float(observation.timecode_seconds) - (period - 1) * REGULATION_PERIOD_SECONDS
-        if period_elapsed_seconds < 0:
+        target_clock_remaining = int(cm.group(1)) * 60 + float(cm.group(2))
+
+        video_event_seconds, source = interp_video_time(period, target_clock_remaining)
+        if video_event_seconds < 0:
             fallback += 1
-            warning = (
-                f"Time map fallback for {observation.observation_id or '<unknown>'}: "
-                f"timecode_seconds={observation.timecode_seconds} is outside period {period}."
-            )
-            warnings.append(warning)
-            print(f"[warning] {warning}")
+            warnings.append(f"Time map fallback for {observation.observation_id}: no anchor or samples for period {period}")
             continue
-        # Scale game-time elapsed to video-time elapsed using period's actual video duration
-        video_dur = period_video_dur.get(period, float(REGULATION_PERIOD_SECONDS))
-        video_event_seconds = float(anchor) + period_elapsed_seconds * (video_dur / float(REGULATION_PERIOD_SECONDS))
+        if source == "sample_extrap_anchor":
+            extrap_count += 1
+        elif source == "anchor_only":
+            anchor_only_count += 1
+
         observation.clip_start_seconds = max(0.0, video_event_seconds - clip_before_seconds)
         observation.clip_end_seconds = max(
             observation.clip_start_seconds + 1.0,
             video_event_seconds + clip_after_seconds,
         )
         adjusted += 1
+    print(f"[time_map] adjusted {adjusted} clips: {adjusted-extrap_count-anchor_only_count} sample_interp, "
+          f"{extrap_count} sample_extrap, {anchor_only_count} anchor_only, {fallback} fallback")
     return observations, {
         "requested": True,
         "applied": adjusted > 0,
