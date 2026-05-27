@@ -538,6 +538,95 @@
       background: linear-gradient(120deg, transparent 30%, rgba(110, 231, 183, 0.12) 50%, transparent 70%) !important;
     }
 
+    /* Delete (×) button on clip cards */
+    .clip-delete-btn {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: rgba(10, 14, 26, 0.7);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      opacity: 0;
+    }
+    .clip-card:hover .clip-delete-btn { opacity: 1; }
+    .clip-delete-btn:hover {
+      background: rgba(248, 113, 113, 0.2);
+      color: #f87171;
+      border-color: #f87171;
+      transform: scale(1.1);
+    }
+    /* Deleted clip card styling */
+    .clip-card.deleted {
+      opacity: 0.35;
+      filter: grayscale(0.7);
+    }
+    .clip-card.deleted .clip-desc {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+    .clip-card.deleted .clip-delete-btn {
+      opacity: 1;
+      background: rgba(110, 231, 183, 0.15);
+      color: var(--accent);
+      border-color: rgba(110, 231, 183, 0.5);
+    }
+    .clip-card.deleted .clip-delete-btn::before { content: "↺"; }
+    .clip-card.deleted .clip-delete-btn span { display: none; }
+    .clip-card.deleted .clip-time, .clip-card.deleted .quality-badge {
+      text-decoration: line-through;
+    }
+
+    /* Toolbar above clip timeline */
+    .curate-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .curate-toolbar .count-pill {
+      padding: 2px 8px;
+      background: rgba(110, 231, 183, 0.1);
+      border: 1px solid rgba(110, 231, 183, 0.3);
+      border-radius: 999px;
+      color: var(--accent);
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+    }
+    .curate-toolbar .count-pill.deleted-count {
+      background: rgba(248, 113, 113, 0.08);
+      border-color: rgba(248, 113, 113, 0.3);
+      color: #f87171;
+    }
+    .curate-toolbar button {
+      padding: 3px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 10px;
+      transition: all 0.15s ease;
+    }
+    .curate-toolbar button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .curate-toolbar button.toggle.active {
+      background: rgba(110, 231, 183, 0.15);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
     /* Selection checkbox on clip cards */
     .clip-checkbox {
       width: 16px;
@@ -1287,24 +1376,30 @@
       return Math.max(0, Math.min(100, score));
     }
 
-    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect, snapByObs }) {
+    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect, snapByObs, deletedSet, onToggleDelete, showDeleted }) {
       if (!clips.length) {
         return <Empty description="该 report 没有 clips" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
       }
+      const visible = showDeleted ? clips : clips.filter((c) => !deletedSet?.has(c.observation_id));
+      if (visible.length === 0) {
+        return <Empty description="所有回合都被删除了（顶部点「显示已删除」恢复）" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+      }
       return (
         <div>
-          {clips.map((clip, idx) => {
+          {visible.map((clip) => {
+            const idx = clips.indexOf(clip);
             const gifName = fileBase(clip.gif_path);
             const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}` : "";
             const tag = (clip.tactic_tags || [])[0] || "";
             const player = (clip.players || []).join(", ");
             const isChecked = selectedSet?.has(clip.observation_id);
+            const isDeleted = deletedSet?.has(clip.observation_id);
             const quality = computeQualityScore(clip, snapByObs?.[clip.observation_id]);
             const qualityClass = quality >= 70 ? "high" : quality >= 50 ? "mid" : "low";
             return (
               <div
                 key={clip.observation_id || idx}
-                className={`clip-card ${idx === selectedIdx ? "active" : ""} quality-${qualityClass}`}
+                className={`clip-card ${idx === selectedIdx ? "active" : ""} quality-${qualityClass} ${isDeleted ? "deleted" : ""}`}
                 onClick={() => onSelect(idx)}
               >
                 <div
@@ -1326,6 +1421,16 @@
                     {tag && <span className="clip-tag">{tag}</span>}
                     {player && <span style={{ color: "var(--muted)", fontSize: 10 }}>{player}</span>}
                   </div>
+                </div>
+                <div
+                  className="clip-delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleDelete(clip.observation_id);
+                  }}
+                  title={isDeleted ? "恢复此回合" : "删除此回合（可恢复）"}
+                >
+                  <span>×</span>
                 </div>
               </div>
             );
@@ -1660,9 +1765,43 @@
       }, []);
       const clearPicked = () => setPickedSet(new Set());
 
+      // Deleted / curated state (per report, persisted to localStorage)
+      const [deletedSet, setDeletedSet] = useState(new Set());
+      const [showDeleted, setShowDeleted] = useState(false);
+      useEffect(() => {
+        if (!reportId) return;
+        try {
+          const raw = localStorage.getItem(`tactical_deleted:${reportId}`);
+          setDeletedSet(raw ? new Set(JSON.parse(raw)) : new Set());
+        } catch (e) { setDeletedSet(new Set()); }
+      }, [reportId]);
+      const persistDeleted = (newSet) => {
+        try {
+          localStorage.setItem(`tactical_deleted:${reportId}`, JSON.stringify([...newSet]));
+        } catch (e) {}
+      };
+      const toggleDeleted = useCallback((obsId) => {
+        setDeletedSet((prev) => {
+          const next = new Set(prev);
+          if (next.has(obsId)) next.delete(obsId); else next.add(obsId);
+          persistDeleted(next);
+          // Also remove from picked if deleting
+          setPickedSet((picked) => {
+            if (!picked.has(obsId)) return picked;
+            const np = new Set(picked); np.delete(obsId); return np;
+          });
+          return next;
+        });
+      }, [reportId]);
+      const restoreAll = () => {
+        setDeletedSet(new Set());
+        persistDeleted(new Set());
+        message.success("已恢复所有被删除的回合");
+      };
+
       const exportHupuDraft = () => {
         if (pickedSet.size === 0) return;
-        const picked = clips.filter((c) => pickedSet.has(c.observation_id));
+        const picked = clips.filter((c) => pickedSet.has(c.observation_id) && !deletedSet.has(c.observation_id));
         const segByObs = {};
         for (const s of segments) {
           for (const e of s.evidence || []) {
@@ -1749,8 +1888,21 @@
               <Sider width={340} style={{ background: "var(--panel)", borderRight: "1px solid var(--line)" }}>
                 <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--line)" }}>
                   <div className="section-title" style={{ margin: 0 }}>回合时间轴</div>
-                  <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 4 }}>
-                    {clips.length} 个 clips
+                  <div className="curate-toolbar">
+                    <span className="count-pill">{clips.length - deletedSet.size} 留</span>
+                    {deletedSet.size > 0 && (
+                      <span className="count-pill deleted-count">{deletedSet.size} 删</span>
+                    )}
+                    <button
+                      className={`toggle ${showDeleted ? "active" : ""}`}
+                      onClick={() => setShowDeleted((v) => !v)}
+                      title="切换是否在列表中显示已删除的回合"
+                    >
+                      {showDeleted ? "✓ 显示已删除" : "显示已删除"}
+                    </button>
+                    {deletedSet.size > 0 && (
+                      <button onClick={restoreAll}>全部恢复</button>
+                    )}
                   </div>
                 </div>
                 <div className="scrollable" style={{ height: "calc(100% - 64px)", padding: "12px" }}>
@@ -1765,6 +1917,9 @@
                       selectedSet={pickedSet}
                       onToggleSelect={togglePicked}
                       snapByObs={snapDetails}
+                      deletedSet={deletedSet}
+                      onToggleDelete={toggleDeleted}
+                      showDeleted={showDeleted}
                     />
                   )}
                 </div>
