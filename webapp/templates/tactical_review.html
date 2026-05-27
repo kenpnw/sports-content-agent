@@ -1698,11 +1698,12 @@
         setSelectedClipIdx(idx);
         const clip = clips[idx];
         if (!clip) return;
+        // STRICT evidence-based matching — no positional fallback to avoid showing
+        // a totally unrelated segment as commentary
         const segIdx = segments.findIndex((s) =>
           (s.evidence || []).some((e) => String(e) === String(clip.observation_id))
         );
-        if (segIdx >= 0) setSelectedSegIdx(segIdx);
-        else if (idx < segments.length) setSelectedSegIdx(idx);
+        setSelectedSegIdx(segIdx);  // -1 if no match, which makes commentary section show nothing
       }, [clips, segments]);
 
       const handleSegSelect = useCallback((idx) => {
