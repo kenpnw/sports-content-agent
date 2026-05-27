@@ -439,6 +439,8 @@ def snap_clip_window(
     clip_end: float,
     max_snap_distance: float = 25.0,
     min_clip_seconds: float = 6.0,
+    event_time: float | None = None,
+    event_position_ratio: float = 0.78,
 ) -> tuple[float, float, dict[str, Any]]:
     """Adjust [clip_start, clip_end] to align with play_segments.
 
@@ -535,6 +537,41 @@ def snap_clip_window(
         "reason": "no_nearby_play_segment",
         "segment": None,
     }
+
+
+def normalize_event_position(
+    clip_start: float,
+    clip_end: float,
+    event_time: float,
+    target_ratio: float = 0.78,
+    seg_start: float | None = None,
+    seg_end: float | None = None,
+) -> tuple[float, float]:
+    """Shift the clip window so the event lands at target_ratio position (0..1) inside it.
+
+    Preserves clip duration. If the shifted window would fall outside the
+    play_segment bounds (seg_start/seg_end), clamps to stay inside.
+
+    Returns (new_start, new_end).
+    """
+    duration = max(clip_end - clip_start, 1.0)
+    # Place event at target_ratio: new_start = event - duration * target_ratio
+    new_start = event_time - duration * target_ratio
+    new_end = new_start + duration
+
+    # Clamp to play_segment if provided
+    if seg_start is not None and new_start < seg_start:
+        shift = seg_start - new_start
+        new_start += shift
+        new_end += shift
+    if seg_end is not None and new_end > seg_end:
+        shift = new_end - seg_end
+        new_start -= shift
+        new_end -= shift
+        if seg_start is not None:
+            new_start = max(new_start, seg_start)
+    new_start = max(new_start, 0.0)
+    return new_start, new_end
 
 
 def load_play_segments_payload(path: str | Path) -> dict[str, Any]:

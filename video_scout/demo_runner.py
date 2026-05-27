@@ -314,7 +314,7 @@ def _build_tactical_clips(
 
         # ---- play-segment snap ----
         if play_segments_payload is not None:
-            from video_scout.play_segment_detector import snap_clip_window
+            from video_scout.play_segment_detector import snap_clip_window, normalize_event_position
             orig_start, orig_end = start, end
             start, end, snap_info = snap_clip_window(
                 play_segments_payload, start, end, max_snap_distance=30.0, min_clip_seconds=8.0,
@@ -326,12 +326,34 @@ def _build_tactical_clips(
                     snap_stats["snapped"] += 1
             else:
                 snap_stats["no_nearby"] += 1
+
+            # ---- event-position normalization ----
+            # Reconstruct event video time from the original (pre-snap) clip window:
+            # original was [event - before_seconds, event + after_seconds]
+            # so event_video_time = orig_end - after_seconds
+            event_video_time = orig_end - after_seconds
+            seg = snap_info.get("segment") or {}
+            if seg.get("start") is not None and seg.get("end") is not None:
+                # Normalize so event lands at 78% through clip (audience sees ~20s build-up + ~6s after)
+                norm_start, norm_end = normalize_event_position(
+                    clip_start=start, clip_end=end, event_time=event_video_time,
+                    target_ratio=0.78,
+                    seg_start=seg["start"], seg_end=seg["end"],
+                )
+                if (norm_end - norm_start) >= 8.0 and (
+                    abs(norm_start - start) > 0.5 or abs(norm_end - end) > 0.5
+                ):
+                    snap_info["normalized"] = True
+                    snap_info["pre_norm"] = [round(start, 2), round(end, 2)]
+                    start, end = norm_start, norm_end
+                    snap_info["adjusted"] = [round(start, 2), round(end, 2)]
+
             snap_stats["details"].append({
                 "index": index,
                 "observation_id": observation.observation_id,
                 "original": snap_info["original"],
                 "adjusted": snap_info["adjusted"],
-                "reason": snap_info["reason"],
+                "reason": snap_info["reason"] + ("|event_normalized" if snap_info.get("normalized") else ""),
             })
             # Update observation so downstream metadata reflects the actual clip window
             observation.clip_start_seconds = start
