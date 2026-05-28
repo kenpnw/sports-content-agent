@@ -252,6 +252,9 @@ def main() -> None:
     ap.add_argument("--clip-before", type=float, default=8.0, help="seconds before event (default 8)")
     ap.add_argument("--clip-after", type=float, default=8.0, help="seconds after event (default 8)")
     ap.add_argument("--dry-run", action="store_true", help="Compute new positions but don't re-cut")
+    ap.add_argument("--manifest-only", action="store_true",
+                    help="Skip re-cutting; only rewrite clip_manifest.json with new positions. "
+                    "Use when clips were already re-cut by a prior run that crashed before manifest write.")
     args = ap.parse_args()
 
     report_dir = Path(args.report).resolve()
@@ -343,8 +346,14 @@ def main() -> None:
         if not clip_filename:
             fail_count += 1
             continue
-        # Switch extension to .mp4 if necessary
         clip_path = clips_dir / (clip_filename if clip_filename.endswith(".mp4") else Path(clip_filename).stem + ".mp4")
+        if args.manifest_only:
+            # Skip re-cutting — just patch the manifest entry
+            clip["start_seconds"] = np["start"]
+            clip["end_seconds"] = np["end"]
+            clip["recut_by_recover_positions"] = True
+            ok_count += 1
+            continue
         if not clip_path.exists():
             print(f"  [{i+1}/60] clip mp4 not found: {clip_path.name}")
             fail_count += 1
@@ -357,7 +366,6 @@ def main() -> None:
         )
         if ok:
             ok_count += 1
-            # Patch the manifest entry
             clip["start_seconds"] = np["start"]
             clip["end_seconds"] = np["end"]
             clip["recut_by_recover_positions"] = True
@@ -369,7 +377,12 @@ def main() -> None:
     print(f"\n[info] writing updated clip_manifest.json (atomic)")
     old_manifest["recover_positions_at"] = datetime.now().isoformat()
     old_manifest["recover_positions_summary"] = {
-        "ok": ok_count, "failed": fail_count, "total": len(old_clips), "ratios": ratios,
+        "ok": ok_count,
+        "failed": fail_count,
+        "total": len(old_clips),
+        "cleaned_samples_per_period": {
+            str(p): len(cleaned_by_period.get(p, [])) for p, _ in sorted_anchors
+        },
     }
     _atomic_write_json(clip_manifest_path, old_manifest)
 
@@ -378,7 +391,7 @@ def main() -> None:
     print(f"Done: {ok_count}/{len(old_clips)} clips re-cut successfully")
     print(f"      {fail_count} failed")
     print(f"      manifest updated at {clip_manifest_path}")
-    print(f"      ratios: {ratios}")
+    print(f"      cleaned samples per period: {[(p, len(cleaned_by_period.get(p, []))) for p, _ in sorted_anchors]}")
     print("=" * 60)
     print("\nNext: reload the tactical_review webapp page (Ctrl+F5).")
     print("Verify with: python -m thesis_scripts.verify_clip_alignment ...")
