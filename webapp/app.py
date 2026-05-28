@@ -278,6 +278,109 @@ def get_tactical_frame(report_id: str, basename: str, frame_filename: str):
     return send_file(frame_path)
 
 
+# ---------- Manual clip adjustment (P0-A) ----------
+
+def _source_video_for_report(report_dir: Path) -> Path | None:
+    """Find the source MKV/MP4 referenced by this report's clip_manifest."""
+    manifest_path = report_dir / "clip_manifest.json"
+    if not manifest_path.exists():
+        return None
+    try:
+        manifest = _read_json_file(manifest_path)
+    except Exception:
+        return None
+    raw = manifest.get("video_path") or manifest.get("source_video")
+    if not raw:
+        # Also check report.json metadata
+        rep = report_dir / "report.json"
+        if rep.exists():
+            try:
+                data = _read_json_file(rep)
+                raw = (data.get("metadata") or {}).get("video_path") or data.get("video_path")
+            except Exception:
+                pass
+    if not raw:
+        return None
+    p = Path(raw)
+    return p if p.exists() else None
+
+
+@app.get("/api/tactical/<report_id>/overrides")
+def get_clip_overrides(report_id: str):
+    """Return the user-saved clip adjustments for this report."""
+    try:
+        report_dir = _safe_tactical_report_dir(report_id)
+    except PermissionError:
+        abort(403)
+    from video_scout.recut_clip import load_overrides
+    return jsonify(load_overrides(report_dir))
+
+
+@app.get("/api/tactical/<report_id>/preview-frame")
+def get_preview_frame(report_id: str):
+    """Extract a single frame at the given video second. Used by the
+    manual-adjust modal to live-preview where the slider will cut.
+
+    Query param: ?second=<float>
+    """
+    try:
+        report_dir = _safe_tactical_report_dir(report_id)
+    except PermissionError:
+        abort(403)
+    try:
+        second = float(request.args.get("second", "0"))
+    except (TypeError, ValueError):
+        abort(400)
+    if second < 0 or second > 36000:  # sanity: 10h cap
+        abort(400)
+    video = _source_video_for_report(report_dir)
+    if not video:
+        abort(404, "source video not found")
+    # Write to a per-report ephemeral preview file (overwritten on each call)
+    preview = report_dir / "_preview_frame.jpg"
+    from video_scout.recut_clip import extract_single_frame
+    ok = extract_single_frame(video, second, preview)
+    if not ok:
+        abort(500, "ffmpeg frame extract failed")
+    return send_file(preview, mimetype="image/jpeg")
+
+
+@app.post("/api/tactical/<report_id>/clip/<path:clip_filename>/adjust")
+def adjust_clip_endpoint(report_id: str, clip_filename: str):
+    """Save user-adjusted start/end seconds for a clip, then re-cut MP4 + GIF.
+
+    Body JSON: {start_seconds: float, end_seconds: float}
+    """
+    try:
+        report_dir = _safe_tactical_report_dir(report_id)
+    except PermissionError:
+        abort(403)
+    if "/" in clip_filename or "\\" in clip_filename or ".." in clip_filename:
+        abort(403)
+    try:
+        payload = request.get_json(force=True) or {}
+        start = float(payload.get("start_seconds"))
+        end = float(payload.get("end_seconds"))
+    except (TypeError, ValueError, KeyError):
+        abort(400, "body must include start_seconds and end_seconds")
+    if end - start < 1.0 or end - start > 60.0:
+        abort(400, "clip duration must be between 1 and 60 seconds")
+    video = _source_video_for_report(report_dir)
+    if not video:
+        abort(404, "source video not found for this report")
+
+    from video_scout.recut_clip import adjust_clip
+    result = adjust_clip(
+        report_dir=report_dir,
+        video_path=video,
+        clip_filename=clip_filename,
+        new_start_seconds=start,
+        new_end_seconds=end,
+    )
+    status = 200 if result.get("ok") else 500
+    return jsonify(result), status
+
+
 def run() -> None:
     app.run(host=APP_HOST, port=APP_PORT, debug=False)
 

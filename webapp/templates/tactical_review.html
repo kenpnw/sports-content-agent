@@ -584,6 +584,44 @@
       text-decoration: line-through;
     }
 
+    /* Adjust (⚙️) button on clip cards */
+    .clip-adjust-btn {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: rgba(10, 14, 26, 0.7);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      opacity: 0;
+      margin-right: 4px;
+    }
+    .clip-card:hover .clip-adjust-btn { opacity: 1; }
+    .clip-adjust-btn:hover {
+      background: rgba(124, 179, 255, 0.2);
+      color: var(--accent-2);
+      border-color: var(--accent-2);
+      transform: scale(1.1);
+    }
+    .clip-card.adjusted .clip-adjust-btn {
+      opacity: 1;
+      background: rgba(124, 179, 255, 0.2);
+      color: var(--accent-2);
+      border-color: var(--accent-2);
+    }
+    .clip-card.adjusted .clip-time::after {
+      content: "✏";
+      font-size: 9px;
+      color: var(--accent-2);
+      margin-left: 4px;
+    }
+
     /* Toolbar above clip timeline */
     .curate-toolbar {
       display: flex;
@@ -1336,6 +1374,20 @@
       report: (id) => fetch(`/api/tactical/report/${encodeURIComponent(id)}`).then((r) => r.json()),
       frames: (id, clipFile) =>
         fetch(`/api/tactical/clip/${encodeURIComponent(id)}/${encodeURIComponent(clipFile)}/frames`).then((r) => r.json()),
+      overrides: (id) =>
+        fetch(`/api/tactical/${encodeURIComponent(id)}/overrides`).then((r) => r.json()),
+      previewFrameUrl: (id, second) =>
+        `/api/tactical/${encodeURIComponent(id)}/preview-frame?second=${encodeURIComponent(second)}&_=${Date.now()}`,
+      adjustClip: (id, clipFile, startSec, endSec) =>
+        fetch(`/api/tactical/${encodeURIComponent(id)}/clip/${encodeURIComponent(clipFile)}/adjust`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ start_seconds: startSec, end_seconds: endSec }),
+        }).then(async (r) => {
+          const data = await r.json();
+          if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+          return data;
+        }),
     };
 
     // ---------- Components ----------
@@ -1376,7 +1428,7 @@
       return Math.max(0, Math.min(100, score));
     }
 
-    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect, snapByObs, deletedSet, onToggleDelete, showDeleted }) {
+    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect, snapByObs, deletedSet, onToggleDelete, showDeleted, overridesSet, onOpenAdjust }) {
       if (!clips.length) {
         return <Empty description="该 report 没有 clips" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
       }
@@ -1394,12 +1446,14 @@
             const player = (clip.players || []).join(", ");
             const isChecked = selectedSet?.has(clip.observation_id);
             const isDeleted = deletedSet?.has(clip.observation_id);
+            const _clipBase = fileBase(clip.output_path) || fileBase(clip.gif_path);
+            const isAdjusted = overridesSet?.has(`${_clipBase}.mp4`);
             const quality = computeQualityScore(clip, snapByObs?.[clip.observation_id]);
             const qualityClass = quality >= 70 ? "high" : quality >= 50 ? "mid" : "low";
             return (
               <div
                 key={clip.observation_id || idx}
-                className={`clip-card ${idx === selectedIdx ? "active" : ""} quality-${qualityClass} ${isDeleted ? "deleted" : ""}`}
+                className={`clip-card ${idx === selectedIdx ? "active" : ""} quality-${qualityClass} ${isDeleted ? "deleted" : ""} ${isAdjusted ? "adjusted" : ""}`}
                 onClick={() => onSelect(idx)}
               >
                 <div
@@ -1421,6 +1475,16 @@
                     {tag && <span className="clip-tag">{tag}</span>}
                     {player && <span style={{ color: "var(--muted)", fontSize: 10 }}>{player}</span>}
                   </div>
+                </div>
+                <div
+                  className="clip-adjust-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenAdjust && onOpenAdjust(clip);
+                  }}
+                  title={isAdjusted ? "已手动调整 — 点击重新调整" : "手动调整 clip 时间窗口"}
+                >
+                  ⚙
                 </div>
                 <div
                   className="clip-delete-btn"
@@ -1799,6 +1863,69 @@
         message.success("已恢复所有被删除的回合");
       };
 
+      // ---- Manual clip-time adjustment (P0-A) ----
+      const [overridesSet, setOverridesSet] = useState(new Set());  // set of clip filenames (basenames)
+      const [adjustingClip, setAdjustingClip] = useState(null);     // {clip, start, end}
+      const [adjustSaving, setAdjustSaving] = useState(false);
+
+      // Fetch existing overrides for this report
+      useEffect(() => {
+        if (!reportId) { setOverridesSet(new Set()); return; }
+        api.overrides(reportId).then((data) => {
+          const keys = Object.keys((data && data.overrides) || {});
+          setOverridesSet(new Set(keys));
+        }).catch(() => setOverridesSet(new Set()));
+      }, [reportId, manifest]);
+
+      const openAdjust = useCallback((clip) => {
+        const start = clip.start_seconds || clip.clip_start_seconds || 0;
+        const end = clip.end_seconds || clip.clip_end_seconds || (start + 26);
+        setAdjustingClip({
+          clip,
+          start: Math.round(start * 10) / 10,
+          end: Math.round(end * 10) / 10,
+          origStart: start,
+          origEnd: end,
+        });
+      }, []);
+
+      const closeAdjust = () => { setAdjustingClip(null); setAdjustSaving(false); };
+
+      const saveAdjust = async () => {
+        if (!adjustingClip) return;
+        const clip = adjustingClip.clip;
+        const clipBase = fileBase(clip.output_path) || fileBase(clip.gif_path);
+        const clipMp4 = clipBase ? `${clipBase}.mp4` : null;
+        if (!clipMp4) { message.error("无法定位 clip mp4 文件"); return; }
+        if (adjustingClip.end - adjustingClip.start < 1) {
+          message.error("时长必须 >= 1 秒"); return;
+        }
+        setAdjustSaving(true);
+        try {
+          await api.adjustClip(reportId, clipMp4, adjustingClip.start, adjustingClip.end);
+          message.success("已重切 clip + 重生成 GIF");
+          // Refresh overrides set + reload report so the new GIF shows
+          setOverridesSet((prev) => {
+            const next = new Set(prev);
+            next.add(clipMp4);
+            return next;
+          });
+          // Force GIF reload by appending cache-buster
+          setTimeout(() => {
+            const imgs = document.querySelectorAll(`img.clip-thumb`);
+            imgs.forEach((im) => {
+              if (im.src && im.src.includes(clipBase)) {
+                im.src = im.src.split("?")[0] + "?_=" + Date.now();
+              }
+            });
+          }, 200);
+          closeAdjust();
+        } catch (e) {
+          message.error("调整失败：" + e.message);
+          setAdjustSaving(false);
+        }
+      };
+
       const exportHupuDraft = () => {
         if (pickedSet.size === 0) return;
         const picked = clips.filter((c) => pickedSet.has(c.observation_id) && !deletedSet.has(c.observation_id));
@@ -1920,6 +2047,8 @@
                       deletedSet={deletedSet}
                       onToggleDelete={toggleDeleted}
                       showDeleted={showDeleted}
+                      overridesSet={overridesSet}
+                      onOpenAdjust={openAdjust}
                     />
                   )}
                 </div>
@@ -1980,6 +2109,91 @@
               <button className="btn-ghost" onClick={clearPicked}>清空</button>
               <button className="btn-primary" onClick={exportHupuDraft}>📋 复制虎扑草稿</button>
             </div>
+            {adjustingClip && (
+              <Modal
+                open={true}
+                title={`手动调整 clip 时间窗口 — Q${adjustingClip.clip.period} ${fmtClock(adjustingClip.clip.clock)}`}
+                onCancel={closeAdjust}
+                footer={null}
+                width={680}
+                destroyOnClose
+              >
+                {(() => {
+                  const a = adjustingClip;
+                  const setStart = (v) => setAdjustingClip({ ...a, start: Math.max(0, +v) });
+                  const setEnd = (v) => setAdjustingClip({ ...a, end: Math.max(a.start + 1, +v) });
+                  const nudge = (deltaStart, deltaEnd) => setAdjustingClip({
+                    ...a,
+                    start: Math.max(0, a.start + deltaStart),
+                    end: Math.max(a.start + deltaStart + 1, a.end + deltaEnd),
+                  });
+                  const previewT = (a.start + a.end) / 2;
+                  return (
+                    <div>
+                      <div style={{ marginBottom: 12, color: "var(--muted)", fontSize: 12 }}>
+                        事件描述：<span style={{ color: "var(--text)" }}>{a.clip.event_description || a.clip.label}</span>
+                      </div>
+                      <div style={{ marginBottom: 12 }}>
+                        <img
+                          key={`${a.start}_${a.end}`}
+                          src={api.previewFrameUrl(reportId, previewT)}
+                          alt="frame preview"
+                          style={{ width: "100%", maxHeight: 280, objectFit: "contain", background: "#000", borderRadius: 4 }}
+                        />
+                        <div style={{ textAlign: "center", color: "var(--muted)", fontSize: 11, marginTop: 4 }}>
+                          预览：视频 {previewT.toFixed(1)}s 处的画面（clip 中心）
+                        </div>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                        <div>
+                          <label style={{ fontSize: 12, color: "var(--muted)" }}>起点 (秒)</label>
+                          <input
+                            type="number"
+                            value={a.start}
+                            step={0.5}
+                            onChange={(e) => setStart(e.target.value)}
+                            style={{ width: "100%", padding: "6px 8px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--line)", color: "var(--text)", borderRadius: 4 }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 12, color: "var(--muted)" }}>终点 (秒)</label>
+                          <input
+                            type="number"
+                            value={a.end}
+                            step={0.5}
+                            onChange={(e) => setEnd(e.target.value)}
+                            style={{ width: "100%", padding: "6px 8px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--line)", color: "var(--text)", borderRadius: 4 }}
+                          />
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap", justifyContent: "center" }}>
+                        <button onClick={() => nudge(-30, -30)} className="btn-ghost">← -30s</button>
+                        <button onClick={() => nudge(-10, -10)} className="btn-ghost">← -10s</button>
+                        <button onClick={() => nudge(-3, -3)} className="btn-ghost">← -3s</button>
+                        <button onClick={() => nudge(-1, -1)} className="btn-ghost">← -1s</button>
+                        <button onClick={() => nudge(1, 1)} className="btn-ghost">+1s →</button>
+                        <button onClick={() => nudge(3, 3)} className="btn-ghost">+3s →</button>
+                        <button onClick={() => nudge(10, 10)} className="btn-ghost">+10s →</button>
+                        <button onClick={() => nudge(30, 30)} className="btn-ghost">+30s →</button>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid var(--line)" }}>
+                        <div style={{ fontSize: 11, color: "var(--muted)" }}>
+                          时长 {(a.end - a.start).toFixed(1)}s &nbsp;|&nbsp;
+                          原始: {a.origStart.toFixed(1)}s → {a.origEnd.toFixed(1)}s
+                          (偏移 {(a.start - a.origStart >= 0 ? "+" : "") + (a.start - a.origStart).toFixed(1)}s)
+                        </div>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button onClick={closeAdjust} className="btn-ghost" disabled={adjustSaving}>取消</button>
+                          <button onClick={saveAdjust} className="btn-primary" disabled={adjustSaving}>
+                            {adjustSaving ? "重切中..." : "💾 保存并重切"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </Modal>
+            )}
           </Layout>
         </ConfigProvider>
       );
