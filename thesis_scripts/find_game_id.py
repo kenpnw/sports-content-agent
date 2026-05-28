@@ -41,8 +41,8 @@ def main() -> None:
     if team or opp:
         filtered = []
         for g in games:
-            home = (g.get("homeTeam", {}).get("teamTricode") or "").upper()
-            away = (g.get("awayTeam", {}).get("teamTricode") or "").upper()
+            home = (g.get("home_tricode") or "").upper()
+            away = (g.get("away_tricode") or "").upper()
             tricodes = {home, away}
             if team and team not in tricodes:
                 continue
@@ -56,22 +56,21 @@ def main() -> None:
         print("[empty] no matching games")
         return
 
-    # Pretty print: date, matchup, game_id
+    # Pretty print: date, matchup, game_id, label
     print()
-    print(f"{'date':<12} {'matchup':<20} {'game_id':<14} {'final':<14}")
-    print("-" * 64)
+    print(f"{'date':<12} {'matchup':<16} {'game_id':<14} {'final':<10} {'label':<30}")
+    print("-" * 88)
     for g in games:
-        gid = g.get("gameId", "")
-        away = g.get("awayTeam", {})
-        home = g.get("homeTeam", {})
-        away_t = away.get("teamTricode", "?")
-        home_t = home.get("teamTricode", "?")
-        away_s = away.get("score", "")
-        home_s = home.get("score", "")
-        date = g.get("gameDateUTC", g.get("gameDate", ""))[:10]
+        gid = g.get("game_id", "")
+        away_t = g.get("away_tricode", "?")
+        home_t = g.get("home_tricode", "?")
+        away_s = g.get("away_score", "")
+        home_s = g.get("home_score", "")
+        date_str = g.get("game_date", "")[:10]
         matchup = f"{away_t} @ {home_t}"
         final = f"{away_s}-{home_s}" if away_s != "" else ""
-        print(f"{date:<12} {matchup:<20} {gid:<14} {final:<14}")
+        label = " ".join(s for s in (g.get("game_label", ""), g.get("game_sublabel", "")) if s).strip()
+        print(f"{date_str:<12} {matchup:<16} {gid:<14} {final:<10} {label:<30}")
 
 
 if __name__ == "__main__":

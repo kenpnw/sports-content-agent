@@ -136,15 +136,15 @@ def _autodetect_game(video_path: Path, override_date: date | None) -> dict | Non
     # A tricode-only match is enough to surface as a candidate.
     def score(g: dict) -> int:
         s = 0
-        gd_raw = g.get("gameDateUTC") or g.get("gameDate") or g.get("gameEt") or ""
+        gd_raw = g.get("game_date") or ""
         try:
-            gd = datetime.fromisoformat(gd_raw.replace("Z", "+00:00")).date()
+            gd = datetime.fromisoformat(gd_raw).date()
         except (ValueError, TypeError):
             gd = None
         if gd and sniffed_date and abs((gd - sniffed_date).days) <= 1:
             s += 5
-        home_t = (g.get("homeTeam", {}).get("teamTricode") or "").upper()
-        away_t = (g.get("awayTeam", {}).get("teamTricode") or "").upper()
+        home_t = (g.get("home_tricode") or "").upper()
+        away_t = (g.get("away_tricode") or "").upper()
         if home_t in tricodes:
             s += 3
         if away_t in tricodes:
@@ -176,9 +176,9 @@ def _autodetect_game(video_path: Path, override_date: date | None) -> dict | Non
        (len(candidates) == 1 or score(candidates[0]) > score(candidates[1])):
         g = candidates[0]
         print(f"[autodetect] unique high-confidence match  -> "
-              f"{g['awayTeam']['teamTricode']} @ {g['homeTeam']['teamTricode']} "
-              f"({(g.get('gameDateUTC') or g.get('gameEt', ''))[:10]}) "
-              f"game_id={g['gameId']}  [score {score(g)}]")
+              f"{g.get('away_tricode')} @ {g.get('home_tricode')} "
+              f"({g.get('game_date', '')[:10]}) "
+              f"game_id={g.get('game_id')}  [score {score(g)}]")
         return g
 
     # Otherwise (single weak match OR multiple candidates), let user pick.
@@ -186,10 +186,11 @@ def _autodetect_game(video_path: Path, override_date: date | None) -> dict | Non
     candidates = candidates[:15]
     print(f"[autodetect] {len(candidates)} candidate(s) match team(s) {sorted(tricodes)}:")
     for i, g in enumerate(candidates, 1):
-        date_str = (g.get("gameDateUTC") or g.get("gameEt") or "")[:10]
-        print(f"  [{i:>2}] {g['awayTeam']['teamTricode']} @ {g['homeTeam']['teamTricode']}  "
-              f"{date_str}  {g.get('awayTeam', {}).get('score', 0)}-{g.get('homeTeam', {}).get('score', 0)}  "
-              f"game_id={g['gameId']}  [score {score(g)}]")
+        date_str = g.get("game_date", "")[:10]
+        label = " ".join(s for s in (g.get("game_label", ""), g.get("game_sublabel", "")) if s).strip()
+        print(f"  [{i:>2}] {g.get('away_tricode')} @ {g.get('home_tricode')}  "
+              f"{date_str}  {g.get('away_score', 0)}-{g.get('home_score', 0)}  "
+              f"game_id={g.get('game_id')}  [score {score(g)}] {label}")
     try:
         choice = input("Pick number (or Enter to abort): ").strip()
     except EOFError:
@@ -204,9 +205,9 @@ def _autodetect_game(video_path: Path, override_date: date | None) -> dict | Non
 
 def _slugify(g: dict) -> str:
     """Generate a stable slug from a game dict, e.g. 'sas_okc_20260527'."""
-    away = (g.get("awayTeam", {}).get("teamTricode") or "X").lower()
-    home = (g.get("homeTeam", {}).get("teamTricode") or "X").lower()
-    date_str = (g.get("gameDateUTC") or g.get("gameEt") or "")[:10].replace("-", "")
+    away = (g.get("away_tricode") or "X").lower()
+    home = (g.get("home_tricode") or "X").lower()
+    date_str = (g.get("game_date") or "")[:10].replace("-", "")
     return f"{away}_{home}_{date_str}"
 
 
@@ -261,7 +262,7 @@ def main() -> None:
             print("        Either pass --game-id <id> directly, or check the filename")
             print("        contains team tricodes (SAS, OKC, etc) or a date (YYYYMMDD).")
             sys.exit(1)
-        game_id = g["gameId"]
+        game_id = g["game_id"]
         if not slug:
             slug = _slugify(g)
     else:
