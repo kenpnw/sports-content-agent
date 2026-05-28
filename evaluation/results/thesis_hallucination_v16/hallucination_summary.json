@@ -1,0 +1,10 @@
+{
+  "source_report": "data\\generated\\video_scout\\real_okc_lal_g1_v16_full_llm",
+  "total_claims": 42,
+  "supported": 30,
+  "partial": 7,
+  "unsupported": 5,
+  "hallucination_rate": 0.119,
+  "partial_or_worse_rate": 0.2857,
+  "judge_model": "deepseek-chat"
+}

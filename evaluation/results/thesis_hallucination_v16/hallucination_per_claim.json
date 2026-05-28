@@ -1,0 +1,296 @@
+[
+  {
+    "index": 1,
+    "timecode": "01:12",
+    "claim": "本回合属于快攻中的追身三分。L. James 在转换进攻中持球推进，防守方尚未完全落位，他利用防守后退的空间直接干拔出手。这不是固定战术，而是基于防守阵型未稳的个人进攻选择。 命中三分，为湖人追分，但整体节奏仍受雷霆控制。",
+    "label": "supported",
+    "reason": "解说中L. James追身三分命中、个人进攻选择等描述与PBP中'26' 3PT running pullup'完全一致，主观评价合理。"
+  },
+  {
+    "index": 2,
+    "timecode": "01:33",
+    "claim": "本回合属于『一五挡拆』(1-5 PnR) 战术。Holmgren 上提为 SGA 做掩护，吸引湖人防守收缩后，SGA 将球传给外弹的 Holmgren，后者迅速转移给弱侧空位的 Dort，创造三分机会。 命中三分，帮助雷霆扩大领先优势，提升士气。",
+    "label": "partial",
+    "reason": "Dort 命中三分和 Holmgren 助攻正确，但证据未提及 SGA 参与挡拆、传球给 Holmgren 及湖人防守收缩等细节。"
+  },
+  {
+    "index": 3,
+    "timecode": "02:09",
+    "claim": "本回合属于『弱侧空切』(Weak-side cutting) 战术。Mitchell 在弧顶持球吸引防守，Holmgren 从弱侧沿底线空切至篮下，接 Mitchell 传球完成扣篮。防守方未能及时协防，暴露出对无球切入的警惕不足。 雷霆通过无球跑动轻松得分，进一步拉开分差，打击湖人防守士气。",
+    "label": "supported",
+    "reason": "解说中Mitchell弧顶持球、Holmgren空切扣篮、助攻等事实均与PBP证据一致，战术评价合理。"
+  },
+  {
+    "index": 4,
+    "timecode": "03:46",
+    "claim": "本回合属于『一五挡拆』(1-5 PnR) 战术。Dort 与 Holmgren 在弧顶执行挡拆，迫使湖人换防后，Holmgren 外弹至三分线接球出手。 命中三分帮助雷霆反超比分，提升士气并扩大领先优势。",
+    "label": "partial",
+    "reason": "解说提到挡拆迫使湖人换防、外弹三分反超比分，但证据仅显示Holmgren命中三分且Dort助攻，未提及挡拆细节、换防及比分变化。"
+  },
+  {
+    "index": 5,
+    "timecode": "04:11",
+    "claim": "本回合属于『进攻篮板后外传三分』战术。Smart 突破抛投不中后自抢进攻篮板，迅速传给外线空位的 James，后者接球直接拔起三分命中。这是典型的二次进攻中利用防守收缩后的外线机会。 positive",
+    "label": "supported",
+    "reason": "解说中Smart突破抛投不中、自抢进攻篮板、传给James三分命中等事实均与PBP证据完全对应。"
+  },
+  {
+    "index": 6,
+    "timecode": "05:27",
+    "claim": "本回合是S. Gilgeous-Alexander的传球失误。他在弧顶持球试图传给切入的队友时，传球路线被湖人防守球员预判拦截，导致球权转换。失误原因可能是传球意图过于明显或防守轮转到位。 失误直接送给湖人一次进攻机会，中断了雷霆的得分势头，可能影响球队士气。",
+    "label": "supported",
+    "reason": "证据显示S. Gilgeous-Alexander在首节6分36秒出现bad pass失误，解说描述的传球失误和球权转换与PBP一致，主观分析合理。"
+  },
+  {
+    "index": 7,
+    "timecode": "06:45",
+    "claim": "本回合是 A. Reaves 的传球失误。他在持球时试图将球传给队友，但传球力量或角度不佳，球直接出界。这是一次非受迫性失误，可能源于防守压力或判断失误。 失误导致湖人失去一次进攻机会，并让雷霆获得球权，对湖人不利。",
+    "label": "supported",
+    "reason": "解说中A. Reaves传球失误出界与PBP证据完全一致，主观评价如非受迫性失误等合理，无矛盾或虚构细节。"
+  },
+  {
+    "index": 8,
+    "timecode": "06:55",
+    "claim": "本回合是S. Gilgeous-Alexander的失误。他在持球时被防守者干扰或自身运球失误导致丢球，属于个人控球失误，无明确战术配合。 失误直接导致球权转换，湖人获得进攻机会，对雷霆不利。",
+    "label": "supported",
+    "reason": "解说指出S. Gilgeous-Alexander失误，证据中明确记录其lost ball TURNOVER，且无其他矛盾细节。"
+  },
+  {
+    "index": 9,
+    "timecode": "06:59",
+    "claim": "本回合是A. Reaves的失误。他在边线附近持球时被L. Kennard抢断，随后在试图救球时踩线出界。失误原因是Reaves运球过于靠近边线，且未注意Kennard的防守位置，导致球被掏掉后失去平衡。 失误直接送给雷霆一次球权，湖人失去一次进攻机会，对湖人追分不利。",
+    "label": "supported",
+    "reason": "解说中A. Reaves失误、L. Kennard抢断、踩线出界等事实均与PBP证据完全对应，主观评价合理。"
+  },
+  {
+    "index": 10,
+    "timecode": "07:38",
+    "claim": "本回合为快攻转换。Ayton 抢下篮板后迅速传给前插的 James，James 利用速度摆脱防守完成扣篮。属于典型的防守反击，无固定阵地战术配合。 湖人通过快攻轻松得分，缩小分差，提升士气。",
+    "label": "supported",
+    "reason": "解说中Ayton抢篮板、传球给James、James扣篮等事实与PBP中Ayton助攻、James扣篮完全对应，主观评价合理。"
+  },
+  {
+    "index": 11,
+    "timecode": "09:00",
+    "claim": "本回合是J. Williams的失误。他在持球时被防守压迫，失去球权导致失误。由于是孤立失误事件，无明确战术配合，因此不命名战术。 失误使雷霆失去一次进攻机会，湖人可能获得球权并转换得分，对雷霆不利。",
+    "label": "supported",
+    "reason": "解说中J. Williams失误、失去球权、无战术配合等描述均与PBP证据完全一致。"
+  },
+  {
+    "index": 12,
+    "timecode": "09:05",
+    "claim": "本回合是J. LaRavia的传球失误。他在持球时被M. Smart预判抢断，传球意图过于明显，导致球权丢失。此回合无明确战术配合，属于个人决策失误。 失误直接送给雷霆一次快攻机会，对湖人进攻节奏造成负面影响，可能助长对手士气。",
+    "label": "supported",
+    "reason": "解说中J. LaRavia传球失误、M. Smart抢断等具体事实与PBP证据完全一致，主观评价与动作合理一致。"
+  },
+  {
+    "index": 13,
+    "timecode": "09:45",
+    "claim": "本回合属于『拉开挡拆』(Spread PnR) 战术。SGA 在弧顶持球，J. Williams 上提掩护后外弹至三分线，SGA 吸引包夹后分球，Williams 第一次出手被 LaRavia 封盖，但 Williams 冲抢进攻篮板后二次出手命中。 关键三分命中，将分差扩大至 8 分，打击湖人防守士气。",
+    "label": "unsupported",
+    "reason": "解说称Williams二次出手命中且分差扩大至8分，但证据显示其三分被盖后仅抢到篮板，无后续得分或比分变化记录。"
+  },
+  {
+    "index": 14,
+    "timecode": "11:01",
+    "claim": "失误回合。J. Hayes 在弧顶持球试图传给切入的队友时，传球路线被雷霆防守球员预判拦截，导致失误。原因是传球意图过于明显且缺乏假动作，属于个人决策失误。 湖人失去一次进攻机会，雷霆获得球权，可能转化为快攻得分，对湖人不利。",
+    "label": "supported",
+    "reason": "解说中J. Hayes失误、传球被拦截、个人决策失误等事实与PBP中'bad pass TURNOVER'完全一致，主观评价合理。"
+  },
+  {
+    "index": 15,
+    "timecode": "11:04",
+    "claim": "失误回合。J. Williams 在持球过程中被对手抢断，导致球权丢失。原因是运球或传球时注意力不集中，被防守者预判并完成抢断。 negative",
+    "label": "unsupported",
+    "reason": "证据显示J. Williams自己丢球失误，同时有他的抢断记录，但解说称被对手抢断，与证据矛盾。"
+  },
+  {
+    "index": 16,
+    "timecode": "12:03",
+    "claim": "Q1 收尾时刻。雷霆以 119-102 领先湖人，首节结束，双方进入节间休息。 无直接影响，仅标志首节结束。",
+    "label": "supported",
+    "reason": "解说描述首节结束、比分119-102，与PBP中'Period End'及比分一致，无矛盾或虚构细节。"
+  },
+  {
+    "index": 17,
+    "timecode": "13:25",
+    "claim": "本回合属于快攻中的追身三分。McCain 在转换进攻中运球至三分线外，利用防守未落位果断出手命中。 命中三分将分差扩大，提升球队士气，属于 momentum swing 回合。",
+    "label": "supported",
+    "reason": "解说中McCain命中追身三分、转换进攻、防守未落位等描述与PBP中'25' 3PT running pullup'一致，无矛盾或虚构细节。"
+  },
+  {
+    "index": 18,
+    "timecode": "15:36",
+    "claim": "本回合属于『进攻篮板外传三分』战术。A. Mitchell 三分出手不中，J. McCain 抢到进攻篮板后迅速传给外线的 C. Wallace，后者命中三分。这是典型的二次进攻配合，利用篮板球创造空位三分机会。 命中三分，OKC 扩大领先优势，提升士气。",
+    "label": "partial",
+    "reason": "解说中J. McCain抢到进攻篮板后传给C. Wallace，但证据显示篮板是J. McCain抢到，助攻是A. Mitchell，未明确提及传球动作，且解说称“命中三分，OKC扩大领先优势”但证据无比分信息。"
+  },
+  {
+    "index": 19,
+    "timecode": "15:56",
+    "claim": "本回合是 LeBron James 的走步失误。他在弧顶持球试图突破时，启动前未明确确立中枢脚，被裁判吹罚走步。这是一次个人失误，无战术配合铺垫。 湖人失去一次进攻机会，雷霆获得球权，对湖人追分不利。",
+    "label": "supported",
+    "reason": "解说中LeBron James走步失误、被吹罚、个人失误、湖人失去球权等事实均与PBP中'L. James traveling TURNOVER'完全一致。"
+  },
+  {
+    "index": 20,
+    "timecode": "16:17",
+    "claim": "本回合是快攻中的空接配合。Reaves 在转换中观察到 Vanderbilt 从弱侧切入，及时送出高吊传球，Vanderbilt 完成双手扣篮。这是利用对手退防未稳的快速进攻，没有复杂战术铺垫。 湖人追回2分，将分差缩小至个位数，提振士气。",
+    "label": "supported",
+    "reason": "解说中Reaves助攻Vanderbilt完成扣篮、快攻配合等事实均与PBP证据完全一致，主观评价合理。"
+  },
+  {
+    "index": 21,
+    "timecode": "16:55",
+    "claim": "本回合是 DeAndre Ayton 的丢球失误。他在抢到进攻篮板后，面对防守球员的夹击或干扰，未能保护好球，导致球权丢失。这是一个典型的篮板后处理球失误，缺乏有效的护球和出球选择。 失误直接送给雷霆一次进攻机会，湖人失去了一次可能的二次进攻得分机会，对湖人追分不利。",
+    "label": "supported",
+    "reason": "解说中Ayton抢到进攻篮板后丢球失误，与PBP中Ayton抢到篮板后立即出现lost ball turnover完全一致，主观评价合理。"
+  },
+  {
+    "index": 22,
+    "timecode": "17:06",
+    "claim": "本回合属于快攻/Transition。C. Wallace抢断后迅速推进，吸引防守后传给跟进的I. Hartenstein，后者再分球给底角空位的C. Holmgren命中三分。这是典型的抢断后快速转移球创造空位机会。 命中三分将分差扩大到两位数，提升球队士气并迫使湖人暂停调整。",
+    "label": "partial",
+    "reason": "解说提到C. Wallace抢断后推进并传给I. Hartenstein再分球给C. Holmgren，但证据中只有抢断和助攻记录，缺少传球细节，且未提及分差扩大和湖人暂停。"
+  },
+  {
+    "index": 23,
+    "timecode": "17:43",
+    "claim": "本回合是C. Wallace的传球失误。他在持球时试图传给队友，但传球角度或力度不佳，导致球直接出界。这是一次非受迫性失误，反映出雷霆在进攻组织上的失误问题。 失误导致雷霆失去一次进攻机会，并让湖人获得球权，可能转化为得分，对雷霆不利。",
+    "label": "supported",
+    "reason": "解说中C. Wallace传球失误出界与PBP证据完全一致，主观评价合理，无矛盾或虚构细节。"
+  },
+  {
+    "index": 24,
+    "timecode": "18:06",
+    "claim": "本回合属于『空接配合』(Alley-oop) 战术。Hartenstein 在高位持球，Holmgren 从弱侧空切篮下，Hartenstein 及时将球抛向篮筐，Holmgren 接球完成暴扣。防守方未能及时协防，导致轻松得分。 OKC 扩大领先优势，提升士气。",
+    "label": "supported",
+    "reason": "解说中Hartenstein高位持球、Holmgren空切暴扣、助攻得分等细节与PBP记录的alley-oop扣篮及助攻完全一致。"
+  },
+  {
+    "index": 25,
+    "timecode": "18:40",
+    "claim": "本回合属于『进攻篮板外传三分』战术。Smart 突破抛投不中，Hayes 抢到进攻篮板后迅速传给外线的 Reaves，Reaves 再转移给 Smart 完成三分命中。这是典型的二次进攻配合，利用内线篮板优势创造外线机会。 Smart 的三分命中帮助湖人将分差缩小到 8 分，维持了追分势头。",
+    "label": "unsupported",
+    "reason": "证据中只有Smart三分命中及Reaves助攻，没有提及Smart突破抛投、Hayes抢篮板、Reaves转移球等细节，这些事实在证据中不存在。"
+  },
+  {
+    "index": 26,
+    "timecode": "19:35",
+    "claim": "本回合是A. Reaves的进攻犯规失误。他在持球突破时与防守球员发生身体接触，被吹罚带球撞人，导致球权转换。这是一次个人决策失误，缺乏有效的战术配合。 失误使湖人失去一次进攻机会，并让雷霆获得球权，对湖人追分不利。",
+    "label": "supported",
+    "reason": "解说中A. Reaves进攻犯规、带球撞人、失误导致球权转换等事实均与PBP证据完全一致。"
+  },
+  {
+    "index": 27,
+    "timecode": "19:49",
+    "claim": "快攻/Transition。L. James 被换下后，OKC 抓住湖人防守未稳的机会，Dort 快速推进并传给跟进的 SGA，后者完成扣篮。此回合无固定阵地战术，属于转换进攻。 OKC 扩大领先优势，利用湖人换人后的防守漏洞轻松得分，士气提升。",
+    "label": "supported",
+    "reason": "证据显示L. James被换下后，Dort助攻SGA扣篮，与解说中快攻、换人、扣篮等事实一致。"
+  },
+  {
+    "index": 28,
+    "timecode": "20:18",
+    "claim": "本回合是 S. Gilgeous-Alexander 的传球失误。他在弧顶持球试图传给弱侧空切队友时，传球路线被湖人防守球员识破并破坏出界。失误原因是传球意图过于明显且缺乏假动作，属于个人决策失误。 失误导致雷霆失去一次进攻机会，湖人获得球权，可能转化为快攻得分，对雷霆士气有负面影响。",
+    "label": "supported",
+    "reason": "证据明确显示S. Gilgeous-Alexander出现bad pass out-of-bounds失误，解说中的球员姓名、失误类型及个人决策描述与证据一致。"
+  },
+  {
+    "index": 29,
+    "timecode": "20:42",
+    "claim": "本回合是二次进攻。C. Wallace 突破上篮被 A. Reaves 封盖，Holmgren 抢到进攻篮板后直接补扣得分。没有战术配合，属于个人拼抢篮板后的直接终结。 Holmgren 的补扣为雷霆拿下关键两分，延续了进攻回合，对湖人防守士气造成打击。",
+    "label": "partial",
+    "reason": "解说提到Holmgren抢到进攻篮板后补扣，但证据显示篮板是C. Wallace抢到，且Holmgren直接补扣，未明确说明篮板归属细节有偏差。"
+  },
+  {
+    "index": 30,
+    "timecode": "21:08",
+    "claim": "本回合属于『弱侧空切』(Weak-side cutting) 战术。SGA 在弧顶持球吸引防守注意力，Holmgren 从弱侧沿底线空切，接 SGA 传球完成扣篮。防守方未能及时轮转补位，暴露了弱侧防守沟通问题。 OKC 扩大领先优势，Holmgren 轻松得分打击湖人防守士气。",
+    "label": "supported",
+    "reason": "解说中SGA持球、Holmgren空切扣篮、助攻等事实与PBP记录完全一致，防守评价与动作合理一致。"
+  },
+  {
+    "index": 31,
+    "timecode": "21:31",
+    "claim": "本回合属于『手递手』(Hand-off / DHO) 战术。Reaves 在弧顶将球递交给 Smart，同时利用身体做掩护挡住防守人，为 Smart 创造三分出手空间。Smart 接球后迅速起跳命中。 命中三分，湖人将分差缩小至 9 分，保持追分势头。",
+    "label": "partial",
+    "reason": "解说提到手递手战术和Reaves掩护，但证据只显示Reaves助攻Smart命中三分，未明确描述手递手动作和掩护细节，部分细节无法验证。"
+  },
+  {
+    "index": 32,
+    "timecode": "22:13",
+    "claim": "本回合是L. Dort的失误。他在持球时失去控制，球出界，导致球权转换。这是一次个人失误，没有明显的战术配合支撑，属于孤立事件。 失误让雷霆失去一次进攻机会，并可能给湖人快攻机会，对雷霆不利。",
+    "label": "supported",
+    "reason": "解说中L. Dort持球失误、球出界、个人失误等事实均与PBP证据完全一致，主观评价合理。"
+  },
+  {
+    "index": 33,
+    "timecode": "22:25",
+    "claim": "本回合属于『翼侧挡拆』(Wing PnR) 战术。L. James 在右侧翼位与 D. Ayton 打挡拆，吸引防守后分球给底角 Kennard，后者命中三分。 命中关键三分，将分差扩大至 10 分以上，打击湖人追分势头。",
+    "label": "unsupported",
+    "reason": "解说称L. James与D. Ayton打挡拆后助攻Kennard，但证据显示助攻者是L. James，且无D. Ayton参与挡拆的任何记录，Ayton不在该回合阵容中。"
+  },
+  {
+    "index": 34,
+    "timecode": "22:41",
+    "claim": "本回合是S. Gilgeous-Alexander的传球失误。他在弧顶持球试图传给切入的队友时，传球路线被湖人防守球员预判拦截，导致失误。属于个人决策失误，非战术执行失败。 失误使雷霆失去一次进攻机会，湖人可能借此缩小分差，对雷霆不利。",
+    "label": "supported",
+    "reason": "解说中S. Gilgeous-Alexander的传球失误与PBP证据完全一致，主观评价合理，无矛盾或虚构细节。"
+  },
+  {
+    "index": 35,
+    "timecode": "22:43",
+    "claim": "本回合为快攻转换。L. James 在防守端完成抢断，随即持球推进，在无防守压力下完成扣篮。这是个人防守反击能力的体现，无固定战术配合。 湖人追回2分，将分差缩小至个位数，提振士气。",
+    "label": "supported",
+    "reason": "解说中L. James抢断、持球推进扣篮、得2分等事实均与PBP证据完全对应，主观评价合理。"
+  },
+  {
+    "index": 36,
+    "timecode": "23:23",
+    "claim": "本回合属于『进攻篮板外传』(Offensive Rebound Kickout) 战术。SGA 突破吸引防守，上篮不中后 J. Williams 冲抢进攻篮板，迅速传给外线空位的 Caruso，后者命中三分。这是雷霆利用突破分球和篮板拼抢创造的外线机会。 关键三分将分差扩大，打击湖人士气，巩固雷霆领先优势。",
+    "label": "supported",
+    "reason": "解说中SGA上篮不中、J. Williams抢进攻篮板、传给Caruso命中三分等事实均与PBP证据完全对应，主观战术评价合理。"
+  },
+  {
+    "index": 37,
+    "timecode": "24:03",
+    "claim": "Q2 收尾时刻。湖人最后一攻尝试空接未果，雷霆抢到篮板后时间走完，雷霆以领先结束上半场。 雷霆守住领先优势进入下半场，士气占优。",
+    "label": "unsupported",
+    "reason": "解说提到湖人最后一攻空接未果、雷霆抢篮板后时间走完，但证据中只有犯规和换人，无任何进攻或篮板事件。"
+  },
+  {
+    "index": 38,
+    "timecode": "24:44",
+    "claim": "本回合属于『一五挡拆』(1-5 PnR) 战术。SGA 与 Holmgren 在弧顶执行挡拆，SGA 吸引包夹后高抛给顺下的 Holmgren，完成空接暴扣。 OKC 领先优势扩大，提升士气。",
+    "label": "supported",
+    "reason": "解说中SGA助攻Holmgren完成空接暴扣与PBP记录完全一致，挡拆战术描述与动作合理相符。"
+  },
+  {
+    "index": 39,
+    "timecode": "25:02",
+    "claim": "本回合是 L. James 的传球失误。他在弧顶持球试图传给切入的队友时，传球角度不佳直接出界，属于个人决策失误，无明确战术配合。 失误导致湖人失去一次进攻机会，雷霆获得球权，可能影响湖人追分势头。",
+    "label": "supported",
+    "reason": "解说中L. James传球失误出界、个人决策失误、湖人失去球权等事实均与PBP证据完全一致。"
+  },
+  {
+    "index": 40,
+    "timecode": "25:59",
+    "claim": "本回合是雷霆的24秒违例失误。Dort 在弧顶强行出手27英尺后撤步三分不中，雷霆抢到进攻篮板后未能及时组织二次进攻，最终被吹罚24秒违例。 浪费一次进攻机会，且未造成防守阵型混乱，对雷霆追分不利。",
+    "label": "supported",
+    "reason": "解说中Dort 27英尺后撤步三分不中、雷霆抢到进攻篮板、最终24秒违例等事实均与PBP证据完全对应。"
+  },
+  {
+    "index": 41,
+    "timecode": "26:18",
+    "claim": "失误回合，原因是八村塁在持球时失去控制，球出界。没有明确的战术配合，属于个人失误。 湖人失去一次进攻机会，雷霆获得球权，可能转化为得分。",
+    "label": "supported",
+    "reason": "解说中八村塁持球失误出界、湖人失去球权等事实与PBP中R. Hachimura lost ball out-of-bounds TURNOVER完全一致。"
+  },
+  {
+    "index": 42,
+    "timecode": "27:59",
+    "claim": "本回合属于『拉开挡拆』(Spread PnR) 战术。LeBron James 在弧顶持球，利用八村塁的掩护后吸引防守，将球传给外弹至三分线的八村塁，后者接球出手命中。 八村塁命中三分，湖人将分差缩小至10分，维持追分势头。",
+    "label": "partial",
+    "reason": "解说提到八村塁命中三分、助攻来自詹姆斯、分差缩小至10分，但证据未显示具体分差和战术细节（如挡拆、外弹），部分信息无法验证。"
+  }
+]

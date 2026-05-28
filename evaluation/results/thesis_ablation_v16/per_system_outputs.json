@@ -1,0 +1,2830 @@
+{
+  "main": {
+    "runs": [
+      {
+        "system": "main",
+        "run_index": 1,
+        "elapsed_seconds": 53.578,
+        "fallback": true,
+        "summary": {
+          "workflow": "video_scout",
+          "video_path": "",
+          "observations_path": "",
+          "observations_source": "auto_pbp",
+          "auto_observations": true,
+          "auto_observations_path": "C:\\Users\\Administrator\\Desktop\\sports-content-agent\\sports-content-agent\\sports_agent\\data\\samples\\auto_observations_demo.json",
+          "frame_manifest_path": "",
+          "replay_path": "data/samples/nba_replay_sample.json",
+          "court_report_path": "",
+          "use_llm": true,
+          "use_vision": false,
+          "target_chars": 2000,
+          "use_reasoner": false,
+          "observation_count": 12,
+          "segment_count": 12,
+          "clip_count": 12,
+          "clip_status": "plan_only",
+          "gif_enabled": true,
+          "video_period_windows": {},
+          "time_map": {
+            "requested": false,
+            "applied": false,
+            "path": "",
+            "period_anchors_used": {},
+            "adjusted_clips": 0,
+            "fallback_clips": 0,
+            "warnings": [],
+            "error": ""
+          },
+          "event_refinement": {
+            "requested": false,
+            "events_refined": 0,
+            "fallback_clips": 0,
+            "skipped_clips": 0,
+            "warned_shift_count": 0,
+            "monotonic_fallbacks": 0,
+            "neighbor_interpolation_count": 0,
+            "linear_fallback_no_neighbor_count": 0,
+            "sample_fallbacks": 0,
+            "hard_threshold_drops": 0,
+            "total_observations": 0,
+            "refinement_total_ocr_calls": 0,
+            "refinement_elapsed_seconds": 0.0,
+            "strategy_distribution": {
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "sample_fallback": 0,
+              "linear_fallback": 0
+            },
+            "warnings": [],
+            "error": "",
+            "roi_path": ""
+          },
+          "auto_periods": [],
+          "llm_used_successfully": false,
+          "llm_steps_summary": [
+            {
+              "step": "step_1_skeleton",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 4.39,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_2_segments",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 35.77,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_3_full_analysis",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 13.05,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_4_mvp_and_profiles",
+              "model": "fallback_template",
+              "status": "fallback",
+              "latency_seconds": 0.0,
+              "fallback_reason": "No court report context supplied."
+            }
+          ],
+          "output_dir": "C:\\Users\\Administrator\\Desktop\\sports-content-agent\\sports-content-agent\\sports_agent\\evaluation\\results\\thesis_ablation_v16\\main_artifacts\\run_01",
+          "title": "勇士客场三分雨险胜湖人"
+        },
+        "report": {
+          "title": "勇士客场三分雨险胜湖人",
+          "executive_summary": "勇士凭借库里和汤普森的外线火力，在首节和次节建立领先，湖人虽在末节追平，但库里终场前8秒命中关键三分，勇士113-110险胜。",
+          "full_analysis": "本场比赛勇士客场挑战湖人，最终以113-110险胜，比赛过程跌宕起伏。勇士凭借首节和次节精准的三分投射建立领先优势，而湖人在末节展开猛烈反扑，一度追平比分，但库里在终场前8秒命中关键三分，帮助勇士锁定胜局。以下从战术角度对关键回合进行详细分析。\n\n首节开局，湖人率先进入状态。比赛进行到11分42秒时，勒布朗·詹姆斯在快攻转换中迅速推进至三分线外，利用防守落位未稳果断出手命中，这是一记典型的转换三分，展现了詹姆斯出色的攻防转换意识和投射能力。随后，勇士立即回应：11分20秒，斯蒂芬·库里在弧顶利用队友高位掩护，防守方选择沉退留出空间，库里果断干拔三分命中。本回合属于『拉开挡拆』(Spread PnR) 战术，库里利用掩护后的瞬间出手机会，惩罚了湖人的沉退防守。\n\n首节中段，湖人通过战术配合得分。10分58秒，安东尼·戴维斯在弱侧利用防守者注意力被持球人吸引的瞬间，突然切入篮下接球完成扣篮。本回合属于『反跑』(Back-cut) 战术，戴维斯敏锐地捕捉到防守漏洞，轻松得分。然而，勇士的进攻随后出现失误：10分31秒，德雷蒙德·格林在弧顶持球时遭遇防守压迫，试图传给弱侧队友但传球路线被提前预判拦截，导致球权丢失。这是一次典型的传球失误，格林在高压下未能做出正确决策。\n\n首节最后阶段，勇士反超比分。9分48秒，克莱·汤普森利用队友高位掩护获得出手空间，防守方未能及时换防或挤过掩护，汤普森在弧顶接球后直接起跳命中三分。本回合同样属于『拉开挡拆』(Spread PnR) 战术，汤普森凭借出色的跑位和投篮能力，帮助勇士反超比分。\n\n次节比赛，勇士继续扩大优势。7分20秒，勒布朗·詹姆斯出现丢球失误，他在持球过程中失去控制，球被对手抢断，属于个人失误，无明确战术配合。勇士抓住机会，在6分58秒由汤普森再次命中三分。本回合属于『西班牙挡拆』(Spain PnR) 战术：库里与格林在弧顶发动挡拆，汤普森借卢尼的背掩护从底角绕出至弧顶接球，防守方换防不及时，汤普森获得空位三分机会并命中。这一战术充分利用了勇士外线射手的牵制力和掩护质量。\n\n第三节，湖人试图缩小分差。4分50秒，库里出现走步失误，他在弧顶持球试图突破时，启动前未及时收球，被裁判吹罚走步违例。这是一次个人失误，没有战术配合支撑。随后，湖人打出精彩配合：4分20秒，湖人通过外线持球吸引防守后，将球高抛给切入内线的戴维斯完成空接扣篮。本回合属于空接配合（Alley Oop），利用了戴维斯的篮下威胁和防守注意力转移。\n\n末节决战，湖人一度反超。2分10秒，詹姆斯在弧顶持球，队友清空一侧，他利用个人能力运球后干拔三分命中。本回合属于『拉开单打』(ISO) 战术，这是关键时刻的个人英雄球，战术上无复杂配合。然而，勇士在最后时刻展现了大心脏：35秒时，格林出现界外失误，球出界，勇士失去球权。但湖人未能锁定胜局，库里在最后8秒利用队友的掩护或自身运球创造空间，在28英尺处果断出手命中三分。虽然缺乏具体跑位细节，无法确认具体战术名称，但这是一次高质量的关键球执行，体现了库里超强的个人能力和心理素质。\n\n纵观全场，勇士的三分投射是取胜关键，尤其是库里和汤普森在关键时刻的发挥。湖人虽然在内线占据优势，但失误过多，尤其是詹姆斯和戴维斯在关键时刻的失误，葬送了追分机会。本场比赛的战术博弈精彩纷呈，勇士的挡拆战术和湖人的空切配合都给人留下深刻印象。\n\n进一步从证据链角度看，这份报告的重点不是把比分结果重复一遍，而是把每个关键回合拆成可以复核的战术单元。也就是说，系统只围绕已经给出的时间点、球员、战术标签和观察文本展开，不把没有出现在视频观察或场馆报告里的内容写成确定事实。\n\n第1个回合发生在Q1 PT11M42S，战术标签是transition_three。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James 25' 3PT Jump Shot Made；判断层再解释快攻转换三分。L. James 在攻防转换中迅速推进至三分线外，利用防守落位未稳果断出手命中。；影响层对应positive。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第2个回合发生在Q1 PT11M20S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry 26' 3PT Jump Shot Made；判断层再解释本回合属于『拉开挡拆』(Spread PnR) 战术。Curry 在弧顶利用队友高位掩护，防守方沉退留出空间，Curry 利用掩护后直接干拔三分命中。；影响层对应命中三分，为勇士队取得领先，提升球队士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第3个回合发生在Q1 PT10M58S，战术标签是cutting。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录A. Davis Cutting Dunk Shot Made；判断层再解释本回合属于『反跑』(Back-cut) 战术。A. Davis 在弱侧利用防守者注意力被持球人吸引的瞬间，突然切入篮下接球完成扣篮，防守方未能及时协防。；影响层对应成功得分，为湖人队增加2分，提升士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第4个回合发生在Q1 PT10M31S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录D. Green 传球失误，球权转换。；判断层再解释本回合是 D. Green 的传球失误。他在弧顶持球时遭遇防守压迫，试图传给弱侧队友但传球路线被提前预判拦截，导致球权丢失。；影响层对应失误直接送给湖人一次进攻机会，可能影响勇士的进攻节奏和士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第5个回合发生在Q1 PT09M48S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录K. Thompson 24' 3PT Jump Shot Made；判断层再解释本回合属于『拉开挡拆』(Spread PnR) 战术。K. Thompson 利用队友高位掩护获得出手空间，防守方未能及时换防或挤过掩护，Thompson 在弧顶接球后直接起跳命中三分。；影响层对应该三分球帮助勇士队反超比分，形成领先优势，对比赛走势产生积极影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第6个回合发生在Q2 PT07M20S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James Turnover Lost Ball；判断层再解释本回合是L. James的丢球失误。他在持球过程中失去控制，球被对手抢断，属于个人失误，无明确战术配合。；影响层对应失误导致球权转换，对湖人进攻回合造成负面影响，可能让勇士获得快攻机会。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第7个回合发生在Q2 PT06M58S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录K. Thompson 25' 3PT Jump Shot Made；判断层再解释本回合属于『西班牙挡拆』(Spain PnR) 战术。Curry 与 Green 在弧顶发动挡拆，Thompson 借 Looney 的背掩护从底角绕出至弧顶接球，防守方换防不及时，Thompson 获得空位三分机会并命中。；影响层对应命中三分帮助勇士缩小分差，提升球队士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第8个回合发生在Q3 PT04M50S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry Turnover Traveling；判断层再解释本回合是S. Curry的走步失误。他在弧顶持球试图突破时，启动前未及时收球，被裁判吹罚走步违例。这是一次个人失误，没有战术配合支撑。；影响层对应失误导致勇士失去一次进攻机会，湖人获得球权，可能转化为快攻得分。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第9个回合发生在Q3 PT04M20S，战术标签是alley_oop。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录A. Davis Alley Oop Dunk Shot Made；判断层再解释本回合属于空接配合（Alley Oop）。湖人通过外线持球吸引防守后，将球高抛给切入内线的A. Davis完成扣篮。该战术利用了Davis的篮下威胁和防守注意力转移。；影响层对应湖人通过高效配合轻松得分，提升士气并扩大分差。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第10个回合发生在Q4 PT02M10S，战术标签是clutch_shot。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James 26' 3PT Jump Shot Made；判断层再解释本回合属于『拉开单打』(ISO) 战术。L. James 在弧顶持球，队友清空一侧，他利用个人能力运球后干拔三分命中。这是关键时刻的个人英雄球，战术上无复杂配合。；影响层对应关键三分命中，帮助湖人扩大领先优势，对比赛走势有积极影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第11个回合发生在Q4 PT00M35S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录D. Green Turnover Out of Bounds；判断层再解释失误回合，原因是D. Green在进攻中球出界失误。此时勇士落后，时间仅剩35秒，失误直接葬送追分机会。；影响层对应关键失误使勇士失去球权，湖人获得球权并消耗时间，几乎锁定胜局。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第12个回合发生在Q4 PT00M08S，战术标签是clutch_shot。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry 28' 3PT Jump Shot Made (clutch)；判断层再解释本回合是库里在关键时刻的个人能力表现。勇士在第四节最后8秒落后，库里利用队友的掩护或自身运球创造空间，在28英尺处果断出手命中三分。由于缺乏具体跑位细节，无法确认具体战术名称，但这是一次高质量的关键球执行。；影响层对应关键三分命中，帮助勇士在最后时刻缩小分差或反超，对比赛结果产生决定性影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n因此，当前版本即使只输入少量人工观察，也已经能体现主线能力：先把多源资料归一到同一个证据索引，再让LLM负责表达和组织，而不是让LLM凭空补比赛细节。等后续接入自动回合边界检测和真实视频切片后，同一套逻辑可以扩展到更多回合，形成完整的赛后战术复盘与社交媒体二次分发素材。",
+          "key_segments": [
+            {
+              "timecode": "00:21",
+              "period": 1,
+              "clock": "PT11M42S",
+              "tactic_type": "transition_three",
+              "observation": "L. James 25' 3PT Jump Shot Made",
+              "decision_analysis": "快攻转换三分。L. James 在攻防转换中迅速推进至三分线外，利用防守落位未稳果断出手命中。",
+              "win_loss_impact": "positive",
+              "evidence": [
+                "poss_p1_e2",
+                "event:2",
+                "L. James 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "00:43",
+              "period": 1,
+              "clock": "PT11M20S",
+              "tactic_type": "three_point_creation",
+              "observation": "S. Curry 26' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『拉开挡拆』(Spread PnR) 战术。Curry 在弧顶利用队友高位掩护，防守方沉退留出空间，Curry 利用掩护后直接干拔三分命中。",
+              "win_loss_impact": "命中三分，为勇士队取得领先，提升球队士气。",
+              "evidence": [
+                "poss_p1_e3",
+                "event:3",
+                "S. Curry 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "01:05",
+              "period": 1,
+              "clock": "PT10M58S",
+              "tactic_type": "cutting",
+              "observation": "A. Davis Cutting Dunk Shot Made",
+              "decision_analysis": "本回合属于『反跑』(Back-cut) 战术。A. Davis 在弱侧利用防守者注意力被持球人吸引的瞬间，突然切入篮下接球完成扣篮，防守方未能及时协防。",
+              "win_loss_impact": "成功得分，为湖人队增加2分，提升士气。",
+              "evidence": [
+                "poss_p1_e4",
+                "event:4",
+                "A. Davis Cutting Dunk Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "01:32",
+              "period": 1,
+              "clock": "PT10M31S",
+              "tactic_type": "turnover",
+              "observation": "D. Green 传球失误，球权转换。",
+              "decision_analysis": "本回合是 D. Green 的传球失误。他在弧顶持球时遭遇防守压迫，试图传给弱侧队友但传球路线被提前预判拦截，导致球权丢失。",
+              "win_loss_impact": "失误直接送给湖人一次进攻机会，可能影响勇士的进攻节奏和士气。",
+              "evidence": [
+                "poss_p1_e5",
+                "event:5",
+                "D. Green Turnover Bad Pass"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "02:15",
+              "period": 1,
+              "clock": "PT09M48S",
+              "tactic_type": "three_point_creation",
+              "observation": "K. Thompson 24' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『拉开挡拆』(Spread PnR) 战术。K. Thompson 利用队友高位掩护获得出手空间，防守方未能及时换防或挤过掩护，Thompson 在弧顶接球后直接起跳命中三分。",
+              "win_loss_impact": "该三分球帮助勇士队反超比分，形成领先优势，对比赛走势产生积极影响。",
+              "evidence": [
+                "poss_p1_e6",
+                "event:6",
+                "K. Thompson 24' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.84
+            },
+            {
+              "timecode": "16:43",
+              "period": 2,
+              "clock": "PT07M20S",
+              "tactic_type": "turnover",
+              "observation": "L. James Turnover Lost Ball",
+              "decision_analysis": "本回合是L. James的丢球失误。他在持球过程中失去控制，球被对手抢断，属于个人失误，无明确战术配合。",
+              "win_loss_impact": "失误导致球权转换，对湖人进攻回合造成负面影响，可能让勇士获得快攻机会。",
+              "evidence": [
+                "poss_p2_e11",
+                "event:11",
+                "L. James Turnover Lost Ball"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "17:05",
+              "period": 2,
+              "clock": "PT06M58S",
+              "tactic_type": "three_point_creation",
+              "observation": "K. Thompson 25' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『西班牙挡拆』(Spain PnR) 战术。Curry 与 Green 在弧顶发动挡拆，Thompson 借 Looney 的背掩护从底角绕出至弧顶接球，防守方换防不及时，Thompson 获得空位三分机会并命中。",
+              "win_loss_impact": "命中三分帮助勇士缩小分差，提升球队士气。",
+              "evidence": [
+                "poss_p2_e12",
+                "event:12",
+                "K. Thompson 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "31:13",
+              "period": 3,
+              "clock": "PT04M50S",
+              "tactic_type": "turnover",
+              "observation": "S. Curry Turnover Traveling",
+              "decision_analysis": "本回合是S. Curry的走步失误。他在弧顶持球试图突破时，启动前未及时收球，被裁判吹罚走步违例。这是一次个人失误，没有战术配合支撑。",
+              "win_loss_impact": "失误导致勇士失去一次进攻机会，湖人获得球权，可能转化为快攻得分。",
+              "evidence": [
+                "poss_p3_e15",
+                "event:15",
+                "S. Curry Turnover Traveling"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "31:43",
+              "period": 3,
+              "clock": "PT04M20S",
+              "tactic_type": "alley_oop",
+              "observation": "A. Davis Alley Oop Dunk Shot Made",
+              "decision_analysis": "本回合属于空接配合（Alley Oop）。湖人通过外线持球吸引防守后，将球高抛给切入内线的A. Davis完成扣篮。该战术利用了Davis的篮下威胁和防守注意力转移。",
+              "win_loss_impact": "湖人通过高效配合轻松得分，提升士气并扩大分差。",
+              "evidence": [
+                "poss_p3_e16",
+                "event:16",
+                "A. Davis Alley Oop Dunk Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "45:53",
+              "period": 4,
+              "clock": "PT02M10S",
+              "tactic_type": "clutch_shot",
+              "observation": "L. James 26' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『拉开单打』(ISO) 战术。L. James 在弧顶持球，队友清空一侧，他利用个人能力运球后干拔三分命中。这是关键时刻的个人英雄球，战术上无复杂配合。",
+              "win_loss_impact": "关键三分命中，帮助湖人扩大领先优势，对比赛走势有积极影响。",
+              "evidence": [
+                "poss_p4_e17",
+                "event:17",
+                "L. James 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.86
+            },
+            {
+              "timecode": "47:28",
+              "period": 4,
+              "clock": "PT00M35S",
+              "tactic_type": "turnover",
+              "observation": "D. Green Turnover Out of Bounds",
+              "decision_analysis": "失误回合，原因是D. Green在进攻中球出界失误。此时勇士落后，时间仅剩35秒，失误直接葬送追分机会。",
+              "win_loss_impact": "关键失误使勇士失去球权，湖人获得球权并消耗时间，几乎锁定胜局。",
+              "evidence": [
+                "poss_p4_e18",
+                "event:18",
+                "D. Green Turnover Out of Bounds"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "47:55",
+              "period": 4,
+              "clock": "PT00M08S",
+              "tactic_type": "clutch_shot",
+              "observation": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+              "decision_analysis": "本回合是库里在关键时刻的个人能力表现。勇士在第四节最后8秒落后，库里利用队友的掩护或自身运球创造空间，在28英尺处果断出手命中三分。由于缺乏具体跑位细节，无法确认具体战术名称，但这是一次高质量的关键球执行。",
+              "win_loss_impact": "关键三分命中，帮助勇士在最后时刻缩小分差或反超，对比赛结果产生决定性影响。",
+              "evidence": [
+                "poss_p4_e19",
+                "event:19",
+                "S. Curry 28' 3PT Jump Shot Made (clutch)"
+              ],
+              "confidence": 0.86
+            }
+          ],
+          "tactical_themes": [
+            "三分投射",
+            "失误控制",
+            "关键球能力"
+          ],
+          "quarter_flow": [
+            "首节对攻，勇士领先",
+            "次节勇士扩大优势",
+            "末节湖人反扑，库里绝杀"
+          ],
+          "deciding_factors": [
+            "库里末节关键三分",
+            "勇士三分命中率",
+            "湖人失误过多"
+          ],
+          "mvp_analysis": "No smart-court MVP data is attached; MVP judgement can only use video observations.",
+          "player_tactical_profiles": [],
+          "player_decision_notes": [
+            "Ball-handlers should be evaluated by when they attack, pass, or shoot after coverage declares itself.",
+            "Weak-side defenders create risk when they over-help and expose corner or wing spacing."
+          ],
+          "content_angles": [
+            "Use the tactical clip as proof: this was not just a highlight, it was a repeatable action.",
+            "Frame the social post around the possession logic behind the turning point."
+          ],
+          "limitations": [
+            "样本有限，需更多比赛验证"
+          ],
+          "evidence_index": [
+            {
+              "id": "poss_p1_e2",
+              "timecode": "00:21",
+              "source": "auto_pbp",
+              "value": "L. James 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p1_e3",
+              "timecode": "00:43",
+              "source": "auto_pbp",
+              "value": "S. Curry 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p1_e4",
+              "timecode": "01:05",
+              "source": "auto_pbp",
+              "value": "A. Davis Cutting Dunk Shot Made"
+            },
+            {
+              "id": "poss_p1_e5",
+              "timecode": "01:32",
+              "source": "auto_pbp",
+              "value": "D. Green Turnover Bad Pass"
+            },
+            {
+              "id": "poss_p1_e6",
+              "timecode": "02:15",
+              "source": "auto_pbp",
+              "value": "K. Thompson 24' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p2_e11",
+              "timecode": "16:43",
+              "source": "auto_pbp",
+              "value": "L. James Turnover Lost Ball"
+            },
+            {
+              "id": "poss_p2_e12",
+              "timecode": "17:05",
+              "source": "auto_pbp",
+              "value": "K. Thompson 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p3_e15",
+              "timecode": "31:13",
+              "source": "auto_pbp",
+              "value": "S. Curry Turnover Traveling"
+            },
+            {
+              "id": "poss_p3_e16",
+              "timecode": "31:43",
+              "source": "auto_pbp",
+              "value": "A. Davis Alley Oop Dunk Shot Made"
+            },
+            {
+              "id": "poss_p4_e17",
+              "timecode": "45:53",
+              "source": "auto_pbp",
+              "value": "L. James 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p4_e18",
+              "timecode": "47:28",
+              "source": "auto_pbp",
+              "value": "D. Green Turnover Out of Bounds"
+            },
+            {
+              "id": "poss_p4_e19",
+              "timecode": "47:55",
+              "source": "auto_pbp",
+              "value": "S. Curry 28' 3PT Jump Shot Made (clutch)"
+            }
+          ],
+          "metadata": {
+            "contract_id": "video_scout.tactical_report.v1",
+            "fallback_reason": "No court report context supplied.",
+            "observation_count": 12,
+            "court_report_attached": false,
+            "target_chars": 2000,
+            "model": "mixed_llm_fallback",
+            "llm_used_successfully": false,
+            "llm_steps": [
+              {
+                "step": "step_1_skeleton",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 4.39,
+                "tokens": {
+                  "prompt_tokens": 5858,
+                  "completion_tokens": 163,
+                  "total_tokens": 6021
+                },
+                "fallback_reason": "",
+                "details": []
+              },
+              {
+                "step": "step_2_segments",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 35.77,
+                "tokens": {
+                  "prompt_tokens": 14990,
+                  "completion_tokens": 2125,
+                  "total_tokens": 17115
+                },
+                "fallback_reason": "",
+                "details": [
+                  {
+                    "observation_id": "poss_p1_e2",
+                    "status": "ok",
+                    "latency_seconds": 2.84
+                  },
+                  {
+                    "observation_id": "poss_p1_e3",
+                    "status": "ok",
+                    "latency_seconds": 3.08
+                  },
+                  {
+                    "observation_id": "poss_p1_e4",
+                    "status": "ok",
+                    "latency_seconds": 2.94
+                  },
+                  {
+                    "observation_id": "poss_p1_e5",
+                    "status": "ok",
+                    "latency_seconds": 2.61
+                  },
+                  {
+                    "observation_id": "poss_p1_e6",
+                    "status": "ok",
+                    "latency_seconds": 3.12
+                  },
+                  {
+                    "observation_id": "poss_p2_e11",
+                    "status": "ok",
+                    "latency_seconds": 2.5
+                  },
+                  {
+                    "observation_id": "poss_p2_e12",
+                    "status": "ok",
+                    "latency_seconds": 3.12
+                  },
+                  {
+                    "observation_id": "poss_p3_e15",
+                    "status": "ok",
+                    "latency_seconds": 2.86
+                  },
+                  {
+                    "observation_id": "poss_p3_e16",
+                    "status": "ok",
+                    "latency_seconds": 2.98
+                  },
+                  {
+                    "observation_id": "poss_p4_e17",
+                    "status": "ok",
+                    "latency_seconds": 3.08
+                  },
+                  {
+                    "observation_id": "poss_p4_e18",
+                    "status": "ok",
+                    "latency_seconds": 3.0
+                  },
+                  {
+                    "observation_id": "poss_p4_e19",
+                    "status": "ok",
+                    "latency_seconds": 3.62
+                  }
+                ]
+              },
+              {
+                "step": "step_3_full_analysis",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 13.05,
+                "tokens": {
+                  "prompt_tokens": 6490,
+                  "completion_tokens": 954,
+                  "total_tokens": 7444
+                },
+                "fallback_reason": "",
+                "details": []
+              },
+              {
+                "step": "step_4_mvp_and_profiles",
+                "model": "fallback_template",
+                "status": "fallback",
+                "latency_seconds": 0.0,
+                "tokens": {
+                  "prompt_tokens": 0,
+                  "completion_tokens": 0,
+                  "total_tokens": 0
+                },
+                "fallback_reason": "No court report context supplied.",
+                "details": []
+              }
+            ],
+            "use_reasoning_model_requested": false
+          }
+        },
+        "predicted_boundaries": [
+          {
+            "period": 1,
+            "end_event_index": "2",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "3",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "4",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "5",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "6",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 2,
+            "end_event_index": "11",
+            "end_reason": "turnover",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 2,
+            "end_event_index": "12",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "15",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "16",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "17",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "18",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 4,
+            "end_event_index": "19",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          }
+        ]
+      },
+      {
+        "system": "main",
+        "run_index": 2,
+        "elapsed_seconds": 55.969,
+        "fallback": true,
+        "summary": {
+          "workflow": "video_scout",
+          "video_path": "",
+          "observations_path": "",
+          "observations_source": "auto_pbp",
+          "auto_observations": true,
+          "auto_observations_path": "C:\\Users\\Administrator\\Desktop\\sports-content-agent\\sports-content-agent\\sports_agent\\data\\samples\\auto_observations_demo.json",
+          "frame_manifest_path": "",
+          "replay_path": "data/samples/nba_replay_sample.json",
+          "court_report_path": "",
+          "use_llm": true,
+          "use_vision": false,
+          "target_chars": 2000,
+          "use_reasoner": false,
+          "observation_count": 12,
+          "segment_count": 12,
+          "clip_count": 12,
+          "clip_status": "plan_only",
+          "gif_enabled": true,
+          "video_period_windows": {},
+          "time_map": {
+            "requested": false,
+            "applied": false,
+            "path": "",
+            "period_anchors_used": {},
+            "adjusted_clips": 0,
+            "fallback_clips": 0,
+            "warnings": [],
+            "error": ""
+          },
+          "event_refinement": {
+            "requested": false,
+            "events_refined": 0,
+            "fallback_clips": 0,
+            "skipped_clips": 0,
+            "warned_shift_count": 0,
+            "monotonic_fallbacks": 0,
+            "neighbor_interpolation_count": 0,
+            "linear_fallback_no_neighbor_count": 0,
+            "sample_fallbacks": 0,
+            "hard_threshold_drops": 0,
+            "total_observations": 0,
+            "refinement_total_ocr_calls": 0,
+            "refinement_elapsed_seconds": 0.0,
+            "strategy_distribution": {
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "sample_fallback": 0,
+              "linear_fallback": 0
+            },
+            "warnings": [],
+            "error": "",
+            "roi_path": ""
+          },
+          "auto_periods": [],
+          "llm_used_successfully": false,
+          "llm_steps_summary": [
+            {
+              "step": "step_1_skeleton",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 3.53,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_2_segments",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 35.92,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_3_full_analysis",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 16.16,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_4_mvp_and_profiles",
+              "model": "fallback_template",
+              "status": "fallback",
+              "latency_seconds": 0.0,
+              "fallback_reason": "No court report context supplied."
+            }
+          ],
+          "output_dir": "C:\\Users\\Administrator\\Desktop\\sports-content-agent\\sports-content-agent\\sports_agent\\evaluation\\results\\thesis_ablation_v16\\main_artifacts\\run_02",
+          "title": "勇士客场三分险胜湖人"
+        },
+        "report": {
+          "title": "勇士客场三分险胜湖人",
+          "executive_summary": "勇士凭借库里末节8秒准绝杀三分以113-110险胜湖人。湖人开局由詹姆斯和戴维斯内外开花，但勇士汤普森和库里连续命中三分反超。湖人失误较多，关键时刻格林失误葬送机会。",
+          "full_analysis": "勇士客场三分险胜湖人，这场比赛的过程可谓跌宕起伏。从开局的对攻到末节的绝杀，每一个回合都充满了战术博弈和球星个人能力的展现。本文基于有限的观察样本，尝试还原这场比赛的战术脉络，重点分析那些改变比赛走势的关键回合。需要说明的是，由于样本量有限，本文的分析仅基于提供的12个关键片段，无法覆盖全场比赛的每一个细节，但足以勾勒出比赛的核心轮廓。\n\n比赛伊始，湖人率先发难。首节11分42秒，勒布朗·詹姆斯在转换进攻中快速推进至三分线外，趁防守未落位果断出手命中。这一球属于典型的快攻三分战术，利用防守阵型未稳创造机会。随后，勇士迅速回应，斯蒂芬·库里在弧顶利用队友的掩护，执行『拉开挡拆』(Spread PnR) 战术，防守方因忌惮其三分而选择沉退，库里果断出手命中。双方开局就展现了出色的进攻状态。\n\n湖人内线优势同样明显。首节10分58秒，安东尼·戴维斯在罚球线附近佯装接球，趁防守人注意力外移时突然切入篮下，接队友传球完成扣篮。这一回合属于『反跑』(Back-cut) 战术，戴维斯利用防守人的瞬间走神，轻松得分。然而，勇士的失误问题也早早暴露。首节10分31秒，德雷蒙德·格林在弧顶持球时试图传给切入的队友，但传球路线被防守球员预判拦截，导致球权丢失。这是一次典型的传球失误，意图过于明显且力度控制不佳。\n\n勇士的外线火力在首节中段开始发威。首节9分48秒，克莱·汤普森在弧顶接球后利用队友的掩护快速出手三分，防守人未能及时干扰，命中反超比分的关键球。这一回合属于『手枪』(Pistol) 战术，汤普森利用掩护创造出手空间，展现了其作为顶级射手的价值。次节6分58秒，汤普森再次命中三分，这次他借队友手递手传球后直接起跳三分，属于『手递手』(Hand-off / DHO) 战术，防守者未能及时挤过掩护，汤普森出手果断。\n\n湖人的失误问题同样不容忽视。次节7分20秒，勒布朗·詹姆斯在持球时被对手干扰或自己失去控制导致丢球，属于个人失误回合。第三节4分50秒，斯蒂芬·库里也出现走步失误，他在弧顶持球试图突破时，启动前未及时放球，被裁判吹罚走步违例。这些失误不仅让球队失去进攻机会，还可能让对手获得反击得分。\n\n第三节4分20秒，湖人打出精彩配合，安东尼·戴维斯完成空接扣篮。这一回合属于空接配合（Alley Oop）战术，持球人吸引防守后，将球高抛给切入篮下的戴维斯完成扣篮。此战术需要精准的传球时机和跑位，利用防守注意力转移创造直接得分机会。\n\n比赛进入第四节，关键时刻球星接管。第四节2分10秒，勒布朗·詹姆斯在弧顶持球，利用运球节奏创造空间后干拔三分命中，属于个人单打。然而，勇士在第四节末段抓住机会。第四节35秒，德雷蒙德·格林出现失误，球出界，浪费了宝贵的进攻时间。但勇士并未放弃，第四节8秒，斯蒂芬·库里在28英尺处果断出手命中三分，完成准绝杀。这一球是库里在关键时刻的个人能力表现，虽然无法确认特定战术，但这是典型的巨星接管比赛。\n\n综合来看，这场比赛的关键因素在于三分命中率和失误控制。勇士凭借库里和汤普森的外线火力，以及关键时刻的巨星表现，最终险胜。湖人虽然在内线占据优势，但失误过多，尤其是格林在末节的失误，葬送了追分机会。从战术角度看，勇士的『拉开挡拆』和『手递手』战术执行出色，而湖人的『反跑』和空接配合也展现了内线优势。然而，失误成为决定比赛走向的关键变量。\n\n对于视频球探工作而言，这些关键回合的战术分析具有重要价值。通过识别战术类型、分析决策质量，可以更深入地理解比赛。例如，库里的绝杀三分虽然看似简单，但背后是勇士整个战术体系的支撑。未来，随着自动回合边界检测技术的完善，我们可以更高效地提取和分析比赛片段，为球队提供更精准的战术报告。\n\n进一步从证据链角度看，这份报告的重点不是把比分结果重复一遍，而是把每个关键回合拆成可以复核的战术单元。也就是说，系统只围绕已经给出的时间点、球员、战术标签和观察文本展开，不把没有出现在视频观察或场馆报告里的内容写成确定事实。\n\n第1个回合发生在Q1 PT11M42S，战术标签是transition_three。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James 25' 3PT Jump Shot Made；判断层再解释本回合属于快攻/Transition 战术。L. James 在转换进攻中快速推进至三分线外，利用防守未落位果断出手命中。；影响层对应命中三分，为湖人开局建立领先优势。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第2个回合发生在Q1 PT11M20S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry 26' 3PT Jump Shot Made；判断层再解释本回合属于『拉开挡拆』(Spread PnR) 战术。Curry 在弧顶利用队友的掩护获得空间，防守方因忌惮其三分而选择沉退，Curry 果断出手命中。；影响层对应勇士队开局命中三分，建立领先优势，对湖人防守形成压力。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第3个回合发生在Q1 PT10M58S，战术标签是空切。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录A. Davis 空切扣篮得分；判断层再解释本回合属于『反跑』(Back-cut) 战术。A. Davis 在罚球线附近佯装接球，趁防守人注意力外移时突然切入篮下，接队友传球完成扣篮。；影响层对应湖人轻松得分，提升士气，迫使勇士调整防守。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第4个回合发生在Q1 PT10M31S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录D. Green Turnover Bad Pass；判断层再解释本回合是D. Green的传球失误。他在弧顶持球时试图传给切入的队友，但传球路线被防守球员预判拦截，导致球权丢失。失误原因在于传球意图过于明显且力度控制不佳。；影响层对应失误直接导致勇士失去一次进攻机会，并可能让湖人获得转换进攻得分，对勇士士气有负面影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第5个回合发生在Q1 PT09M48S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录K. Thompson 24' 3PT Jump Shot Made；判断层再解释本回合属于『手枪』(Pistol) 战术。K. Thompson 在弧顶接球后利用队友的掩护快速出手三分，防守人未能及时干扰，命中反超比分的关键球。；影响层对应命中三分使勇士反超湖人，比分变为领先，对比赛走势产生积极影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第6个回合发生在Q2 PT07M20S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James Turnover Lost Ball；判断层再解释本回合是L. James的失误。他在持球时被对手干扰或自己失去控制导致丢球，属于个人失误回合，没有形成战术配合。；影响层对应失误导致湖人失去一次进攻机会，可能让勇士获得反击得分机会，对湖人不利。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第7个回合发生在Q2 PT06M58S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录K. Thompson 25' 3PT Jump Shot Made；判断层再解释本回合属于『手递手』(Hand-off / DHO) 战术。Thompson 借队友手递手传球后直接起跳三分，利用掩护创造短暂空位，防守者未能及时挤过掩护，出手果断命中。；影响层对应命中三分，为勇士队追分，缩小分差，提升士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第8个回合发生在Q3 PT04M50S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry Turnover Traveling；判断层再解释本回合是S. Curry的走步失误。他在弧顶持球试图突破时，启动前未及时放球，被裁判吹罚走步违例。这是一次个人失误，没有战术配合。；影响层对应勇士队失去一次进攻机会，湖人队获得球权，可能转化为得分。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第9个回合发生在Q3 PT04M20S，战术标签是alley_oop。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录A. Davis Alley Oop Dunk Shot Made；判断层再解释本回合属于空接配合（Alley Oop）战术。持球人吸引防守后，将球高抛给切入篮下的A. Davis完成扣篮。此战术需要精准的传球时机和跑位，利用防守注意力转移创造直接得分机会。；影响层对应成功得分，提升球队士气，对湖人有利。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第10个回合发生在Q4 PT02M10S，战术标签是clutch_shot。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James 26' 3PT Jump Shot Made；判断层再解释本回合为关键时刻个人单打三分命中。L. James 在弧顶持球，利用运球节奏创造空间后干拔出手，无明确掩护配合，属于球星个人能力表现。；影响层对应关键三分命中，帮助湖人扩大领先优势，对比赛走势产生积极影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第11个回合发生在Q4 PT00M35S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录D. Green Turnover Out of Bounds；判断层再解释本回合是D. Green的失误。他在持球时出现失误，球出界，原因可能是传球或运球失误，导致勇士失去球权。；影响层对应勇士在第四节末段出现失误，浪费了宝贵的进攻时间，可能影响追分机会。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第12个回合发生在Q4 PT00M08S，战术标签是clutch_shot。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry 28' 3PT Jump Shot Made (clutch)；判断层再解释本回合是库里在关键时刻的个人能力表现。勇士在第四节最后8秒落后，库里利用队友的掩护或自身运球创造空间，在28英尺处果断出手命中三分。由于缺乏具体跑位细节，无法确认特定战术，但这是典型的巨星接管比赛。；影响层对应关键三分帮助勇士追平或反超比分，对比赛结果有决定性影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n因此，当前版本即使只输入少量人工观察，也已经能体现主线能力：先把多源资料归一到同一个证据索引，再让LLM负责表达和组织，而不是让LLM凭空补比赛细节。等后续接入自动回合边界检测和真实视频切片后，同一套逻辑可以扩展到更多回合，形成完整的赛后战术复盘与社交媒体二次分发素材。",
+          "key_segments": [
+            {
+              "timecode": "00:21",
+              "period": 1,
+              "clock": "PT11M42S",
+              "tactic_type": "transition_three",
+              "observation": "L. James 25' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于快攻/Transition 战术。L. James 在转换进攻中快速推进至三分线外，利用防守未落位果断出手命中。",
+              "win_loss_impact": "命中三分，为湖人开局建立领先优势。",
+              "evidence": [
+                "poss_p1_e2",
+                "event:2",
+                "L. James 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "00:43",
+              "period": 1,
+              "clock": "PT11M20S",
+              "tactic_type": "three_point_creation",
+              "observation": "S. Curry 26' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『拉开挡拆』(Spread PnR) 战术。Curry 在弧顶利用队友的掩护获得空间，防守方因忌惮其三分而选择沉退，Curry 果断出手命中。",
+              "win_loss_impact": "勇士队开局命中三分，建立领先优势，对湖人防守形成压力。",
+              "evidence": [
+                "poss_p1_e3",
+                "event:3",
+                "S. Curry 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "01:05",
+              "period": 1,
+              "clock": "PT10M58S",
+              "tactic_type": "空切",
+              "observation": "A. Davis 空切扣篮得分",
+              "decision_analysis": "本回合属于『反跑』(Back-cut) 战术。A. Davis 在罚球线附近佯装接球，趁防守人注意力外移时突然切入篮下，接队友传球完成扣篮。",
+              "win_loss_impact": "湖人轻松得分，提升士气，迫使勇士调整防守。",
+              "evidence": [
+                "poss_p1_e4",
+                "event:4",
+                "A. Davis Cutting Dunk Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "01:32",
+              "period": 1,
+              "clock": "PT10M31S",
+              "tactic_type": "turnover",
+              "observation": "D. Green Turnover Bad Pass",
+              "decision_analysis": "本回合是D. Green的传球失误。他在弧顶持球时试图传给切入的队友，但传球路线被防守球员预判拦截，导致球权丢失。失误原因在于传球意图过于明显且力度控制不佳。",
+              "win_loss_impact": "失误直接导致勇士失去一次进攻机会，并可能让湖人获得转换进攻得分，对勇士士气有负面影响。",
+              "evidence": [
+                "poss_p1_e5",
+                "event:5",
+                "D. Green Turnover Bad Pass"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "02:15",
+              "period": 1,
+              "clock": "PT09M48S",
+              "tactic_type": "three_point_creation",
+              "observation": "K. Thompson 24' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『手枪』(Pistol) 战术。K. Thompson 在弧顶接球后利用队友的掩护快速出手三分，防守人未能及时干扰，命中反超比分的关键球。",
+              "win_loss_impact": "命中三分使勇士反超湖人，比分变为领先，对比赛走势产生积极影响。",
+              "evidence": [
+                "poss_p1_e6",
+                "event:6",
+                "K. Thompson 24' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.84
+            },
+            {
+              "timecode": "16:43",
+              "period": 2,
+              "clock": "PT07M20S",
+              "tactic_type": "turnover",
+              "observation": "L. James Turnover Lost Ball",
+              "decision_analysis": "本回合是L. James的失误。他在持球时被对手干扰或自己失去控制导致丢球，属于个人失误回合，没有形成战术配合。",
+              "win_loss_impact": "失误导致湖人失去一次进攻机会，可能让勇士获得反击得分机会，对湖人不利。",
+              "evidence": [
+                "poss_p2_e11",
+                "event:11",
+                "L. James Turnover Lost Ball"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "17:05",
+              "period": 2,
+              "clock": "PT06M58S",
+              "tactic_type": "three_point_creation",
+              "observation": "K. Thompson 25' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『手递手』(Hand-off / DHO) 战术。Thompson 借队友手递手传球后直接起跳三分，利用掩护创造短暂空位，防守者未能及时挤过掩护，出手果断命中。",
+              "win_loss_impact": "命中三分，为勇士队追分，缩小分差，提升士气。",
+              "evidence": [
+                "poss_p2_e12",
+                "event:12",
+                "K. Thompson 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "31:13",
+              "period": 3,
+              "clock": "PT04M50S",
+              "tactic_type": "turnover",
+              "observation": "S. Curry Turnover Traveling",
+              "decision_analysis": "本回合是S. Curry的走步失误。他在弧顶持球试图突破时，启动前未及时放球，被裁判吹罚走步违例。这是一次个人失误，没有战术配合。",
+              "win_loss_impact": "勇士队失去一次进攻机会，湖人队获得球权，可能转化为得分。",
+              "evidence": [
+                "poss_p3_e15",
+                "event:15",
+                "S. Curry Turnover Traveling"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "31:43",
+              "period": 3,
+              "clock": "PT04M20S",
+              "tactic_type": "alley_oop",
+              "observation": "A. Davis Alley Oop Dunk Shot Made",
+              "decision_analysis": "本回合属于空接配合（Alley Oop）战术。持球人吸引防守后，将球高抛给切入篮下的A. Davis完成扣篮。此战术需要精准的传球时机和跑位，利用防守注意力转移创造直接得分机会。",
+              "win_loss_impact": "成功得分，提升球队士气，对湖人有利。",
+              "evidence": [
+                "poss_p3_e16",
+                "event:16",
+                "A. Davis Alley Oop Dunk Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "45:53",
+              "period": 4,
+              "clock": "PT02M10S",
+              "tactic_type": "clutch_shot",
+              "observation": "L. James 26' 3PT Jump Shot Made",
+              "decision_analysis": "本回合为关键时刻个人单打三分命中。L. James 在弧顶持球，利用运球节奏创造空间后干拔出手，无明确掩护配合，属于球星个人能力表现。",
+              "win_loss_impact": "关键三分命中，帮助湖人扩大领先优势，对比赛走势产生积极影响。",
+              "evidence": [
+                "poss_p4_e17",
+                "event:17",
+                "L. James 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.86
+            },
+            {
+              "timecode": "47:28",
+              "period": 4,
+              "clock": "PT00M35S",
+              "tactic_type": "turnover",
+              "observation": "D. Green Turnover Out of Bounds",
+              "decision_analysis": "本回合是D. Green的失误。他在持球时出现失误，球出界，原因可能是传球或运球失误，导致勇士失去球权。",
+              "win_loss_impact": "勇士在第四节末段出现失误，浪费了宝贵的进攻时间，可能影响追分机会。",
+              "evidence": [
+                "poss_p4_e18",
+                "event:18",
+                "D. Green Turnover Out of Bounds"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "47:55",
+              "period": 4,
+              "clock": "PT00M08S",
+              "tactic_type": "clutch_shot",
+              "observation": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+              "decision_analysis": "本回合是库里在关键时刻的个人能力表现。勇士在第四节最后8秒落后，库里利用队友的掩护或自身运球创造空间，在28英尺处果断出手命中三分。由于缺乏具体跑位细节，无法确认特定战术，但这是典型的巨星接管比赛。",
+              "win_loss_impact": "关键三分帮助勇士追平或反超比分，对比赛结果有决定性影响。",
+              "evidence": [
+                "poss_p4_e19",
+                "event:19",
+                "S. Curry 28' 3PT Jump Shot Made (clutch)"
+              ],
+              "confidence": 0.86
+            }
+          ],
+          "tactical_themes": [
+            "三分投射",
+            "内线冲击",
+            "失误控制"
+          ],
+          "quarter_flow": [
+            "首节对攻",
+            "次节勇士拉开",
+            "末节决战"
+          ],
+          "deciding_factors": [
+            "库里绝杀三分",
+            "勇士三分命中率",
+            "湖人失误过多"
+          ],
+          "mvp_analysis": "No smart-court MVP data is attached; MVP judgement can only use video observations.",
+          "player_tactical_profiles": [],
+          "player_decision_notes": [
+            "Ball-handlers should be evaluated by when they attack, pass, or shoot after coverage declares itself.",
+            "Weak-side defenders create risk when they over-help and expose corner or wing spacing."
+          ],
+          "content_angles": [
+            "Use the tactical clip as proof: this was not just a highlight, it was a repeatable action.",
+            "Frame the social post around the possession logic behind the turning point."
+          ],
+          "limitations": [
+            "样本有限",
+            "缺乏视频佐证"
+          ],
+          "evidence_index": [
+            {
+              "id": "poss_p1_e2",
+              "timecode": "00:21",
+              "source": "auto_pbp",
+              "value": "L. James 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p1_e3",
+              "timecode": "00:43",
+              "source": "auto_pbp",
+              "value": "S. Curry 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p1_e4",
+              "timecode": "01:05",
+              "source": "auto_pbp",
+              "value": "A. Davis Cutting Dunk Shot Made"
+            },
+            {
+              "id": "poss_p1_e5",
+              "timecode": "01:32",
+              "source": "auto_pbp",
+              "value": "D. Green Turnover Bad Pass"
+            },
+            {
+              "id": "poss_p1_e6",
+              "timecode": "02:15",
+              "source": "auto_pbp",
+              "value": "K. Thompson 24' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p2_e11",
+              "timecode": "16:43",
+              "source": "auto_pbp",
+              "value": "L. James Turnover Lost Ball"
+            },
+            {
+              "id": "poss_p2_e12",
+              "timecode": "17:05",
+              "source": "auto_pbp",
+              "value": "K. Thompson 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p3_e15",
+              "timecode": "31:13",
+              "source": "auto_pbp",
+              "value": "S. Curry Turnover Traveling"
+            },
+            {
+              "id": "poss_p3_e16",
+              "timecode": "31:43",
+              "source": "auto_pbp",
+              "value": "A. Davis Alley Oop Dunk Shot Made"
+            },
+            {
+              "id": "poss_p4_e17",
+              "timecode": "45:53",
+              "source": "auto_pbp",
+              "value": "L. James 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p4_e18",
+              "timecode": "47:28",
+              "source": "auto_pbp",
+              "value": "D. Green Turnover Out of Bounds"
+            },
+            {
+              "id": "poss_p4_e19",
+              "timecode": "47:55",
+              "source": "auto_pbp",
+              "value": "S. Curry 28' 3PT Jump Shot Made (clutch)"
+            }
+          ],
+          "metadata": {
+            "contract_id": "video_scout.tactical_report.v1",
+            "fallback_reason": "No court report context supplied.",
+            "observation_count": 12,
+            "court_report_attached": false,
+            "target_chars": 2000,
+            "model": "mixed_llm_fallback",
+            "llm_used_successfully": false,
+            "llm_steps": [
+              {
+                "step": "step_1_skeleton",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 3.53,
+                "tokens": {
+                  "prompt_tokens": 5858,
+                  "completion_tokens": 159,
+                  "total_tokens": 6017
+                },
+                "fallback_reason": "",
+                "details": []
+              },
+              {
+                "step": "step_2_segments",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 35.92,
+                "tokens": {
+                  "prompt_tokens": 14990,
+                  "completion_tokens": 2110,
+                  "total_tokens": 17100
+                },
+                "fallback_reason": "",
+                "details": [
+                  {
+                    "observation_id": "poss_p1_e2",
+                    "status": "ok",
+                    "latency_seconds": 2.48
+                  },
+                  {
+                    "observation_id": "poss_p1_e3",
+                    "status": "ok",
+                    "latency_seconds": 2.97
+                  },
+                  {
+                    "observation_id": "poss_p1_e4",
+                    "status": "ok",
+                    "latency_seconds": 2.92
+                  },
+                  {
+                    "observation_id": "poss_p1_e5",
+                    "status": "ok",
+                    "latency_seconds": 3.27
+                  },
+                  {
+                    "observation_id": "poss_p1_e6",
+                    "status": "ok",
+                    "latency_seconds": 3.11
+                  },
+                  {
+                    "observation_id": "poss_p2_e11",
+                    "status": "ok",
+                    "latency_seconds": 2.62
+                  },
+                  {
+                    "observation_id": "poss_p2_e12",
+                    "status": "ok",
+                    "latency_seconds": 3.23
+                  },
+                  {
+                    "observation_id": "poss_p3_e15",
+                    "status": "ok",
+                    "latency_seconds": 3.05
+                  },
+                  {
+                    "observation_id": "poss_p3_e16",
+                    "status": "ok",
+                    "latency_seconds": 3.03
+                  },
+                  {
+                    "observation_id": "poss_p4_e17",
+                    "status": "ok",
+                    "latency_seconds": 2.95
+                  },
+                  {
+                    "observation_id": "poss_p4_e18",
+                    "status": "ok",
+                    "latency_seconds": 2.72
+                  },
+                  {
+                    "observation_id": "poss_p4_e19",
+                    "status": "ok",
+                    "latency_seconds": 3.56
+                  }
+                ]
+              },
+              {
+                "step": "step_3_full_analysis",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 16.16,
+                "tokens": {
+                  "prompt_tokens": 6460,
+                  "completion_tokens": 1003,
+                  "total_tokens": 7463
+                },
+                "fallback_reason": "",
+                "details": []
+              },
+              {
+                "step": "step_4_mvp_and_profiles",
+                "model": "fallback_template",
+                "status": "fallback",
+                "latency_seconds": 0.0,
+                "tokens": {
+                  "prompt_tokens": 0,
+                  "completion_tokens": 0,
+                  "total_tokens": 0
+                },
+                "fallback_reason": "No court report context supplied.",
+                "details": []
+              }
+            ],
+            "use_reasoning_model_requested": false
+          }
+        },
+        "predicted_boundaries": [
+          {
+            "period": 1,
+            "end_event_index": "2",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "3",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "4",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "5",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "6",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 2,
+            "end_event_index": "11",
+            "end_reason": "turnover",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 2,
+            "end_event_index": "12",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "15",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "16",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "17",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "18",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 4,
+            "end_event_index": "19",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          }
+        ]
+      },
+      {
+        "system": "main",
+        "run_index": 3,
+        "elapsed_seconds": 52.515,
+        "fallback": true,
+        "summary": {
+          "workflow": "video_scout",
+          "video_path": "",
+          "observations_path": "",
+          "observations_source": "auto_pbp",
+          "auto_observations": true,
+          "auto_observations_path": "C:\\Users\\Administrator\\Desktop\\sports-content-agent\\sports-content-agent\\sports_agent\\data\\samples\\auto_observations_demo.json",
+          "frame_manifest_path": "",
+          "replay_path": "data/samples/nba_replay_sample.json",
+          "court_report_path": "",
+          "use_llm": true,
+          "use_vision": false,
+          "target_chars": 2000,
+          "use_reasoner": false,
+          "observation_count": 12,
+          "segment_count": 12,
+          "clip_count": 12,
+          "clip_status": "plan_only",
+          "gif_enabled": true,
+          "video_period_windows": {},
+          "time_map": {
+            "requested": false,
+            "applied": false,
+            "path": "",
+            "period_anchors_used": {},
+            "adjusted_clips": 0,
+            "fallback_clips": 0,
+            "warnings": [],
+            "error": ""
+          },
+          "event_refinement": {
+            "requested": false,
+            "events_refined": 0,
+            "fallback_clips": 0,
+            "skipped_clips": 0,
+            "warned_shift_count": 0,
+            "monotonic_fallbacks": 0,
+            "neighbor_interpolation_count": 0,
+            "linear_fallback_no_neighbor_count": 0,
+            "sample_fallbacks": 0,
+            "hard_threshold_drops": 0,
+            "total_observations": 0,
+            "refinement_total_ocr_calls": 0,
+            "refinement_elapsed_seconds": 0.0,
+            "strategy_distribution": {
+              "A": 0,
+              "B": 0,
+              "C": 0,
+              "sample_fallback": 0,
+              "linear_fallback": 0
+            },
+            "warnings": [],
+            "error": "",
+            "roi_path": ""
+          },
+          "auto_periods": [],
+          "llm_used_successfully": false,
+          "llm_steps_summary": [
+            {
+              "step": "step_1_skeleton",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 4.42,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_2_segments",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 37.27,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_3_full_analysis",
+              "model": "deepseek-chat",
+              "status": "ok",
+              "latency_seconds": 10.47,
+              "fallback_reason": ""
+            },
+            {
+              "step": "step_4_mvp_and_profiles",
+              "model": "fallback_template",
+              "status": "fallback",
+              "latency_seconds": 0.0,
+              "fallback_reason": "No court report context supplied."
+            }
+          ],
+          "output_dir": "C:\\Users\\Administrator\\Desktop\\sports-content-agent\\sports-content-agent\\sports_agent\\evaluation\\results\\thesis_ablation_v16\\main_artifacts\\run_03",
+          "title": "勇士客场险胜湖人，库里关键三分定胜局"
+        },
+        "report": {
+          "title": "勇士客场险胜湖人，库里关键三分定胜局",
+          "executive_summary": "勇士凭借库里末节8秒准绝杀三分以113-110险胜湖人。湖人开局由詹姆斯和戴维斯内外开花，但勇士汤普森和库里连续命中三分反超。末节詹姆斯扳平后，格林失误葬送机会，库里一击制胜。",
+          "full_analysis": "勇士客场险胜湖人，库里关键三分定胜局。本场比赛，勇士凭借库里在末节最后8秒的准绝杀三分，以113-110险胜湖人。湖人开局由詹姆斯和戴维斯内外开花，但勇士汤普森和库里连续命中三分反超。末节詹姆斯扳平后，格林失误葬送机会，库里一击制胜。\n\n首节对攻，勇士反超。比赛开始，湖人率先发难。詹姆斯在弧顶利用『拉开挡拆』(Spread PnR) 战术，队友拉开空间后直接干拔三分命中，为湖人取得领先。随后库里回应，同样在弧顶利用高位掩护获得出手空间，果断命中三分，勇士反超。戴维斯则通过『反跑』(Back-cut) 战术，在罚球线附近佯装接球，趁防守人注意力外移时突然切入篮下，接球完成扣篮，展现内线威胁。但勇士格林出现传球失误，他在弧顶持球遭遇防守压力，试图传给内切队友时被预判拦截，导致球权丢失。汤普森随后在翼侧借助『翼侧挡拆』(Wing PnR) 战术，接球后迅速起跳命中三分，勇士反超比分。\n\n次节勇士扩大优势。进入第二节，勇士延续火热手感。汤普森再次命中三分，这次他利用『手递手』(Hand-off / DHO) 战术，借队友手递手传球后迅速出手，防守人未能及时干扰。湖人詹姆斯则出现丢球失误，他在持球过程中被对手干扰抢断，导致球权转换。勇士抓住机会，进一步扩大领先优势。\n\n末节詹姆斯扳平，库里绝杀。进入第四节，湖人展开反扑。詹姆斯在弧顶利用『拉开单打』(Isolation) 战术，队友拉开空间，他后撤步命中关键三分，将分差缩小至2分。然而，勇士格林在最后35秒出现出界失误，浪费了一次可能的得分机会。随后，库里在弧顶持球，利用队友掩护或单打创造空间，命中28英尺关键三分，在比赛最后8秒将比分反超。湖人最后一攻未能命中，勇士险胜。\n\n从战术层面看，三分投射主导了本场比赛的进攻。勇士全场三分命中率更高，尤其是汤普森和库里的关键三分，成为取胜关键。而湖人虽然也有詹姆斯和戴维斯的出色发挥，但失误频发影响了进攻节奏。格林和詹姆斯的失误直接导致球权转换，给对手创造了机会。\n\n关键球能力决定了比赛胜负。库里在末节最后8秒的准绝杀三分，展现了巨星的关键球能力。而詹姆斯虽然也命中了关键三分，但未能帮助球队取得最终胜利。勇士在关键时刻的执行力更胜一筹。\n\n总体而言，这是一场典型的对攻大战，双方都展现了出色的进攻火力。勇士凭借更稳定的三分投射和关键时刻的巨星表现，最终客场险胜湖人。\n\n进一步从证据链角度看，这份报告的重点不是把比分结果重复一遍，而是把每个关键回合拆成可以复核的战术单元。也就是说，系统只围绕已经给出的时间点、球员、战术标签和观察文本展开，不把没有出现在视频观察或场馆报告里的内容写成确定事实。\n\n第1个回合发生在Q1 PT11M42S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James 25' 3PT Jump Shot Made；判断层再解释本回合属于『拉开挡拆』(Spread PnR) 战术。L. James 在弧顶持球，利用队友拉开空间后直接干拔三分命中，防守方未能及时干扰。；影响层对应命中三分，为湖人取得领先优势，提升球队士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第2个回合发生在Q1 PT11M20S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry 26' 3PT Jump Shot Made；判断层再解释本回合属于『拉开挡拆』(Spread PnR) 战术。Curry 在弧顶利用高位掩护获得出手空间，防守方未能及时挤过掩护，Curry 果断出手命中三分。；影响层对应命中三分，为勇士队取得领先优势，提升球队士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第3个回合发生在Q1 PT10M58S，战术标签是空切/掩护类。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录A. Davis 空切扣篮得分；判断层再解释本回合属于『反跑』(Back-cut) 战术。A. Davis 在罚球线附近佯装接球，趁防守人注意力外移时突然切入篮下，接球完成扣篮。；影响层对应湖人通过空切轻松得分，提升进攻效率，迫使勇士收缩防守。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第4个回合发生在Q1 PT10M31S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录D. Green Turnover Bad Pass；判断层再解释本回合是D. Green的传球失误。他在弧顶持球时遭遇防守压力，试图将球传给内切队友时传球路线被预判拦截，导致球权丢失。属于失误回合，原因是传球意图过于明显且防守方及时轮转。；影响层对应失误导致勇士失去一次进攻机会，并可能让湖人获得快攻反击机会，对勇士士气有负面影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第5个回合发生在Q1 PT09M48S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录K. Thompson 24' 3PT Jump Shot Made；判断层再解释本回合属于『翼侧挡拆』(Wing PnR) 战术。K. Thompson 在翼侧借助掩护摆脱防守，接球后迅速起跳命中三分，防守方未能及时换防，导致空位出手。；影响层对应该三分命中使勇士队反超比分，取得领先优势，对比赛走势产生积极影响。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第6个回合发生在Q2 PT07M20S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James Turnover Lost Ball；判断层再解释本回合是L. James的丢球失误。他在持球过程中被对手干扰或抢断，导致球权丢失。由于缺乏具体掩护或配合细节，无法识别为特定战术，属于个人失误回合。；影响层对应失误直接导致球权转换，可能让对手获得快攻机会，对湖人队不利。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第7个回合发生在Q2 PT06M58S，战术标签是three_point_creation。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录K. Thompson 25' 3PT Jump Shot Made；判断层再解释本回合属于『手递手』(Hand-off / DHO) 战术。K. Thompson 借队友手递手传球后迅速出手三分，利用掩护创造空间，防守人未能及时干扰。；影响层对应命中三分，为勇士队扩大领先优势，提升士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第8个回合发生在Q3 PT04M50S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry 走步违例失误；判断层再解释本回合是 S. Curry 的走步失误。他在弧顶持球试图突破时，启动前未及时收球，被裁判吹罚走步违例。这是一个非战术性的个人失误，反映出 Curry 在高压防守下的脚步控制问题。；影响层对应勇士队失去一次进攻机会，湖人队获得球权，可能转化为得分。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第9个回合发生在Q3 PT04M20S，战术标签是alley_oop。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录A. Davis Alley Oop Dunk Shot Made；判断层再解释本回合属于『空接配合』(Alley-Oop) 战术。湖人通过高位策应或挡拆吸引防守后，将球高抛给切入内线的 A. Davis 完成扣篮。此战术利用 Davis 的顺下威胁和防守注意力转移，创造轻松得分机会。；影响层对应湖人通过高效空接配合得分，提升士气并扩大分差，对勇士防守造成压力。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第10个回合发生在Q4 PT02M10S，战术标签是clutch_shot。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录L. James 26' 3PT Jump Shot Made；判断层再解释本回合属于『拉开单打』(Isolation) 战术。L. James 在弧顶持球，队友拉开空间，他利用个人能力后撤步命中三分。这是关键时刻的个人英雄球，战术配合较少。；影响层对应关键三分命中，湖人将分差缩小至2分，提升士气。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第11个回合发生在Q4 PT00M35S，战术标签是turnover。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录D. Green Turnover Out of Bounds；判断层再解释失误回合。D. Green 在边线发球或持球时出现出界失误，原因可能是传球路线被防守预判或自身处理球不谨慎。；影响层对应勇士在第四节最后35秒失去球权，浪费了一次可能的得分机会，对追分极为不利。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n第12个回合发生在Q4 PT00M08S，战术标签是clutch_shot。这个片段的价值在于，它把“发生了什么”和“为什么会发生”分开处理：观察层记录S. Curry 28' 3PT Jump Shot Made (clutch)；判断层再解释本回合属于关键球执行，库里在弧顶持球，利用队友掩护或单打创造空间，命中28英尺三分。由于缺乏具体掩护细节，无法明确命名战术，但这是典型的巨星关键球能力体现。；影响层对应关键三分命中，在比赛最后8秒将比分追平或反超，极大影响胜负走向。。这种拆法能让后续剪出的GIF不是普通精彩球，而是带有战术说明的证据片段。\n\n因此，当前版本即使只输入少量人工观察，也已经能体现主线能力：先把多源资料归一到同一个证据索引，再让LLM负责表达和组织，而不是让LLM凭空补比赛细节。等后续接入自动回合边界检测和真实视频切片后，同一套逻辑可以扩展到更多回合，形成完整的赛后战术复盘与社交媒体二次分发素材。",
+          "key_segments": [
+            {
+              "timecode": "00:21",
+              "period": 1,
+              "clock": "PT11M42S",
+              "tactic_type": "three_point_creation",
+              "observation": "L. James 25' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『拉开挡拆』(Spread PnR) 战术。L. James 在弧顶持球，利用队友拉开空间后直接干拔三分命中，防守方未能及时干扰。",
+              "win_loss_impact": "命中三分，为湖人取得领先优势，提升球队士气。",
+              "evidence": [
+                "poss_p1_e2",
+                "event:2",
+                "L. James 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "00:43",
+              "period": 1,
+              "clock": "PT11M20S",
+              "tactic_type": "three_point_creation",
+              "observation": "S. Curry 26' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『拉开挡拆』(Spread PnR) 战术。Curry 在弧顶利用高位掩护获得出手空间，防守方未能及时挤过掩护，Curry 果断出手命中三分。",
+              "win_loss_impact": "命中三分，为勇士队取得领先优势，提升球队士气。",
+              "evidence": [
+                "poss_p1_e3",
+                "event:3",
+                "S. Curry 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "01:05",
+              "period": 1,
+              "clock": "PT10M58S",
+              "tactic_type": "空切/掩护类",
+              "observation": "A. Davis 空切扣篮得分",
+              "decision_analysis": "本回合属于『反跑』(Back-cut) 战术。A. Davis 在罚球线附近佯装接球，趁防守人注意力外移时突然切入篮下，接球完成扣篮。",
+              "win_loss_impact": "湖人通过空切轻松得分，提升进攻效率，迫使勇士收缩防守。",
+              "evidence": [
+                "poss_p1_e4",
+                "event:4",
+                "A. Davis Cutting Dunk Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "01:32",
+              "period": 1,
+              "clock": "PT10M31S",
+              "tactic_type": "turnover",
+              "observation": "D. Green Turnover Bad Pass",
+              "decision_analysis": "本回合是D. Green的传球失误。他在弧顶持球时遭遇防守压力，试图将球传给内切队友时传球路线被预判拦截，导致球权丢失。属于失误回合，原因是传球意图过于明显且防守方及时轮转。",
+              "win_loss_impact": "失误导致勇士失去一次进攻机会，并可能让湖人获得快攻反击机会，对勇士士气有负面影响。",
+              "evidence": [
+                "poss_p1_e5",
+                "event:5",
+                "D. Green Turnover Bad Pass"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "02:15",
+              "period": 1,
+              "clock": "PT09M48S",
+              "tactic_type": "three_point_creation",
+              "observation": "K. Thompson 24' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『翼侧挡拆』(Wing PnR) 战术。K. Thompson 在翼侧借助掩护摆脱防守，接球后迅速起跳命中三分，防守方未能及时换防，导致空位出手。",
+              "win_loss_impact": "该三分命中使勇士队反超比分，取得领先优势，对比赛走势产生积极影响。",
+              "evidence": [
+                "poss_p1_e6",
+                "event:6",
+                "K. Thompson 24' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.84
+            },
+            {
+              "timecode": "16:43",
+              "period": 2,
+              "clock": "PT07M20S",
+              "tactic_type": "turnover",
+              "observation": "L. James Turnover Lost Ball",
+              "decision_analysis": "本回合是L. James的丢球失误。他在持球过程中被对手干扰或抢断，导致球权丢失。由于缺乏具体掩护或配合细节，无法识别为特定战术，属于个人失误回合。",
+              "win_loss_impact": "失误直接导致球权转换，可能让对手获得快攻机会，对湖人队不利。",
+              "evidence": [
+                "poss_p2_e11",
+                "event:11",
+                "L. James Turnover Lost Ball"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "17:05",
+              "period": 2,
+              "clock": "PT06M58S",
+              "tactic_type": "three_point_creation",
+              "observation": "K. Thompson 25' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『手递手』(Hand-off / DHO) 战术。K. Thompson 借队友手递手传球后迅速出手三分，利用掩护创造空间，防守人未能及时干扰。",
+              "win_loss_impact": "命中三分，为勇士队扩大领先优势，提升士气。",
+              "evidence": [
+                "poss_p2_e12",
+                "event:12",
+                "K. Thompson 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "31:13",
+              "period": 3,
+              "clock": "PT04M50S",
+              "tactic_type": "turnover",
+              "observation": "S. Curry 走步违例失误",
+              "decision_analysis": "本回合是 S. Curry 的走步失误。他在弧顶持球试图突破时，启动前未及时收球，被裁判吹罚走步违例。这是一个非战术性的个人失误，反映出 Curry 在高压防守下的脚步控制问题。",
+              "win_loss_impact": "勇士队失去一次进攻机会，湖人队获得球权，可能转化为得分。",
+              "evidence": [
+                "poss_p3_e15",
+                "event:15",
+                "S. Curry Turnover Traveling"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "31:43",
+              "period": 3,
+              "clock": "PT04M20S",
+              "tactic_type": "alley_oop",
+              "observation": "A. Davis Alley Oop Dunk Shot Made",
+              "decision_analysis": "本回合属于『空接配合』(Alley-Oop) 战术。湖人通过高位策应或挡拆吸引防守后，将球高抛给切入内线的 A. Davis 完成扣篮。此战术利用 Davis 的顺下威胁和防守注意力转移，创造轻松得分机会。",
+              "win_loss_impact": "湖人通过高效空接配合得分，提升士气并扩大分差，对勇士防守造成压力。",
+              "evidence": [
+                "poss_p3_e16",
+                "event:16",
+                "A. Davis Alley Oop Dunk Shot Made"
+              ],
+              "confidence": 0.58
+            },
+            {
+              "timecode": "45:53",
+              "period": 4,
+              "clock": "PT02M10S",
+              "tactic_type": "clutch_shot",
+              "observation": "L. James 26' 3PT Jump Shot Made",
+              "decision_analysis": "本回合属于『拉开单打』(Isolation) 战术。L. James 在弧顶持球，队友拉开空间，他利用个人能力后撤步命中三分。这是关键时刻的个人英雄球，战术配合较少。",
+              "win_loss_impact": "关键三分命中，湖人将分差缩小至2分，提升士气。",
+              "evidence": [
+                "poss_p4_e17",
+                "event:17",
+                "L. James 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.86
+            },
+            {
+              "timecode": "47:28",
+              "period": 4,
+              "clock": "PT00M35S",
+              "tactic_type": "turnover",
+              "observation": "D. Green Turnover Out of Bounds",
+              "decision_analysis": "失误回合。D. Green 在边线发球或持球时出现出界失误，原因可能是传球路线被防守预判或自身处理球不谨慎。",
+              "win_loss_impact": "勇士在第四节最后35秒失去球权，浪费了一次可能的得分机会，对追分极为不利。",
+              "evidence": [
+                "poss_p4_e18",
+                "event:18",
+                "D. Green Turnover Out of Bounds"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "47:55",
+              "period": 4,
+              "clock": "PT00M08S",
+              "tactic_type": "clutch_shot",
+              "observation": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+              "decision_analysis": "本回合属于关键球执行，库里在弧顶持球，利用队友掩护或单打创造空间，命中28英尺三分。由于缺乏具体掩护细节，无法明确命名战术，但这是典型的巨星关键球能力体现。",
+              "win_loss_impact": "关键三分命中，在比赛最后8秒将比分追平或反超，极大影响胜负走向。",
+              "evidence": [
+                "poss_p4_e19",
+                "event:19",
+                "S. Curry 28' 3PT Jump Shot Made (clutch)"
+              ],
+              "confidence": 0.86
+            }
+          ],
+          "tactical_themes": [
+            "三分投射主导进攻",
+            "失误频发影响节奏",
+            "关键球能力决定胜负"
+          ],
+          "quarter_flow": [
+            "首节对攻，勇士反超",
+            "次节勇士扩大优势",
+            "末节詹姆斯扳平，库里绝杀"
+          ],
+          "deciding_factors": [
+            "库里末节8秒准绝杀三分",
+            "勇士全场三分命中率更高",
+            "湖人关键失误过多"
+          ],
+          "mvp_analysis": "No smart-court MVP data is attached; MVP judgement can only use video observations.",
+          "player_tactical_profiles": [],
+          "player_decision_notes": [
+            "Ball-handlers should be evaluated by when they attack, pass, or shoot after coverage declares itself.",
+            "Weak-side defenders create risk when they over-help and expose corner or wing spacing."
+          ],
+          "content_angles": [
+            "Use the tactical clip as proof: this was not just a highlight, it was a repeatable action.",
+            "Frame the social post around the possession logic behind the turning point."
+          ],
+          "limitations": [
+            "样本有限，仅含关键回合",
+            "缺乏完整战术跑位数据"
+          ],
+          "evidence_index": [
+            {
+              "id": "poss_p1_e2",
+              "timecode": "00:21",
+              "source": "auto_pbp",
+              "value": "L. James 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p1_e3",
+              "timecode": "00:43",
+              "source": "auto_pbp",
+              "value": "S. Curry 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p1_e4",
+              "timecode": "01:05",
+              "source": "auto_pbp",
+              "value": "A. Davis Cutting Dunk Shot Made"
+            },
+            {
+              "id": "poss_p1_e5",
+              "timecode": "01:32",
+              "source": "auto_pbp",
+              "value": "D. Green Turnover Bad Pass"
+            },
+            {
+              "id": "poss_p1_e6",
+              "timecode": "02:15",
+              "source": "auto_pbp",
+              "value": "K. Thompson 24' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p2_e11",
+              "timecode": "16:43",
+              "source": "auto_pbp",
+              "value": "L. James Turnover Lost Ball"
+            },
+            {
+              "id": "poss_p2_e12",
+              "timecode": "17:05",
+              "source": "auto_pbp",
+              "value": "K. Thompson 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p3_e15",
+              "timecode": "31:13",
+              "source": "auto_pbp",
+              "value": "S. Curry Turnover Traveling"
+            },
+            {
+              "id": "poss_p3_e16",
+              "timecode": "31:43",
+              "source": "auto_pbp",
+              "value": "A. Davis Alley Oop Dunk Shot Made"
+            },
+            {
+              "id": "poss_p4_e17",
+              "timecode": "45:53",
+              "source": "auto_pbp",
+              "value": "L. James 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "poss_p4_e18",
+              "timecode": "47:28",
+              "source": "auto_pbp",
+              "value": "D. Green Turnover Out of Bounds"
+            },
+            {
+              "id": "poss_p4_e19",
+              "timecode": "47:55",
+              "source": "auto_pbp",
+              "value": "S. Curry 28' 3PT Jump Shot Made (clutch)"
+            }
+          ],
+          "metadata": {
+            "contract_id": "video_scout.tactical_report.v1",
+            "fallback_reason": "No court report context supplied.",
+            "observation_count": 12,
+            "court_report_attached": false,
+            "target_chars": 2000,
+            "model": "mixed_llm_fallback",
+            "llm_used_successfully": false,
+            "llm_steps": [
+              {
+                "step": "step_1_skeleton",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 4.42,
+                "tokens": {
+                  "prompt_tokens": 5858,
+                  "completion_tokens": 205,
+                  "total_tokens": 6063
+                },
+                "fallback_reason": "",
+                "details": []
+              },
+              {
+                "step": "step_2_segments",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 37.27,
+                "tokens": {
+                  "prompt_tokens": 14990,
+                  "completion_tokens": 2171,
+                  "total_tokens": 17161
+                },
+                "fallback_reason": "",
+                "details": [
+                  {
+                    "observation_id": "poss_p1_e2",
+                    "status": "ok",
+                    "latency_seconds": 2.64
+                  },
+                  {
+                    "observation_id": "poss_p1_e3",
+                    "status": "ok",
+                    "latency_seconds": 2.73
+                  },
+                  {
+                    "observation_id": "poss_p1_e4",
+                    "status": "ok",
+                    "latency_seconds": 2.98
+                  },
+                  {
+                    "observation_id": "poss_p1_e5",
+                    "status": "ok",
+                    "latency_seconds": 3.19
+                  },
+                  {
+                    "observation_id": "poss_p1_e6",
+                    "status": "ok",
+                    "latency_seconds": 3.33
+                  },
+                  {
+                    "observation_id": "poss_p2_e11",
+                    "status": "ok",
+                    "latency_seconds": 3.61
+                  },
+                  {
+                    "observation_id": "poss_p2_e12",
+                    "status": "ok",
+                    "latency_seconds": 3.02
+                  },
+                  {
+                    "observation_id": "poss_p3_e15",
+                    "status": "ok",
+                    "latency_seconds": 3.11
+                  },
+                  {
+                    "observation_id": "poss_p3_e16",
+                    "status": "ok",
+                    "latency_seconds": 3.22
+                  },
+                  {
+                    "observation_id": "poss_p4_e17",
+                    "status": "ok",
+                    "latency_seconds": 3.16
+                  },
+                  {
+                    "observation_id": "poss_p4_e18",
+                    "status": "ok",
+                    "latency_seconds": 3.0
+                  },
+                  {
+                    "observation_id": "poss_p4_e19",
+                    "status": "ok",
+                    "latency_seconds": 3.28
+                  }
+                ]
+              },
+              {
+                "step": "step_3_full_analysis",
+                "model": "deepseek-chat",
+                "status": "ok",
+                "latency_seconds": 10.47,
+                "tokens": {
+                  "prompt_tokens": 6640,
+                  "completion_tokens": 665,
+                  "total_tokens": 7305
+                },
+                "fallback_reason": "",
+                "details": []
+              },
+              {
+                "step": "step_4_mvp_and_profiles",
+                "model": "fallback_template",
+                "status": "fallback",
+                "latency_seconds": 0.0,
+                "tokens": {
+                  "prompt_tokens": 0,
+                  "completion_tokens": 0,
+                  "total_tokens": 0
+                },
+                "fallback_reason": "No court report context supplied.",
+                "details": []
+              }
+            ],
+            "use_reasoning_model_requested": false
+          }
+        },
+        "predicted_boundaries": [
+          {
+            "period": 1,
+            "end_event_index": "2",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "3",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "4",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "5",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "6",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 2,
+            "end_event_index": "11",
+            "end_reason": "turnover",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 2,
+            "end_event_index": "12",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "15",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "16",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "17",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "18",
+            "end_reason": "turnover",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 4,
+            "end_event_index": "19",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          }
+        ]
+      }
+    ],
+    "fallback": true
+  },
+  "highlight_only": {
+    "runs": [
+      {
+        "system": "highlight_only",
+        "run_index": 1,
+        "elapsed_seconds": 3.516,
+        "fallback": false,
+        "summary": {
+          "llm_used_successfully": true,
+          "elapsed_seconds": 3.516
+        },
+        "report": {
+          "title": "Highlight-only baseline tactical summary",
+          "executive_summary": "This baseline only reads made 3PT and dunk highlights, so it misses non-scoring tactical turns.",
+          "full_analysis": "LAL与GSW的外线对决贯穿全场：詹姆斯首节25英尺三分首开纪录，库里随即26英尺三分回应；汤普森在首节末段和第二节连续命中两记三分拉开分差；戴维斯则用空切扣篮和空接暴扣在内线取分。末节关键时刻，詹姆斯26英尺三分追平比分，但库里在最后8秒命中28英尺制胜三分，帮助GSW以113-110险胜。",
+          "key_segments": [
+            {
+              "timecode": "PT11M42S",
+              "period": 1,
+              "clock": "PT11M42S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "L. James 25' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:2",
+                "L. James 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT11M20S",
+              "period": 1,
+              "clock": "PT11M20S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "S. Curry 26' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:3",
+                "S. Curry 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT10M58S",
+              "period": 1,
+              "clock": "PT10M58S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "A. Davis Cutting Dunk Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:4",
+                "A. Davis Cutting Dunk Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT09M48S",
+              "period": 1,
+              "clock": "PT09M48S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "K. Thompson 24' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:6",
+                "K. Thompson 24' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT06M58S",
+              "period": 2,
+              "clock": "PT06M58S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "K. Thompson 25' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:12",
+                "K. Thompson 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT04M20S",
+              "period": 3,
+              "clock": "PT04M20S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "A. Davis Alley Oop Dunk Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:16",
+                "A. Davis Alley Oop Dunk Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT02M10S",
+              "period": 4,
+              "clock": "PT02M10S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "L. James 26' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:17",
+                "L. James 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT00M08S",
+              "period": 4,
+              "clock": "PT00M08S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:19",
+                "S. Curry 28' 3PT Jump Shot Made (clutch)"
+              ],
+              "confidence": 0.55
+            }
+          ],
+          "tactical_themes": [
+            "made-shot highlight selection"
+          ],
+          "quarter_flow": [],
+          "deciding_factors": [],
+          "mvp_analysis": "",
+          "player_tactical_profiles": [],
+          "limitations": [
+            "No possession classification.",
+            "No turnover or defensive-rebound boundary detection.",
+            "No court-report player stat evidence injection."
+          ],
+          "evidence_index": [
+            {
+              "id": "highlight_2",
+              "timecode": "PT11M42S",
+              "source": "pbp_highlight_only",
+              "value": "L. James 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_3",
+              "timecode": "PT11M20S",
+              "source": "pbp_highlight_only",
+              "value": "S. Curry 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_4",
+              "timecode": "PT10M58S",
+              "source": "pbp_highlight_only",
+              "value": "A. Davis Cutting Dunk Shot Made"
+            },
+            {
+              "id": "highlight_6",
+              "timecode": "PT09M48S",
+              "source": "pbp_highlight_only",
+              "value": "K. Thompson 24' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_12",
+              "timecode": "PT06M58S",
+              "source": "pbp_highlight_only",
+              "value": "K. Thompson 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_16",
+              "timecode": "PT04M20S",
+              "source": "pbp_highlight_only",
+              "value": "A. Davis Alley Oop Dunk Shot Made"
+            },
+            {
+              "id": "highlight_17",
+              "timecode": "PT02M10S",
+              "source": "pbp_highlight_only",
+              "value": "L. James 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_19",
+              "timecode": "PT00M08S",
+              "source": "pbp_highlight_only",
+              "value": "S. Curry 28' 3PT Jump Shot Made (clutch)"
+            }
+          ],
+          "metadata": {
+            "system": "highlight_only",
+            "fallback": false,
+            "fallback_reason": "",
+            "elapsed_seconds": 3.17,
+            "predicted_boundaries": [
+              {
+                "period": 1,
+                "end_event_index": "2",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 1,
+                "end_event_index": "3",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 1,
+                "end_event_index": "4",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 1,
+                "end_event_index": "6",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 2,
+                "end_event_index": "12",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 3,
+                "end_event_index": "16",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 4,
+                "end_event_index": "17",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 4,
+                "end_event_index": "19",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              }
+            ],
+            "llm": {
+              "model": "deepseek-chat",
+              "latency_seconds": 3.17,
+              "tokens": {
+                "prompt_tokens": 933,
+                "completion_tokens": 100,
+                "total_tokens": 1033
+              },
+              "finish_reason": "stop"
+            }
+          }
+        },
+        "predicted_boundaries": [
+          {
+            "period": 1,
+            "end_event_index": "2",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "3",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "4",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "6",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 2,
+            "end_event_index": "12",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "16",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "17",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "19",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          }
+        ]
+      },
+      {
+        "system": "highlight_only",
+        "run_index": 2,
+        "elapsed_seconds": 3.187,
+        "fallback": false,
+        "summary": {
+          "llm_used_successfully": true,
+          "elapsed_seconds": 3.187
+        },
+        "report": {
+          "title": "Highlight-only baseline tactical summary",
+          "executive_summary": "This baseline only reads made 3PT and dunk highlights, so it misses non-scoring tactical turns.",
+          "full_analysis": "LAL和GSW的进攻均以外线为主导：L. James命中两记远投，A. Davis则通过空切和空中接力完成两次扣篮；GSW方面，S. Curry和K. Thompson合计命中四记三分，其中Thompson在第二节命中一记远投，Curry在第四节最后8秒命中关键三分，帮助球队以113-110领先。",
+          "key_segments": [
+            {
+              "timecode": "PT11M42S",
+              "period": 1,
+              "clock": "PT11M42S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "L. James 25' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:2",
+                "L. James 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT11M20S",
+              "period": 1,
+              "clock": "PT11M20S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "S. Curry 26' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:3",
+                "S. Curry 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT10M58S",
+              "period": 1,
+              "clock": "PT10M58S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "A. Davis Cutting Dunk Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:4",
+                "A. Davis Cutting Dunk Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT09M48S",
+              "period": 1,
+              "clock": "PT09M48S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "K. Thompson 24' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:6",
+                "K. Thompson 24' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT06M58S",
+              "period": 2,
+              "clock": "PT06M58S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "K. Thompson 25' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:12",
+                "K. Thompson 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT04M20S",
+              "period": 3,
+              "clock": "PT04M20S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "A. Davis Alley Oop Dunk Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:16",
+                "A. Davis Alley Oop Dunk Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT02M10S",
+              "period": 4,
+              "clock": "PT02M10S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "L. James 26' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:17",
+                "L. James 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT00M08S",
+              "period": 4,
+              "clock": "PT00M08S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:19",
+                "S. Curry 28' 3PT Jump Shot Made (clutch)"
+              ],
+              "confidence": 0.55
+            }
+          ],
+          "tactical_themes": [
+            "made-shot highlight selection"
+          ],
+          "quarter_flow": [],
+          "deciding_factors": [],
+          "mvp_analysis": "",
+          "player_tactical_profiles": [],
+          "limitations": [
+            "No possession classification.",
+            "No turnover or defensive-rebound boundary detection.",
+            "No court-report player stat evidence injection."
+          ],
+          "evidence_index": [
+            {
+              "id": "highlight_2",
+              "timecode": "PT11M42S",
+              "source": "pbp_highlight_only",
+              "value": "L. James 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_3",
+              "timecode": "PT11M20S",
+              "source": "pbp_highlight_only",
+              "value": "S. Curry 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_4",
+              "timecode": "PT10M58S",
+              "source": "pbp_highlight_only",
+              "value": "A. Davis Cutting Dunk Shot Made"
+            },
+            {
+              "id": "highlight_6",
+              "timecode": "PT09M48S",
+              "source": "pbp_highlight_only",
+              "value": "K. Thompson 24' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_12",
+              "timecode": "PT06M58S",
+              "source": "pbp_highlight_only",
+              "value": "K. Thompson 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_16",
+              "timecode": "PT04M20S",
+              "source": "pbp_highlight_only",
+              "value": "A. Davis Alley Oop Dunk Shot Made"
+            },
+            {
+              "id": "highlight_17",
+              "timecode": "PT02M10S",
+              "source": "pbp_highlight_only",
+              "value": "L. James 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_19",
+              "timecode": "PT00M08S",
+              "source": "pbp_highlight_only",
+              "value": "S. Curry 28' 3PT Jump Shot Made (clutch)"
+            }
+          ],
+          "metadata": {
+            "system": "highlight_only",
+            "fallback": false,
+            "fallback_reason": "",
+            "elapsed_seconds": 2.83,
+            "predicted_boundaries": [
+              {
+                "period": 1,
+                "end_event_index": "2",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 1,
+                "end_event_index": "3",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 1,
+                "end_event_index": "4",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 1,
+                "end_event_index": "6",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 2,
+                "end_event_index": "12",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 3,
+                "end_event_index": "16",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 4,
+                "end_event_index": "17",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 4,
+                "end_event_index": "19",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              }
+            ],
+            "llm": {
+              "model": "deepseek-chat",
+              "latency_seconds": 2.83,
+              "tokens": {
+                "prompt_tokens": 933,
+                "completion_tokens": 82,
+                "total_tokens": 1015
+              },
+              "finish_reason": "stop"
+            }
+          }
+        },
+        "predicted_boundaries": [
+          {
+            "period": 1,
+            "end_event_index": "2",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "3",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "4",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "6",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 2,
+            "end_event_index": "12",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "16",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "17",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "19",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          }
+        ]
+      },
+      {
+        "system": "highlight_only",
+        "run_index": 3,
+        "elapsed_seconds": 2.922,
+        "fallback": false,
+        "summary": {
+          "llm_used_successfully": true,
+          "elapsed_seconds": 2.922
+        },
+        "report": {
+          "title": "Highlight-only baseline tactical summary",
+          "executive_summary": "This baseline only reads made 3PT and dunk highlights, so it misses non-scoring tactical turns.",
+          "full_analysis": "LAL 与 GSW 的比赛中，双方外线火力全开。L. James 与 A. Davis 为湖人贡献了远投和空接暴扣，而 GSW 的 S. Curry 和 K. Thompson 则用多记三分球予以回应。比赛末节，L. James 命中关键三分扳平比分，但 S. Curry 在最后8秒命中28英尺超远三分，帮助 GSW 以113-110锁定胜局。",
+          "key_segments": [
+            {
+              "timecode": "PT11M42S",
+              "period": 1,
+              "clock": "PT11M42S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "L. James 25' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:2",
+                "L. James 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT11M20S",
+              "period": 1,
+              "clock": "PT11M20S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "S. Curry 26' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:3",
+                "S. Curry 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT10M58S",
+              "period": 1,
+              "clock": "PT10M58S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "A. Davis Cutting Dunk Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:4",
+                "A. Davis Cutting Dunk Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT09M48S",
+              "period": 1,
+              "clock": "PT09M48S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "K. Thompson 24' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:6",
+                "K. Thompson 24' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT06M58S",
+              "period": 2,
+              "clock": "PT06M58S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "K. Thompson 25' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:12",
+                "K. Thompson 25' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT04M20S",
+              "period": 3,
+              "clock": "PT04M20S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "A. Davis Alley Oop Dunk Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:16",
+                "A. Davis Alley Oop Dunk Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT02M10S",
+              "period": 4,
+              "clock": "PT02M10S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "L. James 26' 3PT Jump Shot Made",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:17",
+                "L. James 26' 3PT Jump Shot Made"
+              ],
+              "confidence": 0.55
+            },
+            {
+              "timecode": "PT00M08S",
+              "period": 4,
+              "clock": "PT00M08S",
+              "tactic_type": "highlight_made_shot",
+              "observation": "S. Curry 28' 3PT Jump Shot Made (clutch)",
+              "decision_analysis": "Baseline treats this made shot as a highlight, without reconstructing the possession that created it.",
+              "win_loss_impact": "Scoring value is visible, but turnover, momentum, and non-scoring context are ignored.",
+              "evidence": [
+                "event:19",
+                "S. Curry 28' 3PT Jump Shot Made (clutch)"
+              ],
+              "confidence": 0.55
+            }
+          ],
+          "tactical_themes": [
+            "made-shot highlight selection"
+          ],
+          "quarter_flow": [],
+          "deciding_factors": [],
+          "mvp_analysis": "",
+          "player_tactical_profiles": [],
+          "limitations": [
+            "No possession classification.",
+            "No turnover or defensive-rebound boundary detection.",
+            "No court-report player stat evidence injection."
+          ],
+          "evidence_index": [
+            {
+              "id": "highlight_2",
+              "timecode": "PT11M42S",
+              "source": "pbp_highlight_only",
+              "value": "L. James 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_3",
+              "timecode": "PT11M20S",
+              "source": "pbp_highlight_only",
+              "value": "S. Curry 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_4",
+              "timecode": "PT10M58S",
+              "source": "pbp_highlight_only",
+              "value": "A. Davis Cutting Dunk Shot Made"
+            },
+            {
+              "id": "highlight_6",
+              "timecode": "PT09M48S",
+              "source": "pbp_highlight_only",
+              "value": "K. Thompson 24' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_12",
+              "timecode": "PT06M58S",
+              "source": "pbp_highlight_only",
+              "value": "K. Thompson 25' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_16",
+              "timecode": "PT04M20S",
+              "source": "pbp_highlight_only",
+              "value": "A. Davis Alley Oop Dunk Shot Made"
+            },
+            {
+              "id": "highlight_17",
+              "timecode": "PT02M10S",
+              "source": "pbp_highlight_only",
+              "value": "L. James 26' 3PT Jump Shot Made"
+            },
+            {
+              "id": "highlight_19",
+              "timecode": "PT00M08S",
+              "source": "pbp_highlight_only",
+              "value": "S. Curry 28' 3PT Jump Shot Made (clutch)"
+            }
+          ],
+          "metadata": {
+            "system": "highlight_only",
+            "fallback": false,
+            "fallback_reason": "",
+            "elapsed_seconds": 2.56,
+            "predicted_boundaries": [
+              {
+                "period": 1,
+                "end_event_index": "2",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 1,
+                "end_event_index": "3",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 1,
+                "end_event_index": "4",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 1,
+                "end_event_index": "6",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 2,
+                "end_event_index": "12",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              },
+              {
+                "period": 3,
+                "end_event_index": "16",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 4,
+                "end_event_index": "17",
+                "end_reason": "made_shot",
+                "possession_team": "LAL"
+              },
+              {
+                "period": 4,
+                "end_event_index": "19",
+                "end_reason": "made_shot",
+                "possession_team": "GSW"
+              }
+            ],
+            "llm": {
+              "model": "deepseek-chat",
+              "latency_seconds": 2.56,
+              "tokens": {
+                "prompt_tokens": 933,
+                "completion_tokens": 104,
+                "total_tokens": 1037
+              },
+              "finish_reason": "stop"
+            }
+          }
+        },
+        "predicted_boundaries": [
+          {
+            "period": 1,
+            "end_event_index": "2",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "3",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 1,
+            "end_event_index": "4",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 1,
+            "end_event_index": "6",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 2,
+            "end_event_index": "12",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          },
+          {
+            "period": 3,
+            "end_event_index": "16",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "17",
+            "end_reason": "made_shot",
+            "possession_team": "LAL"
+          },
+          {
+            "period": 4,
+            "end_event_index": "19",
+            "end_reason": "made_shot",
+            "possession_team": "GSW"
+          }
+        ]
+      }
+    ],
+    "fallback": false
+  },
+  "gpt_only": {
+    "runs": [
+      {
+        "system": "gpt_only",
+        "run_index": 1,
+        "elapsed_seconds": 28.734,
+        "fallback": false,
+        "summary": {
+          "llm_used_successfully": true,
+          "elapsed_seconds": 28.734
+        },
+        "report": {
+          "title": "GPT-only raw PBP tactical report",
+          "executive_summary": "This baseline asks the LLM to analyze raw PBP directly without structured evidence routing.",
+          "full_analysis": "# 战术分析：从原始PBP JSON中解读湖人vs勇士的攻防博弈\n\n## 一、开局阶段的空间争夺与三分对飙\n\n比赛从第一秒起就展现了现代篮球最典型的空间博弈。湖人队由勒布朗·詹姆斯在25英尺处命中三分，这个选择绝非偶然——勇士的防守体系历来强调对禁区的收缩保护，而詹姆斯作为联盟最擅长阅读防守的球员之一，在开场第一回合就识破了勇士的防守策略。他选择在弧顶位置接球后直接拔起，利用勇士防守人习惯性后撤保护篮下的心理，完成了一次“惩罚性”的三分出手。这记投篮不仅为湖人取得领先，更重要的是向勇士传递了一个信号：湖人不会轻易落入勇士的防守陷阱。\n\n勇士的回应堪称教科书级别。斯蒂芬·库里在26英尺处同样命中三分，这不仅仅是比分上的扳平，更是一种战术宣言。勇士的进攻体系建立在“空间最大化”的基础上，库里的三分威胁迫使湖人防守外扩，为后续的切入和传球创造空间。值得注意的是，库里的出手位置比詹姆斯更远，这体现了勇士“越远越准”的进攻哲学，也迫使湖人防守不得不覆盖更大的防守面积。\n\n## 二、内线攻防的战术博弈\n\n安东尼·戴维斯的切入扣篮是湖人战术体系的经典体现。在詹姆斯吸引防守注意力后，戴维斯利用勇士防守轮转的瞬间空隙，从弱侧切入接球完成扣篮。这一战术的成功执行揭示了湖人进攻的双核逻辑：詹姆斯的外线持球威胁与戴维斯的内线终结能力形成互补。勇士的防守在这一回合暴露出轮转速度不足的问题，当格林被詹姆斯吸引到外线后，勇士内线缺乏足够的护框高度来应对戴维斯的冲击。\n\n然而，勇士很快调整了防守策略。德雷蒙德·格林在防守端的价值在随后的回合中得以体现，他成功预判了湖人的传球路线，完成了一次抢断。格林的防守智商和位置感是勇士防守体系的核心，他能够同时兼顾对持球人的压迫和对传球路线的封锁。这次抢断直接转化为勇士的快攻机会，展现了勇士“防守带动进攻”的战术理念。\n\n## 三、三分雨下的战术调整\n\n克莱·汤普森在第一节末段命中三分，将比分反超为6-5。这一进球标志着勇士外线火力的全面开火。汤普森的无球跑动是勇士进攻体系的重要组成部分，他利用库里的牵制力，通过连续的掩护和反跑获得出手空间。湖人的防守在这一回合中出现了沟通失误，两名防守球员同时扑向库里，导致汤普森在弱侧获得空位机会。\n\n进入第二节，勇士的进攻更加多样化。库里的突破上篮展示了他在三分威胁之外的终结能力。当湖人防守过度外扩以限制勇士的三分时，库里利用这一防守倾向，通过变速和变向突破到篮下得分。这种“内外结合”的进攻模式是勇士进攻体系的核心竞争力，也是他们能够持续得分的关键。\n\n## 四、失误与转换进攻的战术价值\n\n第二节中段，詹姆斯出现了一次丢球失误。这次失误并非偶然，勇士在防守端加强了对詹姆斯的包夹力度，迫使他出球困难。勇士的防守策略非常明确：利用多人协防限制詹姆斯的突破路线，同时切断他与戴维斯的传球联系。这种“重点人防守”策略虽然冒险，但勇士凭借出色的轮转速度弥补了防守漏洞。\n\n汤普森随后再次命中三分，将分差扩大到11-5。这一进球来自勇士的转换进攻，在詹姆斯失误后，勇士迅速推进，利用湖人防守尚未落位的时机完成进攻。转换进攻是勇士最致命的武器之一，他们能够在对手防守阵型未稳时快速出手，最大化进攻效率。\n\n## 五、下半场的战术调整与关键回合\n\n第三节开始，詹姆斯通过突破上篮为湖人止血。这一进球展示了詹姆斯在关键时刻的决策能力，他选择在勇士防守尚未完全收缩时强行突破，利用身体优势完成终结。随后，库里出现走步失误，这反映了勇士在进攻端的急躁情绪，也给了湖人追分的机会。\n\n戴维斯的空中接力扣篮是湖人战术体系的完美体现。这次进攻利用了勇士防守对詹姆斯的过度关注，戴维斯在篮下获得空位机会，詹姆斯及时送出传球，完成了一次高效的得分。这种“詹眉连线”是湖人进攻的核心武器，也是他们能够在落后情况下追分的关键。\n\n## 六、决胜时刻的战术博弈\n\n第四节进入最后两分钟，比分来到110-110平。詹姆斯在26英尺处命中关键三分，这一进球展现了他在关键时刻的大心脏。值得注意的是，詹姆斯选择在三分线外出手，而不是选择更稳妥的突破，这反映了他对比赛形势的判断：在比分胶着的情况下，三分球能够迅速拉开分差，给对手施加心理压力。\n\n勇士在最后时刻展现了冠军球队的韧性。格林出现界外失误，给了湖人反超的机会，但库里在最后8秒命中28英尺的超远三分，完成准绝杀。这一进球是库里个人能力的极致体现，也是勇士“永不放弃”精神的写照。库里的出手位置距离篮筐28英尺，这已经超出了常规防守范围，但正是这种“不合理”的出手选择，成就了勇士的胜利。\n\n## 七、战术总结与反思\n\n从这场比赛的战术演变来看，勇士最终获胜的关键在于他们对外线空间的极致利用。库里和汤普森的三分威胁迫使湖人防守不断外扩，为勇士的内线进攻创造了空间。同时，勇士在防守端通过包夹和轮转限制了湖人的核心进攻，尤其是对詹姆斯和戴维斯的连线进行了有效切断。\n\n湖人虽然在比赛中展现了强大的内线优势，但在外线防守和失误控制方面存在明显不足。詹姆斯和戴维斯的个人能力虽然出色，但面对勇士的整体防守体系，湖人的进攻显得有些单一。在决胜时刻，湖人未能有效限制库里的三分出手，这成为他们最终失利的关键因素。\n\n这场比赛充分展示了现代篮球的战术演变趋势：三分球已经成为决定比赛胜负的关键因素，而防守端的空间覆盖和轮转速度则决定了球队能否有效限制对手的外线进攻。勇士用一场经典的“三分雨”胜利，再次证明了他们在战术理念上的领先地位。",
+          "key_segments": [],
+          "tactical_themes": [],
+          "quarter_flow": [],
+          "deciding_factors": [],
+          "mvp_analysis": "",
+          "player_tactical_profiles": [],
+          "limitations": [
+            "No possession boundary detector.",
+            "No court-report evidence injection.",
+            "No structured evidence index."
+          ],
+          "evidence_index": [],
+          "metadata": {
+            "system": "gpt_only",
+            "fallback": false,
+            "fallback_reason": "",
+            "elapsed_seconds": 28.39,
+            "predicted_boundaries": [],
+            "llm": {
+              "model": "deepseek-chat",
+              "latency_seconds": 28.39,
+              "tokens": {
+                "prompt_tokens": 1890,
+                "completion_tokens": 1334,
+                "total_tokens": 3224
+              },
+              "finish_reason": "stop"
+            },
+            "court_report_path_ignored": ""
+          }
+        },
+        "predicted_boundaries": []
+      },
+      {
+        "system": "gpt_only",
+        "run_index": 2,
+        "elapsed_seconds": 28.25,
+        "fallback": false,
+        "summary": {
+          "llm_used_successfully": true,
+          "elapsed_seconds": 28.25
+        },
+        "report": {
+          "title": "GPT-only raw PBP tactical report",
+          "executive_summary": "This baseline asks the LLM to analyze raw PBP directly without structured evidence routing.",
+          "full_analysis": "# 从原始PBP JSON解析的战术分析：湖人vs勇士的攻防博弈\n\n## 一、比赛宏观节奏与战术框架\n\n这份原始PBP数据记录了湖人（LAL）与勇士（GSW）之间一场极具戏剧性的比赛。从时间轴来看，比赛跨越了四个完整节次，最终以勇士113-110险胜收场。但真正值得深挖的，是那些隐藏在事件序列背后的战术逻辑——每一次投篮选择、每一次失误类型、每一次防守轮转的时机，都在无声地讲述着两支球队的战术哲学。\n\n## 二、首节：三分对飙与内线博弈的开局\n\n比赛从跳球开始就进入了快节奏。詹姆斯在11分42秒命中一记25英尺三分，这是湖人典型的“早期进攻”战术——利用詹姆斯在弧顶的持球威胁，直接抢投三分。这种战术的核心在于：当防守方还在落位时，詹姆斯利用其传球威胁吸引防守注意力，随后迅速出手。勇士对此显然准备不足，库里在20秒后立即以同样方式回应——26英尺三分命中，这是勇士“五外站位”的经典回应。\n\n随后戴维斯在10分58秒完成一次“Cutting Dunk”——这是湖人“强侧挡拆+弱侧空切”体系的标志性战术。当詹姆斯在弧顶持球时，戴维斯从弱侧沿底线切入，利用勇士内线防守的犹豫瞬间完成暴扣。这种战术要求内线球员具备出色的时机判断和终结能力，戴维斯完美执行。\n\n但勇士的战术调整更快。格林在10分31秒出现“Bad Pass”失误，这暴露了勇士在高压防守下的传球风险。然而汤普森在9分48秒命中24英尺三分，这是勇士“电梯门”战术的变种——利用库里的无球跑动吸引防守，为汤普森创造空位。首节结束，勇士6-5领先，三分球成为双方的主要得分手段。\n\n## 三、第二节：勇士的防守陷阱与转换进攻\n\n第二节开始，戴维斯在8分15秒尝试8英尺勾手投篮不中，这揭示了勇士的防守策略：他们开始对戴维斯实施“低位包夹”，迫使他在不擅长的区域出手。格林抢下防守篮板后，勇士立即发动转换进攻——库里在7分55秒完成“Driving Layup”，这是勇士“七秒进攻”的典型：利用戴维斯投篮不中的瞬间，格林快速出球，库里利用速度优势直杀篮下。\n\n詹姆斯在7分20秒出现“Lost Ball”失误，这暴露了湖人进攻端的另一个问题：当勇士采用“换防+协防”策略时，詹姆斯的传球路线被切断，导致运球失误。勇士抓住机会，汤普森在6分58秒命中25英尺三分，将分差扩大到11-5。这一节勇士的防守策略非常清晰：限制湖人的内线得分，逼迫他们在外线出手，同时利用失误打反击。\n\n## 四、第三节：湖人的反击与勇士的失误\n\n第三节开始，詹姆斯在5分33秒完成“Driving Layup”，这是湖人调整进攻策略的信号——他们开始更多地利用詹姆斯和戴维斯的挡拆配合，而不是单纯依赖外线投篮。库里在4分50秒出现“Traveling”失误，这反映了勇士在防守端的体力下降：当湖人加强防守强度时，勇士的进攻节奏被打乱。\n\n戴维斯在4分20秒完成“Alley Oop Dunk”，这是湖人“挡拆后顺下”战术的完美执行。詹姆斯在弧顶持球，戴维斯设置掩护后迅速顺下，詹姆斯高抛传球，戴维斯空中接力暴扣。这种战术利用了戴维斯的运动能力和詹姆斯的传球视野，是湖人最有效的得分手段之一。第三节结束时，湖人将比分追至9-11，比赛进入白热化阶段。\n\n## 五、第四节：巨星时刻与战术博弈的终极对决\n\n第四节进入最后两分钟，比赛达到高潮。詹姆斯在2分10秒命中26英尺三分，将比分扳平至110-110。这是湖人“詹姆斯单打”战术的体现——当比赛进入关键时刻，湖人将球交给詹姆斯，利用他的个人能力创造得分机会。詹姆斯在弧顶面对防守，利用节奏变化后撤步三分命中，展现了超级巨星的关键球能力。\n\n但勇士的回应更加致命。格林在35秒出现“Out of Bounds”失误，这给了湖人绝杀的机会。然而湖人在防守端犯下致命错误：他们对库里实施了“换防”策略，但防守沟通出现失误，导致库里在28英尺处获得空位三分机会。库里在8秒命中“clutch”三分，将比分改写为113-110。这是勇士“库里无球跑动+格林高位策应”战术的经典案例：格林在弧顶持球，库里利用队友的掩护从底线绕出，接球后迅速出手。\n\n## 六、战术层面的深层分析\n\n从整体战术来看，这场比赛展现了两种截然不同的进攻哲学。湖人更依赖“巨星单打+内线终结”，詹姆斯和戴维斯的挡拆配合是他们的核心战术。而勇士则更强调“空间拉开+三分投射”，库里的无球跑动和汤普森的接球投篮是他们的主要得分手段。\n\n在防守端，勇士的“换防+协防”策略成功限制了湖人的内线得分，但代价是给了湖人外线机会。湖人的防守则更依赖“个人防守+协防轮转”，但在关键时刻出现了沟通失误，导致库里获得空位三分机会。\n\n失误控制方面，勇士出现了3次失误（格林2次，库里1次），湖人出现1次失误（詹姆斯1次）。但勇士的失误更多发生在非关键时刻，而湖人的失误则直接影响了比赛走势。\n\n## 七、比赛转折点与战术决策\n\n比赛的关键转折点出现在第四节最后时刻。格林在35秒的“Out of Bounds”失误本应成为湖人的机会，但湖人未能把握住。库里在8秒的三分命中，不仅展现了个人能力，更体现了勇士战术体系的成熟——在关键时刻，他们依然能够创造出高质量的三分机会。\n\n湖人最后时刻的防守选择值得商榷。他们对库里实施“换防”策略，但防守球员未能及时跟上库里的无球跑动，导致出现空位。如果湖人选择“包夹库里”或“延误防守”，或许能改变比赛结果。\n\n## 八、总结\n\n这场比赛是两种篮球哲学的碰撞：湖人的“巨星篮球”与勇士的“体系篮球”。从数据来看，勇士的三分球命中率更高（4次三分命中），而湖人的内线得分更占优势（2次扣篮，1次上篮）。但最终决定比赛胜负的，是关键时刻的战术执行和防守决策。\n\n库里的“clutch”三分不仅是一记投篮，更是勇士战术体系的胜利。而湖人的失利，则暴露了他们在关键时刻防守沟通的不足。这场比赛告诉我们：在篮球的最高舞台上，战术执行力和细节决定成败。",
+          "key_segments": [],
+          "tactical_themes": [],
+          "quarter_flow": [],
+          "deciding_factors": [],
+          "mvp_analysis": "",
+          "player_tactical_profiles": [],
+          "limitations": [
+            "No possession boundary detector.",
+            "No court-report evidence injection.",
+            "No structured evidence index."
+          ],
+          "evidence_index": [],
+          "metadata": {
+            "system": "gpt_only",
+            "fallback": false,
+            "fallback_reason": "",
+            "elapsed_seconds": 27.89,
+            "predicted_boundaries": [],
+            "llm": {
+              "model": "deepseek-chat",
+              "latency_seconds": 27.89,
+              "tokens": {
+                "prompt_tokens": 1890,
+                "completion_tokens": 1496,
+                "total_tokens": 3386
+              },
+              "finish_reason": "stop"
+            },
+            "court_report_path_ignored": ""
+          }
+        },
+        "predicted_boundaries": []
+      },
+      {
+        "system": "gpt_only",
+        "run_index": 3,
+        "elapsed_seconds": 37.609,
+        "fallback": false,
+        "summary": {
+          "llm_used_successfully": true,
+          "elapsed_seconds": 37.609
+        },
+        "report": {
+          "title": "GPT-only raw PBP tactical report",
+          "executive_summary": "This baseline asks the LLM to analyze raw PBP directly without structured evidence routing.",
+          "full_analysis": "# 从原始PBP JSON看湖人vs勇士的战术博弈：一场浓缩的攻防辩证法\n\n这份原始play-by-play JSON虽然只记录了20个事件，却像一帧帧战术切片，将湖人（LAL）与勇士（GSW）的攻防逻辑、节奏控制、球星决策乃至比赛哲学，都压缩在短短四节、跨越多个时间节点的片段里。我们不必依赖统计报告，只需顺着事件流的自然呼吸，就能读出两支球队在战术棋盘上的落子逻辑。\n\n## 开局：三分对飙与内线破局\n\n比赛从12:00开始，11:42勒布朗·詹姆斯在25英尺命中三分，湖人3-0领先。这个开局动作本身就暗含战术信号：詹姆斯作为持球核心，在弧顶或侧翼直接拔起三分，通常意味着对手防守收缩或换防沟通出现缝隙。勇士的防守策略往往倾向于放空非射手点，但詹姆斯本赛季的三分稳定性迫使勇士必须外扩，这为后续的内线进攻埋下伏笔。\n\n勇士的回应来得很快：11:20斯蒂芬·库里在26英尺命中三分，3-3。库里这种“无预警”式三分是勇士体系的基石——他不需要复杂掩护，只要半秒空间就能出手。但更值得关注的是时间差：湖人用了22秒完成进攻，勇士只用了22秒就回敬，说明勇士在防守端没有过度消耗，而是快速推转换或早期进攻，让库里在半转换中找到节奏。\n\n10:58安东尼·戴维斯的“Cutting Dunk”是湖人战术体系的典型产物：当詹姆斯或拉塞尔持球时，戴维斯利用防守者注意力被外线牵制的瞬间，从弱侧空切至篮下接球暴扣。这种“外线威胁-内线空切”的二元结构，是湖人进攻的基本语法。勇士的防守在这一回合暴露出问题：他们过度关注持球人，弱侧协防轮转慢了半拍。\n\n## 失误与反击：节奏的破坏者\n\n10:31德雷蒙德·格林出现“Bad Pass”失误。格林是勇士进攻的枢纽，他的失误往往意味着战术跑位失败或防守预判被识破。湖人可能在这一回合采取了“挤过掩护”或“换防后夹击”的策略，迫使格林在非舒适区出球。但湖人未能利用这次失误得分，反而在9:48被克莱·汤普森命中24英尺三分，勇士6-5反超。汤普森的三分通常来自“pin down”掩护或“split cut”后的接球投篮，这说明勇士的战术跑位在格林失误后依然保持了纪律性。\n\n第一节结束5-6，比分极低，说明双方防守强度都很高，进攻节奏被频繁打断。这种低分段的博弈，往往取决于谁先找到稳定的得分模式。\n\n## 第二节：勇士的防守反击与湖人的内线困境\n\n第二节8:15戴维斯8英尺钩射不中，格林拿下防守篮板。戴维斯的钩射通常是他面对小个子防守时的首选，但这次不中可能源于体能下降或防守干扰。格林抓下篮板后，勇士迅速推反击：7:55库里突破上篮得手，8-5。库里的“Driving Layup”不是他的常规武器，但当他利用挡拆错位或防守失位时，这种攻击篮筐的选择会迫使湖人收缩，为外线射手创造空间。\n\n7:20詹姆斯出现“Lost Ball”失误。詹姆斯的失误通常发生在包夹或协防到位时，勇士可能采用了“ice”防守策略（逼迫持球人走边线）或“blitz”夹击，让詹姆斯失去运球空间。这种失误对湖人打击很大，因为詹姆斯是他们的进攻发动机，一旦他失误，勇士的转换进攻就会如潮水般涌来。\n\n6:58汤普森再次命中25英尺三分，11-5。汤普森的两记三分都来自接球投篮，说明勇士的“motion offense”在持续运转：无球掩护、手递手传球、以及库里的引力效应，为汤普森创造了干净的出手空间。湖人在这段时间的防守轮转显得迟缓，尤其是弱侧协防对汤普森的扑防不够及时。\n\n## 第三节：湖人的反击与勇士的失误\n\n第三节5:33詹姆斯突破上篮得手，7-11。这是詹姆斯典型的“drive and finish”打法：利用挡拆后错位，或直接面对防守者加速突破。勇士的防守在这一回合可能选择了“drop coverage”（中锋沉退），给了詹姆斯中距离或篮下的空间。但詹姆斯选择上篮而非三分，说明他更倾向于攻击篮筐以制造犯规或压缩防守。\n\n4:50库里出现“Traveling”失误。库里的走步通常发生在运球节奏被打乱时，湖人可能采用了“trapping”或“hedging”防守，让库里在运球过程中失去平衡。这种失误对勇士的节奏是致命打击，因为他们依赖库里的持球创造机会。\n\n4:20戴维斯完成“Alley Oop Dunk”，9-11。这记空接暴扣是湖人“lob threat”战术的体现：当詹姆斯或拉塞尔突破吸引防守时，戴维斯从弱侧切入，接高抛球完成终结。勇士的防守在这一回合出现了沟通失误：内线球员可能被外线吸引，导致戴维斯无人看防。\n\n## 第四节：高潮与绝杀\n\n第四节2:10詹姆斯命中26英尺三分，110-110。这个时间点（2:10）和比分（110平）都表明比赛进入白热化阶段。詹姆斯的三分选择在关键时刻显得尤为大胆，但也是湖人战术的必然：当勇士收缩内线时，詹姆斯必须用外线投篮惩罚对手。这一球也体现了詹姆斯在高压下的决策能力——他选择三分而非突破，可能是预判到勇士会协防篮下。\n\n0:35格林出现“Out of Bounds”失误。格林在关键时刻的失误对勇士是巨大打击，但湖人未能抓住机会得分。格林可能是在传球或运球时被逼到边线，湖人采用了“sideline trap”防守，迫使格林做出错误决策。\n\n0:08库里命中28英尺三分（clutch），110-113。这是全场比赛的制胜球。库里的“clutch”三分是勇士战术的终极形态：通常通过“double drag”掩护或“pindown”跑位，让库里在三分线外获得出手空间。湖人可能在这一回合选择了“switch everything”换防，但库里的运球后撤步或急停跳投能力让他即使面对换防也能创造出手机会。28英尺的距离说明库里对自己的射程有绝对自信，而湖人的防守可能因为忌惮他的突破而留出了半步空间。\n\n## 战术总结：两种体系的碰撞\n\n从这20个事件中，我们可以提炼出两支球队的战术核心：\n\n**湖人**的进攻逻辑是“詹姆斯-戴维斯双核驱动”：詹姆斯持球创造机会，戴维斯作为内线终结点和空接威胁。湖人的得分集中在三分（詹姆斯2记）、内线（戴维斯扣篮、詹姆斯上篮）和空切，但缺乏中距离和持续的外线火力。他们的失误（詹姆斯1次）和戴维斯的钩射不中暴露了进攻的脆弱性：一旦詹姆斯被夹击或戴维斯手感不佳，湖人的得分就会停滞。\n\n**勇士**的进攻逻辑是“库里-汤普森三分双枪+格林组织”：库里的三分和突破、汤普森的接球投篮、格林的高位策应，构成了“motion offense”的骨架。勇士的得分全部来自三分（库里2记、汤普森2记）和库里的突破上篮，说明他们更依赖外线投射和空间创造。格林的两次失误（Bad Pass和Out of Bounds）是勇士体系的阿喀琉斯之踵：当格林被压迫时，勇士的进攻会陷入混乱。\n\n从节奏控制看，湖人试图通过内线优势和詹姆斯的主导权控制比赛，而勇士则用快速转换和三分投射打乱对手节奏。第一节的低分和第二节的勇士反超，体现了勇士在防守反击上的效率；第三节湖人的反击则展示了他们调整防守策略（夹击库里、压迫格林）的能力。\n\n最后时刻的绝杀球，是库里个人能力的体现，也是勇士战术体系的胜利：即使格林失误，勇士依然能通过库里的个人",
+          "key_segments": [],
+          "tactical_themes": [],
+          "quarter_flow": [],
+          "deciding_factors": [],
+          "mvp_analysis": "",
+          "player_tactical_profiles": [],
+          "limitations": [
+            "No possession boundary detector.",
+            "No court-report evidence injection.",
+            "No structured evidence index."
+          ],
+          "evidence_index": [],
+          "metadata": {
+            "system": "gpt_only",
+            "fallback": false,
+            "fallback_reason": "",
+            "elapsed_seconds": 37.25,
+            "predicted_boundaries": [],
+            "llm": {
+              "model": "deepseek-chat",
+              "latency_seconds": 37.25,
+              "tokens": {
+                "prompt_tokens": 1890,
+                "completion_tokens": 1800,
+                "total_tokens": 3690
+              },
+              "finish_reason": "length"
+            },
+            "court_report_path_ignored": ""
+          }
+        },
+        "predicted_boundaries": []
+      }
+    ],
+    "fallback": false
+  }
+}

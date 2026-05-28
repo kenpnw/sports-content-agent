@@ -1,0 +1,266 @@
+{
+  "main": {
+    "accuracy": 0.8889,
+    "coverage": 0.7333,
+    "hallucination_rate": 0.1111,
+    "matched": 22,
+    "total_gold": 30,
+    "correct": 16,
+    "incorrect": 2,
+    "unverifiable": 4,
+    "matches": [
+      {
+        "gold_claim": "L. James 在第一节11分42秒命中25英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q1 PT11M42S L. James 25' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 在第一节11分20秒命中26英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q1 PT11M20S S. Curry 26' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "A. Davis 在第一节10分58秒完成空切扣篮",
+        "label": "correct",
+        "matched_claim": "Q1 PT10M58S A. Davis Cutting Dunk Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "D. Green 在第一节10分31秒出现传球失误",
+        "label": "correct",
+        "matched_claim": "Q1 PT10M31S D. Green 传球失误，球权转换。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "K. Thompson 在第一节9分48秒命中24英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q1 PT09M48S K. Thompson 24' 3PT Jump Shot Made",
+        "similarity": 0.875
+      },
+      {
+        "gold_claim": "S. Curry 在第二节7分55秒完成突破上篮",
+        "label": "correct",
+        "matched_claim": "次节比赛，勇士继续扩大优势。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "L. James 在第二节7分20秒出现丢球失误",
+        "label": "correct",
+        "matched_claim": "Q2 PT07M20S L. James Turnover Lost Ball",
+        "similarity": 0.8571
+      },
+      {
+        "gold_claim": "K. Thompson 在第二节6分58秒命中25英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q2 PT06M58S K. Thompson 25' 3PT Jump Shot Made",
+        "similarity": 0.875
+      },
+      {
+        "gold_claim": "S. Curry 在第三节4分50秒出现走步违例",
+        "label": "correct",
+        "matched_claim": "Q3 PT04M50S S. Curry Turnover Traveling",
+        "similarity": 0.8333
+      },
+      {
+        "gold_claim": "A. Davis 在第三节4分20秒完成空接扣篮",
+        "label": "correct",
+        "matched_claim": "Q3 PT04M20S A. Davis Alley Oop Dunk Shot Made",
+        "similarity": 0.8571
+      },
+      {
+        "gold_claim": "L. James 在第四节2分10秒命中26英尺三分",
+        "label": "correct",
+        "matched_claim": "Q4 PT02M10S L. James 26' 3PT Jump Shot Made",
+        "similarity": 0.875
+      },
+      {
+        "gold_claim": "D. Green 在第四节最后35秒出现出界失误",
+        "label": "correct",
+        "matched_claim": "Q4 PT00M35S D. Green Turnover Out of Bounds",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 在比赛最后8秒命中28英尺三分",
+        "label": "correct",
+        "matched_claim": "但湖人未能锁定胜局，库里在最后8秒利用队友的掩护或自身运球创造空间，在28英尺处果断出手命中三分。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "最终比分为勇士113比湖人110",
+        "label": "correct",
+        "matched_claim": "本场比赛勇士客场挑战湖人，最终以113-110险胜，比赛过程跌宕起伏。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 全场三分13投7中",
+        "label": "correct",
+        "matched_claim": "纵观全场，勇士的三分投射是取胜关键，尤其是库里和汤普森在关键时刻的发挥。",
+        "similarity": 0.6
+      },
+      {
+        "gold_claim": "K. Thompson 全场三分9投4中",
+        "label": "correct",
+        "matched_claim": "纵观全场，勇士的三分投射是取胜关键，尤其是库里和汤普森在关键时刻的发挥。",
+        "similarity": 0.6
+      },
+      {
+        "gold_claim": "詹姆斯首节三分迫使勇士防守外扩",
+        "label": "unverifiable",
+        "matched_claim": "Q1 PT11M42S L. James 25' 3PT Jump Shot Made",
+        "similarity": 0.8
+      },
+      {
+        "gold_claim": "戴维斯第一节扣篮来自勒布朗弧顶持球吸引防守后的传球",
+        "label": "unverifiable",
+        "matched_claim": "Q1 PT10M58S A. Davis Cutting Dunk Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "格林传球失误说明湖人防守压迫奏效",
+        "label": "unverifiable",
+        "matched_claim": "这是一次典型的传球失误，格林在高压下未能做出正确决策。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "汤普森第一节三分来自无球掩护跑位",
+        "label": "unverifiable",
+        "matched_claim": "勇士凭借库里和汤普森的外线火力，在首节和次节建立领先，湖人虽在末节追平，但库里终场前8秒命中关键三分，勇士113-110险胜。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 本场三分2投2中",
+        "label": "incorrect",
+        "matched_claim": "纵观全场，勇士的三分投射是取胜关键，尤其是库里和汤普森在关键时刻的发挥。",
+        "similarity": 0.75
+      },
+      {
+        "gold_claim": "K. Thompson 本场三分2投2中",
+        "label": "incorrect",
+        "matched_claim": "纵观全场，勇士的三分投射是取胜关键，尤其是库里和汤普森在关键时刻的发挥。",
+        "similarity": 0.75
+      }
+    ],
+    "candidate_count": 172,
+    "generated_claim_count": 172
+  },
+  "highlight_only": {
+    "accuracy": 1.0,
+    "coverage": 0.4,
+    "hallucination_rate": 0.0,
+    "matched": 12,
+    "total_gold": 30,
+    "correct": 9,
+    "incorrect": 0,
+    "unverifiable": 3,
+    "matches": [
+      {
+        "gold_claim": "L. James 在第一节11分42秒命中25英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q1 PT11M42S L. James 25' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "S. Curry 在第一节11分20秒命中26英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q1 PT11M20S S. Curry 26' 3PT Jump Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "A. Davis 在第一节10分58秒完成空切扣篮",
+        "label": "correct",
+        "matched_claim": "Q1 PT10M58S A. Davis Cutting Dunk Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "K. Thompson 在第一节9分48秒命中24英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q1 PT09M48S K. Thompson 24' 3PT Jump Shot Made",
+        "similarity": 0.875
+      },
+      {
+        "gold_claim": "K. Thompson 在第二节6分58秒命中25英尺三分球",
+        "label": "correct",
+        "matched_claim": "Q2 PT06M58S K. Thompson 25' 3PT Jump Shot Made",
+        "similarity": 0.875
+      },
+      {
+        "gold_claim": "A. Davis 在第三节4分20秒完成空接扣篮",
+        "label": "correct",
+        "matched_claim": "Q3 PT04M20S A. Davis Alley Oop Dunk Shot Made",
+        "similarity": 0.8571
+      },
+      {
+        "gold_claim": "L. James 在第四节2分10秒命中26英尺三分",
+        "label": "correct",
+        "matched_claim": "Q4 PT02M10S L. James 26' 3PT Jump Shot Made",
+        "similarity": 0.875
+      },
+      {
+        "gold_claim": "S. Curry 在比赛最后8秒命中28英尺三分",
+        "label": "correct",
+        "matched_claim": "末节关键时刻，詹姆斯26英尺三分追平比分，但库里在最后8秒命中28英尺制胜三分，帮助GSW以113-110险胜。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "最终比分为勇士113比湖人110",
+        "label": "correct",
+        "matched_claim": "末节关键时刻，詹姆斯26英尺三分追平比分，但库里在最后8秒命中28英尺制胜三分，帮助GSW以113-110险胜。",
+        "similarity": 0.8
+      },
+      {
+        "gold_claim": "詹姆斯首节三分迫使勇士防守外扩",
+        "label": "unverifiable",
+        "matched_claim": "LAL与GSW的外线对决贯穿全场：詹姆斯首节25英尺三分首开纪录，库里随即26英尺三分回应；",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "戴维斯第一节扣篮来自勒布朗弧顶持球吸引防守后的传球",
+        "label": "unverifiable",
+        "matched_claim": "Q1 PT10M58S A. Davis Cutting Dunk Shot Made",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "汤普森第一节三分来自无球掩护跑位",
+        "label": "unverifiable",
+        "matched_claim": "汤普森在首节末段和第二节连续命中两记三分拉开分差；",
+        "similarity": 1.0
+      }
+    ],
+    "candidate_count": 54,
+    "generated_claim_count": 54
+  },
+  "gpt_only": {
+    "accuracy": 1.0,
+    "coverage": 0.1,
+    "hallucination_rate": 0.0,
+    "matched": 3,
+    "total_gold": 30,
+    "correct": 2,
+    "incorrect": 0,
+    "unverifiable": 1,
+    "matches": [
+      {
+        "gold_claim": "L. James 在第二节7分20秒出现丢球失误",
+        "label": "correct",
+        "matched_claim": "第二节中段，詹姆斯出现了一次丢球失误。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "最终比分为勇士113比湖人110",
+        "label": "correct",
+        "matched_claim": "从这场比赛的战术演变来看，勇士最终获胜的关键在于他们对外线空间的极致利用。",
+        "similarity": 1.0
+      },
+      {
+        "gold_claim": "汤普森第一节三分来自无球掩护跑位",
+        "label": "unverifiable",
+        "matched_claim": "克莱·汤普森在第一节末段命中三分，将比分反超为6-5。",
+        "similarity": 1.0
+      }
+    ],
+    "candidate_count": 34,
+    "generated_claim_count": 34
+  }
+}

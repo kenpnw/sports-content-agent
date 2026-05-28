@@ -80,3 +80,7 @@ thesis/
 
 # ---- macOS metadata ----
 __MACOSX/
+
+# ---- Thesis build artifacts ----
+thesis_drafts/*/_combined.md
+thesis_figures/__pycache__/
