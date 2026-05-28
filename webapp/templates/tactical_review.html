@@ -1441,14 +1441,16 @@
           {visible.map((clip) => {
             const idx = clips.indexOf(clip);
             const gifName = fileBase(clip.gif_path);
-            const _suffix = clipUrlSuffix ? clipUrlSuffix(fileBase(clip.output_path) || stripExt(gifName)) : "";
+            const _baseStem = stripExt(fileBase(clip.output_path) || gifName);
+            const _suffix = clipUrlSuffix ? clipUrlSuffix(_baseStem) : "";
             const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}${_suffix}` : "";
             const tag = (clip.tactic_tags || [])[0] || "";
             const player = (clip.players || []).join(", ");
             const isChecked = selectedSet?.has(clip.observation_id);
             const isDeleted = deletedSet?.has(clip.observation_id);
-            const _clipBase = fileBase(clip.output_path) || fileBase(clip.gif_path);
-            const isAdjusted = overridesSet?.has(`${_clipBase}.mp4`);
+            const _clipFilename = fileBase(clip.output_path) ||
+              (fileBase(clip.gif_path) ? stripExt(fileBase(clip.gif_path)) + ".mp4" : "");
+            const isAdjusted = overridesSet?.has(_clipFilename);
             const quality = computeQualityScore(clip, snapByObs?.[clip.observation_id]);
             const qualityClass = quality >= 70 ? "high" : quality >= 50 ? "mid" : "low";
             return (
@@ -1925,9 +1927,10 @@
             next.add(clipMp4);
             return next;
           });
-          // Bump version for THIS clip so all GIF/MP4/frame URLs
-          // pick up the new files. React re-render handles the refresh.
-          bumpClipVersion(clipBase);
+          // Bump version using the STEM (no .mp4 / .gif extension) so it
+          // matches the key used by clipUrlSuffix in both ClipTimeline
+          // and ClipPreview. Mismatch here was why GIFs weren't refreshing.
+          bumpClipVersion(stripExt(clipBase));
           closeAdjust();
         } catch (e) {
           message.error("调整失败：" + e.message);
