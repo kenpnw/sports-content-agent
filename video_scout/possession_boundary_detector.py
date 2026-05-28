@@ -308,9 +308,9 @@ def boundaries_to_observations(
     boundaries: list[PossessionBoundary],
     *,
     min_salience: float = 0.45,
-    max_count: int = 12,
+    max_count: int = 60,
 ) -> list[VisualObservation]:
-    """Select 6-12 high-value possessions and convert them to observations."""
+    """Select up to ~60 high-value possessions and convert them to observations."""
     must_keep = {"clutch_shot", "lead_change", "momentum_swing", "period_end", "game_end"}
 
     candidates = [

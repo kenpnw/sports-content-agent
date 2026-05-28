@@ -1,0 +1,17 @@
+{
+  "video_path": "data\\videos\\sas_okc_wcf.mkv",
+  "video_resolution": [
+    1920,
+    1080
+  ],
+  "sample_frame_seconds": 1500.0,
+  "roi": {
+    "x": 905,
+    "y": 925,
+    "w": 140,
+    "h": 75
+  },
+  "broadcaster_hint": "NBA-2026-WCF-G5",
+  "manual_calibration_note": "Calibrated by visual inspection of frames at t=1500s and t=2500s. Scoreboard clock+period is centered around the middle-bottom of the 1920x1080 frame. Auto-ROI initially picked an off-broadcaster region; this manual ROI covers the clock area where OCR is most reliable.",
+  "created_at": "2026-05-28T21:18:00"
+}

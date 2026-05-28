@@ -34,7 +34,7 @@ def build_observations_from_pbp(
     video_period_windows: dict[int, tuple[float, float]] | None = None,
     periods: set[int] | None = None,
     min_salience: float = 0.45,
-    max_count: int = 12,
+    max_count: int = 60,
 ) -> list[VisualObservation]:
     """Create observations from PBP and optionally enrich with court stats."""
     events = load_replay_events(pbp_path)
