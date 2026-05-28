@@ -1,0 +1,338 @@
+"""Rebuild clip positions using a clean per-period linear PBP map,
+then re-cut MP4 + GIF + 6 keyframes for every clip.
+
+Use when the OCR-based time_map snap-collapses multiple distinct events
+onto the same video window (e.g., NBA replay overlay freezing the
+scoreboard). This script:
+
+  1. Reads observations.normalized.json (the 60 events with PBP timing)
+  2. Reads time_map.json's OCR samples (truncation-safe)
+  3. Filters samples to LIVE-only (drops 'frozen' runs from replays)
+  4. Fits a robust per-period linear video<->game time map
+  5. Computes a fresh video position for each event using:
+        video_t = period_anchor + game_elapsed * period_ratio
+  6. Re-cuts each clip's MP4 + GIF + 6 keyframes at the new position
+  7. Updates clip_manifest.json with new start/end seconds (atomic write)
+
+No LLM calls. Runtime: ~5-10 min for 60 clips on a typical laptop.
+
+Usage:
+    python -m thesis_scripts.recover_clip_positions \\
+        --report data/generated/video_scout/real_game_0042500315_v1 \\
+        --video data/videos/sas_okc_wcf.mkv
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import shutil
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+
+# Make repo modules importable
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+
+def _parse_pt(pt_str: str) -> float | None:
+    """PT9M56.00S -> 596 seconds remaining."""
+    m = re.match(r"PT(\d+)M([\d.]+)S", pt_str or "")
+    if not m:
+        return None
+    return float(m.group(1)) * 60.0 + float(m.group(2))
+
+
+def _read_json_truncation_safe(path: Path) -> dict:
+    """Some files may have been left with a partial trailing object
+    from a non-atomic write. Take the first valid JSON object."""
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    dec = json.JSONDecoder()
+    obj, _ = dec.raw_decode(raw)
+    return obj
+
+
+def _load_observations(report_dir: Path) -> list[dict]:
+    obs_path = report_dir / "observations.normalized.json"
+    if not obs_path.exists():
+        raise FileNotFoundError(obs_path)
+    data = _read_json_truncation_safe(obs_path)
+    # observations file is a top-level list
+    if isinstance(data, list):
+        return data
+    return data.get("observations", []) or []
+
+
+def _load_time_map(video_path: Path) -> dict:
+    tmap_path = video_path.with_suffix(".time_map.json")
+    if not tmap_path.exists():
+        raise FileNotFoundError(tmap_path)
+    return _read_json_truncation_safe(tmap_path)
+
+
+def _ratio_for_period(samples: list[dict], period: int, anchor: float, next_anchor: float | None) -> tuple[float, list[dict]]:
+    """Return (video_seconds_per_game_second_ratio, kept_samples)
+    for a given period, after filtering OCR replay outliers."""
+    # samples with a real clock reading in this period
+    in_period = [
+        s for s in samples
+        if s.get("period") == period and s.get("clock_remaining_seconds") is not None
+    ]
+    if next_anchor:
+        video_duration = next_anchor - anchor
+    else:
+        video_duration = max(s.get("video_seconds", anchor) for s in in_period) - anchor if in_period else 720.0
+    # Bare default: linear over full period
+    default_ratio = video_duration / 720.0
+
+    if len(in_period) < 3:
+        return default_ratio, []
+
+    # Sort by video seconds asc
+    in_period.sort(key=lambda s: s["video_seconds"])
+
+    # Filter "frozen" runs (≥3 consecutive samples with same clock_rem within 5s)
+    cleaned: list[dict] = []
+    i = 0
+    while i < len(in_period):
+        j = i + 1
+        while j < len(in_period) and abs(in_period[j]["clock_remaining_seconds"] - in_period[i]["clock_remaining_seconds"]) <= 5.0:
+            j += 1
+        run = in_period[i:j]
+        if len(run) >= 3:
+            # Frozen — keep only the FIRST sample (live game just before replay started)
+            cleaned.append(run[0])
+        else:
+            cleaned.extend(run)
+        i = j
+
+    # Filter outliers from rough linear fit (drop samples >120s off the line)
+    if len(cleaned) >= 3:
+        # Per-period elapsed time vs video offset from anchor
+        xs = [s["video_seconds"] - anchor for s in cleaned]
+        ys = [720.0 - s["clock_remaining_seconds"] for s in cleaned]  # game seconds elapsed
+        # Robust slope via median ratio
+        ratios = []
+        for x, y in zip(xs, ys):
+            if y > 5:
+                ratios.append(x / y)
+        if ratios:
+            ratios.sort()
+            median_ratio = ratios[len(ratios) // 2]
+        else:
+            median_ratio = default_ratio
+        # Drop outliers
+        kept = []
+        for s, x, y in zip(cleaned, xs, ys):
+            expected_x = y * median_ratio
+            if abs(x - expected_x) <= 120.0:
+                kept.append(s)
+        if len(kept) >= 3:
+            # Recompute median ratio from kept
+            ratios = [x / (720 - s["clock_remaining_seconds"]) for s, x in zip(kept, [k["video_seconds"] - anchor for k in kept]) if 720 - s["clock_remaining_seconds"] > 5]
+            ratios.sort()
+            return ratios[len(ratios) // 2], kept
+
+    return default_ratio, cleaned
+
+
+def _video_seconds_for_event(period: int, game_elapsed: float, anchors: dict, ratios: dict) -> float:
+    """Map (period, game_elapsed_seconds) -> video_seconds."""
+    anchor = anchors.get(str(period), anchors.get(period, 0.0))
+    ratio = ratios.get(period, 1.75)
+    return float(anchor) + float(game_elapsed) * float(ratio)
+
+
+def _recut_clip(
+    *,
+    video_path: Path,
+    clip_path: Path,
+    new_start: float,
+    new_end: float,
+    gif_fps: int = 10,
+    gif_width: int = 480,
+) -> bool:
+    """Re-cut MP4 + GIF + 6 keyframes at new times."""
+    duration = max(1.0, new_end - new_start)
+    gif_path = clip_path.with_suffix(".gif")
+    frames_dir = clip_path.parent / f"{clip_path.stem}_frames"
+
+    # MP4
+    r = subprocess.run([
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-ss", f"{max(0.0, new_start):.2f}",
+        "-i", str(video_path),
+        "-t", f"{duration:.2f}",
+        "-c", "copy",
+        str(clip_path),
+    ], capture_output=True, timeout=60)
+    if r.returncode != 0:
+        return False
+
+    # GIF
+    subprocess.run([
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-i", str(clip_path),
+        "-vf", f"fps={gif_fps},scale={gif_width}:-1:flags=lanczos",
+        "-loop", "0",
+        str(gif_path),
+    ], capture_output=True, timeout=60)
+
+    # 6 keyframes (evenly spaced in second half of clip)
+    if frames_dir.exists():
+        shutil.rmtree(frames_dir, ignore_errors=True)
+    frames_dir.mkdir(exist_ok=True)
+    for i in range(6):
+        offset = 0.5 + (i + 0.5) / 12.0  # 54%, 62%, 71%, 79%, 88%, 96%
+        t = new_start + offset * duration
+        out = frames_dir / f"frame_{i+1:02d}.jpg"
+        subprocess.run([
+            "ffmpeg", "-y", "-loglevel", "error",
+            "-ss", f"{max(0.0, t):.2f}",
+            "-i", str(video_path),
+            "-vframes", "1",
+            str(out),
+        ], capture_output=True, timeout=30)
+    return True
+
+
+def _atomic_write_json(path: Path, payload: dict) -> None:
+    text = json.dumps(payload, ensure_ascii=False, indent=2)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--report", required=True, help="Report dir")
+    ap.add_argument("--video", required=True, help="Source video")
+    ap.add_argument("--clip-before", type=float, default=8.0, help="seconds before event (default 8)")
+    ap.add_argument("--clip-after", type=float, default=8.0, help="seconds after event (default 8)")
+    ap.add_argument("--dry-run", action="store_true", help="Compute new positions but don't re-cut")
+    args = ap.parse_args()
+
+    report_dir = Path(args.report).resolve()
+    video_path = Path(args.video).resolve()
+    for p in (report_dir, video_path):
+        if not p.exists():
+            print(f"[error] missing: {p}", file=sys.stderr)
+            sys.exit(1)
+
+    # ---- Load ----
+    print(f"[info] loading observations from {report_dir}")
+    observations = _load_observations(report_dir)
+    print(f"[info] {len(observations)} observations")
+
+    print(f"[info] loading time_map from {video_path.with_suffix('.time_map.json')}")
+    tmap = _load_time_map(video_path)
+    anchors = tmap.get("period_anchors") or {}
+    samples = tmap.get("samples") or []
+    print(f"[info] {len(samples)} OCR samples; anchors: {anchors}")
+
+    # ---- Build per-period ratios with replay-filter ----
+    sorted_anchors = sorted(((int(p), float(v)) for p, v in anchors.items()), key=lambda x: x[1])
+    ratios: dict[int, float] = {}
+    print(f"\n[info] computing per-period ratios:")
+    for idx, (period, anchor) in enumerate(sorted_anchors):
+        next_anchor = sorted_anchors[idx + 1][1] if idx + 1 < len(sorted_anchors) else None
+        ratio, kept = _ratio_for_period(samples, period, anchor, next_anchor)
+        ratios[period] = ratio
+        print(f"  Q{period}: anchor={anchor:.0f}s, ratio={ratio:.3f}s/s, kept_samples={len(kept)}")
+
+    # ---- Compute new positions ----
+    clip_before = args.clip_before
+    clip_after = args.clip_after
+    new_positions = []
+    for i, obs in enumerate(observations, 1):
+        period = int(obs.get("period", 0) or 0)
+        clock_pt = obs.get("clock") or ""
+        clock_rem = _parse_pt(clock_pt)
+        if not period or clock_rem is None:
+            new_positions.append(None)
+            continue
+        elapsed = max(0.0, 720.0 - clock_rem)  # game seconds elapsed in this period
+        video_t = _video_seconds_for_event(period, elapsed, {str(period): anchors.get(str(period), anchors.get(period, 0))}, ratios)
+        new_start = max(0.0, video_t - clip_before)
+        new_end = video_t + clip_after
+        new_positions.append({"start": new_start, "end": new_end, "event_t": video_t})
+
+    print(f"\n[info] new positions (first 20):")
+    print(f"  {'#':<3} {'period':<3} {'clock':<10} {'old_start':>9} {'new_start':>9} {'shift':>8}")
+    clip_manifest_path = report_dir / "clip_manifest.json"
+    old_manifest = _read_json_truncation_safe(clip_manifest_path) if clip_manifest_path.exists() else {"clips": []}
+    old_clips = old_manifest.get("clips", []) or []
+    for i in range(min(20, len(observations))):
+        obs = observations[i]
+        np = new_positions[i]
+        if np is None:
+            print(f"  {i+1:<3} ??       skipped (no clock)")
+            continue
+        old_start = old_clips[i].get("start_seconds", 0) if i < len(old_clips) else 0
+        shift = np["start"] - old_start
+        print(f"  {i+1:<3} Q{obs.get('period')}  {obs.get('clock', '')[:10]:<10} {old_start:>9.1f} {np['start']:>9.1f} {shift:>+8.1f}")
+
+    if args.dry_run:
+        print("\n[dry-run] not re-cutting clips. Re-run without --dry-run to apply.")
+        return
+
+    # ---- Re-cut each clip ----
+    print(f"\n[info] re-cutting {len(old_clips)} clips...")
+    clips_dir = report_dir / "clips"
+    if not clips_dir.exists():
+        print(f"[error] clips dir missing: {clips_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    ok_count = fail_count = 0
+    for i, clip in enumerate(old_clips):
+        if i >= len(new_positions) or new_positions[i] is None:
+            continue
+        np = new_positions[i]
+        clip_filename = Path(clip.get("output_path") or clip.get("gif_path", "")).name
+        if not clip_filename:
+            fail_count += 1
+            continue
+        # Switch extension to .mp4 if necessary
+        clip_path = clips_dir / (clip_filename if clip_filename.endswith(".mp4") else Path(clip_filename).stem + ".mp4")
+        if not clip_path.exists():
+            print(f"  [{i+1}/60] clip mp4 not found: {clip_path.name}")
+            fail_count += 1
+            continue
+        ok = _recut_clip(
+            video_path=video_path,
+            clip_path=clip_path,
+            new_start=np["start"],
+            new_end=np["end"],
+        )
+        if ok:
+            ok_count += 1
+            # Patch the manifest entry
+            clip["start_seconds"] = np["start"]
+            clip["end_seconds"] = np["end"]
+            clip["recut_by_recover_positions"] = True
+        else:
+            fail_count += 1
+        if (i + 1) % 10 == 0:
+            print(f"  [{i+1}/{len(old_clips)}] re-cut {ok_count} OK, {fail_count} failed")
+
+    print(f"\n[info] writing updated clip_manifest.json (atomic)")
+    old_manifest["recover_positions_at"] = datetime.now().isoformat()
+    old_manifest["recover_positions_summary"] = {
+        "ok": ok_count, "failed": fail_count, "total": len(old_clips), "ratios": ratios,
+    }
+    _atomic_write_json(clip_manifest_path, old_manifest)
+
+    print()
+    print("=" * 60)
+    print(f"Done: {ok_count}/{len(old_clips)} clips re-cut successfully")
+    print(f"      {fail_count} failed")
+    print(f"      manifest updated at {clip_manifest_path}")
+    print(f"      ratios: {ratios}")
+    print("=" * 60)
+    print("\nNext: reload the tactical_review webapp page (Ctrl+F5).")
+    print("Verify with: python -m thesis_scripts.verify_clip_alignment ...")
+
+
+if __name__ == "__main__":
+    main()
