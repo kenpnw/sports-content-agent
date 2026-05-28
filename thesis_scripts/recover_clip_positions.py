@@ -71,77 +71,102 @@ def _load_time_map(video_path: Path) -> dict:
     return _read_json_truncation_safe(tmap_path)
 
 
-def _ratio_for_period(samples: list[dict], period: int, anchor: float, next_anchor: float | None) -> tuple[float, list[dict]]:
-    """Return (video_seconds_per_game_second_ratio, kept_samples)
-    for a given period, after filtering OCR replay outliers."""
-    # samples with a real clock reading in this period
+def _cleaned_samples_for_period(samples: list[dict], period: int) -> list[dict]:
+    """Return OCR samples for a period after dropping replay-frozen runs
+    and obvious outliers. Sorted by video_seconds ascending."""
     in_period = [
         s for s in samples
         if s.get("period") == period and s.get("clock_remaining_seconds") is not None
     ]
-    if next_anchor:
-        video_duration = next_anchor - anchor
-    else:
-        video_duration = max(s.get("video_seconds", anchor) for s in in_period) - anchor if in_period else 720.0
-    # Bare default: linear over full period
-    default_ratio = video_duration / 720.0
-
-    if len(in_period) < 3:
-        return default_ratio, []
-
-    # Sort by video seconds asc
+    if not in_period:
+        return []
     in_period.sort(key=lambda s: s["video_seconds"])
 
-    # Filter "frozen" runs (≥3 consecutive samples with same clock_rem within 5s)
+    # Step 1: drop frozen runs (≥3 consecutive samples reading same clock within 5s)
     cleaned: list[dict] = []
     i = 0
     while i < len(in_period):
         j = i + 1
-        while j < len(in_period) and abs(in_period[j]["clock_remaining_seconds"] - in_period[i]["clock_remaining_seconds"]) <= 5.0:
+        while j < len(in_period) and abs(
+            in_period[j]["clock_remaining_seconds"] - in_period[i]["clock_remaining_seconds"]
+        ) <= 5.0:
             j += 1
         run = in_period[i:j]
         if len(run) >= 3:
-            # Frozen — keep only the FIRST sample (live game just before replay started)
-            cleaned.append(run[0])
+            cleaned.append(run[0])  # keep first (live game just before freeze)
         else:
             cleaned.extend(run)
         i = j
 
-    # Filter outliers from rough linear fit (drop samples >120s off the line)
-    if len(cleaned) >= 3:
-        # Per-period elapsed time vs video offset from anchor
-        xs = [s["video_seconds"] - anchor for s in cleaned]
-        ys = [720.0 - s["clock_remaining_seconds"] for s in cleaned]  # game seconds elapsed
-        # Robust slope via median ratio
-        ratios = []
-        for x, y in zip(xs, ys):
-            if y > 5:
-                ratios.append(x / y)
-        if ratios:
-            ratios.sort()
-            median_ratio = ratios[len(ratios) // 2]
-        else:
-            median_ratio = default_ratio
-        # Drop outliers
-        kept = []
-        for s, x, y in zip(cleaned, xs, ys):
-            expected_x = y * median_ratio
-            if abs(x - expected_x) <= 120.0:
-                kept.append(s)
-        if len(kept) >= 3:
-            # Recompute median ratio from kept
-            ratios = [x / (720 - s["clock_remaining_seconds"]) for s, x in zip(kept, [k["video_seconds"] - anchor for k in kept]) if 720 - s["clock_remaining_seconds"] > 5]
-            ratios.sort()
-            return ratios[len(ratios) // 2], kept
-
-    return default_ratio, cleaned
+    # Step 2: enforce monotonic decreasing clock_remaining (events go forward)
+    monotonic: list[dict] = [cleaned[0]] if cleaned else []
+    for s in cleaned[1:]:
+        last = monotonic[-1]
+        if s["clock_remaining_seconds"] <= last["clock_remaining_seconds"] + 2.0:
+            monotonic.append(s)
+        # else: clock went BACKWARDS — almost certainly OCR error, skip
+    return monotonic
 
 
-def _video_seconds_for_event(period: int, game_elapsed: float, anchors: dict, ratios: dict) -> float:
-    """Map (period, game_elapsed_seconds) -> video_seconds."""
-    anchor = anchors.get(str(period), anchors.get(period, 0.0))
-    ratio = ratios.get(period, 1.75)
-    return float(anchor) + float(game_elapsed) * float(ratio)
+def _video_seconds_for_event(
+    period: int,
+    clock_remaining_target: float,
+    anchors: dict,
+    cleaned_samples_by_period: dict[int, list[dict]],
+) -> float:
+    """Piecewise-linear interpolation between adjacent OCR samples.
+
+    For an event with `clock_remaining_target` seconds left in `period`,
+    find the two surrounding samples and linearly interpolate their
+    video_seconds. Falls back to anchor-based linear if out of range.
+    """
+    anchor_raw = anchors.get(str(period), anchors.get(period, 0.0))
+    anchor = float(anchor_raw)
+    samples = cleaned_samples_by_period.get(period, [])
+
+    if not samples:
+        # No usable samples — fall back to global linear assumption
+        # (12-min period, no per-period info available)
+        return anchor + (720.0 - clock_remaining_target) * 1.5
+
+    # samples are sorted by video_seconds asc, which since
+    # clock_remaining DECREASES over time = also sorted by clock_remaining DESC
+    # Walk to find bracketing pair
+    for i in range(len(samples) - 1):
+        s1, s2 = samples[i], samples[i + 1]
+        c1 = s1["clock_remaining_seconds"]
+        c2 = s2["clock_remaining_seconds"]
+        if c1 >= clock_remaining_target >= c2:
+            # Interpolate
+            span_clock = c1 - c2
+            if span_clock < 0.5:
+                return s1["video_seconds"]
+            t = (c1 - clock_remaining_target) / span_clock
+            v1 = s1["video_seconds"]
+            v2 = s2["video_seconds"]
+            return v1 + t * (v2 - v1)
+
+    # Target is OUTSIDE sample range — extrapolate from nearest end
+    first, last = samples[0], samples[-1]
+    if clock_remaining_target > first["clock_remaining_seconds"]:
+        # event is EARLIER than first sample — extrapolate from anchor
+        if len(samples) >= 2:
+            # Use the slope between anchor (clock=720) and first sample
+            game_elapsed_to_first = 720.0 - first["clock_remaining_seconds"]
+            video_offset_to_first = first["video_seconds"] - anchor
+            if game_elapsed_to_first > 5:
+                local_ratio = video_offset_to_first / game_elapsed_to_first
+                return anchor + (720.0 - clock_remaining_target) * local_ratio
+        return anchor + (720.0 - clock_remaining_target) * 1.0
+    else:
+        # event is LATER than last sample — extrapolate from last segment
+        if len(samples) >= 2:
+            s_prev = samples[-2]
+            span_clock = s_prev["clock_remaining_seconds"] - last["clock_remaining_seconds"]
+            if span_clock > 0.5:
+                local_ratio = (last["video_seconds"] - s_prev["video_seconds"]) / span_clock
+                return last["video_seconds"] + (last["clock_remaining_seconds"] - clock_remaining_target) * local_ratio
+        return last["video_seconds"] + (last["clock_remaining_seconds"] - clock_remaining_target) * 1.5
 
 
 def _recut_clip(
@@ -231,17 +256,26 @@ def main() -> None:
     samples = tmap.get("samples") or []
     print(f"[info] {len(samples)} OCR samples; anchors: {anchors}")
 
-    # ---- Build per-period ratios with replay-filter ----
+    # ---- Build cleaned per-period sample lists (frozen-run filter + monotonicity) ----
     sorted_anchors = sorted(((int(p), float(v)) for p, v in anchors.items()), key=lambda x: x[1])
-    ratios: dict[int, float] = {}
-    print(f"\n[info] computing per-period ratios:")
-    for idx, (period, anchor) in enumerate(sorted_anchors):
-        next_anchor = sorted_anchors[idx + 1][1] if idx + 1 < len(sorted_anchors) else None
-        ratio, kept = _ratio_for_period(samples, period, anchor, next_anchor)
-        ratios[period] = ratio
-        print(f"  Q{period}: anchor={anchor:.0f}s, ratio={ratio:.3f}s/s, kept_samples={len(kept)}")
+    cleaned_by_period: dict[int, list[dict]] = {}
+    print(f"\n[info] per-period sample cleaning:")
+    for period, anchor in sorted_anchors:
+        all_in_period = [s for s in samples if s.get("period") == period and s.get("clock_remaining_seconds") is not None]
+        cleaned = _cleaned_samples_for_period(samples, period)
+        cleaned_by_period[period] = cleaned
+        print(f"  Q{period}: anchor={anchor:.0f}s, raw_samples={len(all_in_period)}, cleaned={len(cleaned)} "
+              f"(replay+outlier filter)")
+        if cleaned:
+            first, last = cleaned[0], cleaned[-1]
+            game_span = first["clock_remaining_seconds"] - last["clock_remaining_seconds"]
+            video_span = last["video_seconds"] - first["video_seconds"]
+            avg_ratio = video_span / game_span if game_span > 5 else 0
+            print(f"       span: clock {first['clock_remaining_seconds']:.0f}->{last['clock_remaining_seconds']:.0f} "
+                  f"({game_span:.0f}s game), video {first['video_seconds']:.0f}->{last['video_seconds']:.0f} "
+                  f"({video_span:.0f}s), avg ratio={avg_ratio:.2f}")
 
-    # ---- Compute new positions ----
+    # ---- Compute new positions via piecewise interpolation ----
     clip_before = args.clip_before
     clip_after = args.clip_after
     new_positions = []
@@ -252,8 +286,7 @@ def main() -> None:
         if not period or clock_rem is None:
             new_positions.append(None)
             continue
-        elapsed = max(0.0, 720.0 - clock_rem)  # game seconds elapsed in this period
-        video_t = _video_seconds_for_event(period, elapsed, {str(period): anchors.get(str(period), anchors.get(period, 0))}, ratios)
+        video_t = _video_seconds_for_event(period, clock_rem, anchors, cleaned_by_period)
         new_start = max(0.0, video_t - clip_before)
         new_end = video_t + clip_after
         new_positions.append({"start": new_start, "end": new_end, "event_t": video_t})
