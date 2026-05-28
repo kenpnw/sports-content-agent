@@ -71,12 +71,28 @@ def _load_time_map(video_path: Path) -> dict:
     return _read_json_truncation_safe(tmap_path)
 
 
-def _cleaned_samples_for_period(samples: list[dict], period: int) -> list[dict]:
+def _cleaned_samples_for_period(
+    samples: list[dict],
+    period: int,
+    anchor: float,
+    next_anchor: float | None,
+) -> list[dict]:
     """Return OCR samples for a period after dropping replay-frozen runs
-    and obvious outliers. Sorted by video_seconds ascending."""
+    and obvious outliers. Sorted by video_seconds ascending.
+
+    Critical: filter samples to lie within this period's video range
+    [anchor, next_anchor). NBA OCR sometimes misreads '1ST' as '4TH'
+    or vice versa, polluting one period's sample list with frames
+    that actually belong to a different period.
+    """
+    # Period-range filter: samples must be within this period's video window
+    upper = next_anchor if next_anchor else float("inf")
     in_period = [
         s for s in samples
-        if s.get("period") == period and s.get("clock_remaining_seconds") is not None
+        if s.get("period") == period
+        and s.get("clock_remaining_seconds") is not None
+        and anchor - 30.0 <= s.get("video_seconds", 0) < upper + 30.0
+        # 30s slack on each side to accommodate slightly mis-anchored samples
     ]
     if not in_period:
         return []
@@ -256,13 +272,14 @@ def main() -> None:
     samples = tmap.get("samples") or []
     print(f"[info] {len(samples)} OCR samples; anchors: {anchors}")
 
-    # ---- Build cleaned per-period sample lists (frozen-run filter + monotonicity) ----
+    # ---- Build cleaned per-period sample lists (frozen-run filter + monotonicity + range) ----
     sorted_anchors = sorted(((int(p), float(v)) for p, v in anchors.items()), key=lambda x: x[1])
     cleaned_by_period: dict[int, list[dict]] = {}
     print(f"\n[info] per-period sample cleaning:")
-    for period, anchor in sorted_anchors:
+    for idx, (period, anchor) in enumerate(sorted_anchors):
+        next_anchor = sorted_anchors[idx + 1][1] if idx + 1 < len(sorted_anchors) else None
         all_in_period = [s for s in samples if s.get("period") == period and s.get("clock_remaining_seconds") is not None]
-        cleaned = _cleaned_samples_for_period(samples, period)
+        cleaned = _cleaned_samples_for_period(samples, period, anchor, next_anchor)
         cleaned_by_period[period] = cleaned
         print(f"  Q{period}: anchor={anchor:.0f}s, raw_samples={len(all_in_period)}, cleaned={len(cleaned)} "
               f"(replay+outlier filter)")
