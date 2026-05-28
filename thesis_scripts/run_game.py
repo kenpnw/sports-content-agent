@@ -231,6 +231,9 @@ def main() -> None:
                     help="Fail instead of asking for picker (CI mode)")
     ap.add_argument("--skip-roi", action="store_true",
                     help="Skip ROI auto-detect; reuse existing JSON")
+    ap.add_argument("--skip-refine", action="store_true",
+                    help="Skip per-event OCR refinement (use time_map only). "
+                    "Useful when refinement is being fooled by replays.")
     args = ap.parse_args()
 
     _load_env()
@@ -329,7 +332,11 @@ def main() -> None:
     if tmap_path.exists():
         cmd5.extend(["--apply-time-map", "--time-map", str(tmap_path)])
     if roi_path.exists():
-        cmd5.extend(["--refine-events", "--roi", str(roi_path)])
+        if args.skip_refine:
+            print("[5/5] skipping --refine-events per --skip-refine flag")
+            cmd5.extend(["--roi", str(roi_path)])
+        else:
+            cmd5.extend(["--refine-events", "--roi", str(roi_path)])
     if vis_path.exists():
         cmd5.extend(["--play-segments", str(vis_path)])
 
