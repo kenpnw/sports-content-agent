@@ -345,6 +345,51 @@ def get_preview_frame(report_id: str):
     return send_file(preview, mimetype="image/jpeg")
 
 
+@app.get("/api/tactical/<report_id>/preview-ocr")
+def get_preview_ocr(report_id: str):
+    """OCR the scoreboard in the frame at the given video second.
+    Returns {period, clock_remaining, raw_text} so the adjust modal
+    can show "this frame says Q2 6:30" right next to the user's
+    target label.
+    """
+    try:
+        report_dir = _safe_tactical_report_dir(report_id)
+    except PermissionError:
+        abort(403)
+    try:
+        second = float(request.args.get("second", "0"))
+    except (TypeError, ValueError):
+        abort(400)
+    video = _source_video_for_report(report_dir)
+    if not video:
+        return jsonify({"error": "source video not found"}), 404
+    # Find ROI JSON for this video
+    roi_path = video.with_suffix(".scoreboard_roi.json")
+    if not roi_path.exists():
+        return jsonify({"error": "ROI JSON not found", "checked": str(roi_path)}), 404
+    # Use the existing OCR module
+    try:
+        from video_scout.scoreboard_ocr import ScoreboardOCR, load_roi_json
+        ocr = ScoreboardOCR(load_roi_json(roi_path), use_gpu=False)
+        reading = ocr.read_video_at(str(video), second)
+        clock_s = reading.clock_remaining_seconds
+        clock_disp = None
+        if clock_s is not None:
+            m = int(clock_s // 60)
+            s = int(clock_s % 60)
+            clock_disp = f"{m}:{s:02d}"
+        return jsonify({
+            "video_second": second,
+            "period": reading.period,
+            "clock_remaining_seconds": clock_s,
+            "clock_display": clock_disp,
+            "raw_text": reading.raw_text,
+            "extraction_mode": reading.extraction_mode,
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 @app.post("/api/tactical/<report_id>/clip/<path:clip_filename>/adjust")
 def adjust_clip_endpoint(report_id: str, clip_filename: str):
     """Save user-adjusted start/end seconds for a clip, then re-cut MP4 + GIF.

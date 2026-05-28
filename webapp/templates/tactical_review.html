@@ -1378,6 +1378,10 @@
         fetch(`/api/tactical/${encodeURIComponent(id)}/overrides`).then((r) => r.json()),
       previewFrameUrl: (id, second) =>
         `/api/tactical/${encodeURIComponent(id)}/preview-frame?second=${encodeURIComponent(second)}&_=${Date.now()}`,
+      previewOCR: (id, second) =>
+        fetch(`/api/tactical/${encodeURIComponent(id)}/preview-ocr?second=${encodeURIComponent(second)}`)
+          .then((r) => r.json())
+          .catch(() => null),
       adjustClip: (id, clipFile, startSec, endSec) =>
         fetch(`/api/tactical/${encodeURIComponent(id)}/clip/${encodeURIComponent(clipFile)}/adjust`, {
           method: "POST",
@@ -1905,9 +1909,26 @@
           origStart: start,
           origEnd: end,
         });
+        setPreviewOCR(null);
       }, []);
 
-      const closeAdjust = () => { setAdjustingClip(null); setAdjustSaving(false); };
+      const closeAdjust = () => { setAdjustingClip(null); setAdjustSaving(false); setPreviewOCR(null); };
+
+      // ---- live OCR readout of the current preview frame ----
+      const [previewOCR, setPreviewOCR] = useState(null);  // {period, clock_display, raw_text}
+      const [previewOCRLoading, setPreviewOCRLoading] = useState(false);
+      useEffect(() => {
+        if (!adjustingClip || !reportId) return;
+        const previewT = (adjustingClip.start + adjustingClip.end) / 2;
+        setPreviewOCRLoading(true);
+        const handle = setTimeout(() => {
+          api.previewOCR(reportId, previewT).then((data) => {
+            setPreviewOCR(data);
+            setPreviewOCRLoading(false);
+          });
+        }, 400);  // debounce 400ms so rapid nudges don't spam OCR
+        return () => clearTimeout(handle);
+      }, [adjustingClip?.start, adjustingClip?.end, reportId]);
 
       const saveAdjust = async () => {
         if (!adjustingClip) return;
@@ -2155,6 +2176,27 @@
                         />
                         <div style={{ textAlign: "center", color: "var(--muted)", fontSize: 11, marginTop: 4 }}>
                           预览：视频 {previewT.toFixed(1)}s 处的画面（clip 中心）
+                        </div>
+                        {/* OCR readout: tells the user what the scoreboard ACTUALLY says
+                            in this frame, so they can compare to the label and know
+                            whether to scrub forward / backward. */}
+                        <div style={{ marginTop: 8, padding: "8px 12px", background: "rgba(124,179,255,0.08)", border: "1px solid var(--line)", borderRadius: 4, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+                          <div>
+                            <span style={{ color: "var(--muted)" }}>目标 label：</span>
+                            <span style={{ color: "var(--text)", fontWeight: 600 }}>Q{a.clip.period} {fmtClock(a.clip.clock)}</span>
+                          </div>
+                          <div>
+                            <span style={{ color: "var(--muted)" }}>画面记分牌（OCR）：</span>
+                            {previewOCRLoading ? (
+                              <span style={{ color: "var(--muted)", fontStyle: "italic" }}>读取中...</span>
+                            ) : previewOCR && previewOCR.clock_display ? (
+                              <span style={{ color: (previewOCR.period === a.clip.period) ? "var(--accent)" : "#f87171", fontWeight: 600 }}>
+                                {previewOCR.period ? `Q${previewOCR.period}` : "Q?"} {previewOCR.clock_display}
+                              </span>
+                            ) : (
+                              <span style={{ color: "var(--muted)" }}>未读到时钟</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
