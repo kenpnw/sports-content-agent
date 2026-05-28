@@ -17,3 +17,6 @@ numpy>=1.24
 opencv-python>=4.5
 easyocr>=1.7.0
 # torch / torchvision 已通过 PyTorch CPU 索引手动安装
+
+# ---- PDF Reader（proposal Phase 2: Vision LLM extraction from scouting reports）----
+pypdfium2>=4.0
