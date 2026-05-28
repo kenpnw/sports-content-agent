@@ -299,13 +299,16 @@ def main() -> None:
     else:
         print(f"\n[2/5  ROI]  re-using {roi_path}")
 
-    # ---- Stage 3: Scoreboard visibility (dense v2) ----
+    # ---- Stage 3: Scoreboard visibility (requires ROI) ----
     vis_path = video_path.with_suffix(".scoreboard_visibility_v2.json")
-    cmd3 = [sys.executable, "-m", "video_scout.scoreboard_visibility_detector",
-            "--video", str(video_path), "--output", str(vis_path), "--mode", "dense_v2"]
     if roi_path.exists():
-        cmd3.extend(["--roi", str(roi_path)])
-    _run(cmd3, "3/5  Scoreboard visibility detection")
+        cmd3 = [sys.executable, "-m", "video_scout.scoreboard_visibility_detector",
+                "--video", str(video_path),
+                "--roi", str(roi_path),
+                "--output", str(vis_path)]
+        _run(cmd3, "3/5  Scoreboard visibility detection")
+    else:
+        print("\n[3/5  Scoreboard visibility]  SKIPPED (no ROI available)")
 
     # ---- Stage 4: OCR time map ----
     tmap_path = video_path.with_suffix(".time_map.json")
