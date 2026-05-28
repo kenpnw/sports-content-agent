@@ -538,13 +538,28 @@
       background: linear-gradient(120deg, transparent 30%, rgba(110, 231, 183, 0.12) 50%, transparent 70%) !important;
     }
 
+    /* Action button group — floats top-right of card, only on hover */
+    .clip-actions {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 5;
+    }
+    .clip-card:hover .clip-actions,
+    .clip-card.deleted .clip-actions,
+    .clip-card.adjusted .clip-actions { opacity: 1; }
+
     /* Delete (×) button on clip cards */
     .clip-delete-btn {
       width: 22px;
       height: 22px;
       border: 1px solid var(--line);
       border-radius: 50%;
-      background: rgba(10, 14, 26, 0.7);
+      background: rgba(10, 14, 26, 0.85);
       color: var(--muted);
       cursor: pointer;
       display: flex;
@@ -554,9 +569,7 @@
       font-weight: 700;
       transition: all 0.15s ease;
       flex-shrink: 0;
-      opacity: 0;
     }
-    .clip-card:hover .clip-delete-btn { opacity: 1; }
     .clip-delete-btn:hover {
       background: rgba(248, 113, 113, 0.2);
       color: #f87171;
@@ -573,7 +586,6 @@
       color: var(--muted);
     }
     .clip-card.deleted .clip-delete-btn {
-      opacity: 1;
       background: rgba(110, 231, 183, 0.15);
       color: var(--accent);
       border-color: rgba(110, 231, 183, 0.5);
@@ -584,13 +596,13 @@
       text-decoration: line-through;
     }
 
-    /* Adjust (调时) button on clip cards — sits LEFT of delete button */
+    /* Adjust (调时) button — pill-style, lives inside .clip-actions */
     .clip-adjust-btn {
-      width: 28px;
       height: 22px;
+      padding: 0 8px;
       border: 1px solid var(--line);
-      border-radius: 4px;
-      background: rgba(10, 14, 26, 0.7);
+      border-radius: 11px;
+      background: rgba(10, 14, 26, 0.85);
       color: var(--muted);
       cursor: pointer;
       display: flex;
@@ -598,23 +610,17 @@
       justify-content: center;
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0;
       transition: all 0.15s ease;
       flex-shrink: 0;
-      opacity: 0;
-      margin-right: 10px;     /* clear gap before × delete button */
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    .clip-card:hover .clip-adjust-btn { opacity: 1; }
     .clip-adjust-btn:hover {
-      background: rgba(124, 179, 255, 0.2);
+      background: rgba(124, 179, 255, 0.25);
       color: var(--accent-2);
       border-color: var(--accent-2);
-      transform: scale(1.05);
     }
     .clip-card.adjusted .clip-adjust-btn {
-      opacity: 1;
-      background: rgba(124, 179, 255, 0.2);
+      background: rgba(124, 179, 255, 0.25);
       color: var(--accent-2);
       border-color: var(--accent-2);
     }
@@ -1489,25 +1495,27 @@
                     {player && <span style={{ color: "var(--muted)", fontSize: 10 }}>{player}</span>}
                   </div>
                 </div>
-                <div
-                  className="clip-adjust-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenAdjust && onOpenAdjust(clip);
-                  }}
-                  title={isAdjusted ? "已手动调整 — 点击重新调整" : "手动调整 clip 时间窗口"}
-                >
-                  调时
-                </div>
-                <div
-                  className="clip-delete-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleDelete(clip.observation_id);
-                  }}
-                  title={isDeleted ? "恢复此回合" : "删除此回合（可恢复）"}
-                >
-                  <span>×</span>
+                <div className="clip-actions">
+                  <div
+                    className="clip-adjust-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenAdjust && onOpenAdjust(clip);
+                    }}
+                    title={isAdjusted ? "已手动调整 — 点击重新调整" : "手动调整 clip 时间窗口"}
+                  >
+                    调时
+                  </div>
+                  <div
+                    className="clip-delete-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleDelete(clip.observation_id);
+                    }}
+                    title={isDeleted ? "恢复此回合" : "删除此回合（可恢复）"}
+                  >
+                    <span>×</span>
+                  </div>
                 </div>
               </div>
             );
