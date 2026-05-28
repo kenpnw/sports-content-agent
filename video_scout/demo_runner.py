@@ -172,8 +172,18 @@ def run_video_scout_demo(
                 clip_after_seconds=clip_after_seconds,
             )
             refinement_summary["roi_path"] = str(resolved_roi_path)
-            if float(refinement_summary.get("refinement_elapsed_seconds", 0.0) or 0.0) > 2400.0:
-                raise RuntimeError("Per-event refinement exceeded 40 minutes.")
+            # Note: refinement can legitimately take ~30-60 minutes on CPU for
+            # a full game (60 events x ~323 OCR calls each). We used to raise
+            # at >40 minutes and discard ALL the work, which is wasteful.
+            # Now we just log a soft warning and KEEP the refined positions.
+            elapsed_min = float(
+                refinement_summary.get("refinement_elapsed_seconds", 0.0) or 0.0
+            ) / 60.0
+            if elapsed_min > 40.0:
+                print(
+                    f"[refine-events] WARN: refinement took {elapsed_min:.1f} min; "
+                    f"results kept but consider GPU OCR for speedup."
+                )
         except Exception as exc:
             print(f"[warning] Per-event refinement failed, keeping original clip times: {exc}")
             refinement_summary = _empty_refinement_summary(

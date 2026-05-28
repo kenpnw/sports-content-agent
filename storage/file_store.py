@@ -16,7 +16,17 @@ def timestamp_slug() -> str:
 
 
 def write_json(path: Path, payload: Any) -> None:
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    """Atomic JSON write: serialize to a sibling .tmp file, then rename.
+
+    Prevents the destination file from being half-written if the process is
+    interrupted, the disk buffer isn't fully flushed, or a mount-side cache
+    sees the file mid-write. This was triggering UTF-8 decode errors on
+    ~28 KB reports under Windows mounts.
+    """
+    text = json.dumps(payload, ensure_ascii=False, indent=2)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)  # os.replace is atomic on both POSIX and Windows.
 
 
 def write_text(path: Path, content: str) -> None:
