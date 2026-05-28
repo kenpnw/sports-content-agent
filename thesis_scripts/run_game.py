@@ -115,7 +115,13 @@ def _sniff_date(name: str, mtime: float) -> date | None:
 
 
 def _autodetect_game(video_path: Path, override_date: date | None) -> dict | None:
-    """Return the single matching NBA game dict, or None if ambiguous/missing."""
+    """Return the single matching NBA game dict, or None if ambiguous/missing.
+
+    Strategy: progressively widen the schedule lookback until we find at
+    least one game whose teams match the sniffed tricodes. Date proximity
+    boosts the score, but tricode match alone is enough to surface a game
+    for the user to pick.
+    """
     from ingestion.nba_live import list_recent_finals
 
     name = video_path.stem
@@ -126,14 +132,8 @@ def _autodetect_game(video_path: Path, override_date: date | None) -> dict | Non
     print(f"[autodetect] sniffed tricodes: {sorted(tricodes) or '(none)'}")
     print(f"[autodetect] sniffed date:     {sniffed_date}")
 
-    # Look back from sniffed date +/- 2 days to absorb timezone slop
-    today = date.today()
-    lookback = max(7, (today - sniffed_date).days + 5)
-    print(f"[autodetect] querying NBA schedule, lookback={lookback} days...")
-    games = list_recent_finals(lookback_days=lookback)
-    print(f"[autodetect] {len(games)} completed games in window")
-
-    # Score each game: +5 for matching date, +3 per matching tricode
+    # Score each game: +5 for date match, +3 per matching tricode.
+    # A tricode-only match is enough to surface as a candidate.
     def score(g: dict) -> int:
         s = 0
         gd_raw = g.get("gameDateUTC") or g.get("gameDate") or g.get("gameEt") or ""
@@ -151,28 +151,45 @@ def _autodetect_game(video_path: Path, override_date: date | None) -> dict | Non
             s += 3
         return s
 
-    scored = sorted(games, key=score, reverse=True)
-    top_score = score(scored[0]) if scored else 0
-
-    if top_score == 0:
+    # Progressive widening: start narrow (fast common case), widen on miss.
+    widened = []
+    games: list[dict] = []
+    for lookback in (7, 30, 90, 365):
+        print(f"[autodetect] querying NBA schedule, lookback={lookback} days...")
+        games = list_recent_finals(lookback_days=lookback)
+        print(f"[autodetect] {len(games)} completed games in window")
+        scored = sorted(games, key=score, reverse=True)
+        top_score = score(scored[0]) if scored else 0
+        if top_score >= 3:  # at least one tricode matched
+            break
+        widened.append(lookback)
+    else:
+        print(f"[autodetect] no tricode-matching games even at 365 days; giving up.")
+        print(f"             tried lookbacks: {widened}")
         return None
-    candidates = [g for g in scored if score(g) == top_score]
 
-    if len(candidates) == 1:
+    candidates = [g for g in scored if score(g) >= 3]
+    candidates.sort(key=score, reverse=True)
+
+    # If there's a clearly best match (date + both teams = score 11), auto-confirm.
+    if len(candidates) >= 1 and score(candidates[0]) >= 11 and \
+       (len(candidates) == 1 or score(candidates[0]) > score(candidates[1])):
         g = candidates[0]
-        print(f"[autodetect] unique match  -> "
+        print(f"[autodetect] unique high-confidence match  -> "
               f"{g['awayTeam']['teamTricode']} @ {g['homeTeam']['teamTricode']} "
-              f"({g.get('gameDateUTC', g.get('gameEt', ''))[:10]}) "
-              f"game_id={g['gameId']}  [score {top_score}]")
+              f"({(g.get('gameDateUTC') or g.get('gameEt', ''))[:10]}) "
+              f"game_id={g['gameId']}  [score {score(g)}]")
         return g
 
-    # Multiple candidates; let the user pick.
-    print(f"[autodetect] {len(candidates)} candidate matches (top score = {top_score}):")
+    # Otherwise (single weak match OR multiple candidates), let user pick.
+    # Cap at 15 to keep the picker readable.
+    candidates = candidates[:15]
+    print(f"[autodetect] {len(candidates)} candidate(s) match team(s) {sorted(tricodes)}:")
     for i, g in enumerate(candidates, 1):
         date_str = (g.get("gameDateUTC") or g.get("gameEt") or "")[:10]
-        print(f"  [{i}] {g['awayTeam']['teamTricode']} @ {g['homeTeam']['teamTricode']}  "
+        print(f"  [{i:>2}] {g['awayTeam']['teamTricode']} @ {g['homeTeam']['teamTricode']}  "
               f"{date_str}  {g.get('awayTeam', {}).get('score', 0)}-{g.get('homeTeam', {}).get('score', 0)}  "
-              f"game_id={g['gameId']}")
+              f"game_id={g['gameId']}  [score {score(g)}]")
     try:
         choice = input("Pick number (or Enter to abort): ").strip()
     except EOFError:
