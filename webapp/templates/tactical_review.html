@@ -1428,7 +1428,7 @@
       return Math.max(0, Math.min(100, score));
     }
 
-    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect, snapByObs, deletedSet, onToggleDelete, showDeleted, overridesSet, onOpenAdjust }) {
+    function ClipTimeline({ clips, reportId, selectedIdx, onSelect, selectedSet, onToggleSelect, snapByObs, deletedSet, onToggleDelete, showDeleted, overridesSet, onOpenAdjust, clipUrlSuffix }) {
       if (!clips.length) {
         return <Empty description="该 report 没有 clips" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
       }
@@ -1441,7 +1441,8 @@
           {visible.map((clip) => {
             const idx = clips.indexOf(clip);
             const gifName = fileBase(clip.gif_path);
-            const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}` : "";
+            const _suffix = clipUrlSuffix ? clipUrlSuffix(fileBase(clip.output_path) || stripExt(gifName)) : "";
+            const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}${_suffix}` : "";
             const tag = (clip.tactic_tags || [])[0] || "";
             const player = (clip.players || []).join(", ");
             const isChecked = selectedSet?.has(clip.observation_id);
@@ -1589,11 +1590,15 @@
     }
 
     // ---------- Enhanced ClipPreview with frames + tactical commentary ----------
-    function ClipPreview({ clip, segment, reportId, snapInfo }) {
+    function ClipPreview({ clip, segment, reportId, snapInfo, clipUrlSuffix, clipVersions }) {
       const [frames, setFrames] = useState([]);
       const [framesBase, setFramesBase] = useState("");
       const [enlarged, setEnlarged] = useState(null);
 
+      const _clipBase = clip ? (fileBase(clip.output_path) || fileBase(clip.gif_path)) : "";
+      const _clipBaseStem = _clipBase ? stripExt(_clipBase) : "";
+      // Read the version for THIS clip — when bumped, the useEffect re-fires
+      const _clipVer = clipVersions ? (clipVersions[_clipBaseStem] || 0) : 0;
       useEffect(() => {
         setFrames([]);
         if (!clip || !reportId) return;
@@ -1603,7 +1608,7 @@
           setFrames(data.frames || []);
           setFramesBase(data.basename || stripExt(clipFile));
         });
-      }, [clip, reportId]);
+      }, [clip, reportId, _clipVer]);
 
       if (!clip) {
         return <Empty description="点击左侧 clip 查看详情" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
@@ -1611,8 +1616,9 @@
 
       const gifName = fileBase(clip.gif_path);
       const mp4Name = fileBase(clip.output_path);
-      const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}` : "";
-      const mp4Url = mp4Name ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(mp4Name)}` : "";
+      const _suffix = clipUrlSuffix ? clipUrlSuffix(_clipBaseStem) : "";
+      const gifUrl = gifName ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(gifName)}${_suffix}` : "";
+      const mp4Url = mp4Name ? `/static-clips/${encodeURIComponent(reportId)}/${encodeURIComponent(mp4Name)}${_suffix}` : "";
 
       const obs = segment?.observation || "";
       const dec = segment?.decision_analysis || segment?.decision || "";
@@ -1732,7 +1738,7 @@
           ) : (
             <div className="frames-grid">
               {frames.map((fname) => {
-                const url = `/static-frames/${encodeURIComponent(reportId)}/${encodeURIComponent(framesBase)}/${encodeURIComponent(fname)}`;
+                const url = `/static-frames/${encodeURIComponent(reportId)}/${encodeURIComponent(framesBase)}/${encodeURIComponent(fname)}${_suffix}`;
                 return (
                   <img
                     key={fname}
@@ -1867,6 +1873,16 @@
       const [overridesSet, setOverridesSet] = useState(new Set());  // set of clip filenames (basenames)
       const [adjustingClip, setAdjustingClip] = useState(null);     // {clip, start, end}
       const [adjustSaving, setAdjustSaving] = useState(false);
+      // Cache-buster: bumped per clip whenever we recut; included in every
+      // GIF/MP4/frame URL so browser refetches after recut.
+      const [clipVersions, setClipVersions] = useState({});           // {clipBasename: int}
+      const bumpClipVersion = useCallback((basename) => {
+        setClipVersions((prev) => ({ ...prev, [basename]: (prev[basename] || 0) + 1 }));
+      }, []);
+      const clipUrlSuffix = useCallback((basename) => {
+        const v = clipVersions[basename] || 0;
+        return v ? `?v=${v}` : "";
+      }, [clipVersions]);
 
       // Fetch existing overrides for this report
       useEffect(() => {
@@ -1903,22 +1919,15 @@
         setAdjustSaving(true);
         try {
           await api.adjustClip(reportId, clipMp4, adjustingClip.start, adjustingClip.end);
-          message.success("已重切 clip + 重生成 GIF");
-          // Refresh overrides set + reload report so the new GIF shows
+          message.success("已重切 clip + 重生成 GIF + 6 关键帧");
           setOverridesSet((prev) => {
             const next = new Set(prev);
             next.add(clipMp4);
             return next;
           });
-          // Force GIF reload by appending cache-buster
-          setTimeout(() => {
-            const imgs = document.querySelectorAll(`img.clip-thumb`);
-            imgs.forEach((im) => {
-              if (im.src && im.src.includes(clipBase)) {
-                im.src = im.src.split("?")[0] + "?_=" + Date.now();
-              }
-            });
-          }, 200);
+          // Bump version for THIS clip so all GIF/MP4/frame URLs
+          // pick up the new files. React re-render handles the refresh.
+          bumpClipVersion(clipBase);
           closeAdjust();
         } catch (e) {
           message.error("调整失败：" + e.message);
@@ -2049,6 +2058,7 @@
                       showDeleted={showDeleted}
                       overridesSet={overridesSet}
                       onOpenAdjust={openAdjust}
+                      clipUrlSuffix={clipUrlSuffix}
                     />
                   )}
                 </div>
@@ -2096,7 +2106,7 @@
                   <div className="section-title" style={{ margin: 0 }}>预览 · 战术解说 · 证据</div>
                 </div>
                 <div className="scrollable" style={{ height: "calc(100% - 49px)", padding: "16px" }}>
-                  <ClipPreview clip={selectedClip} segment={selectedSeg} reportId={reportId} snapInfo={selectedSnap} />
+                  <ClipPreview clip={selectedClip} segment={selectedSeg} reportId={reportId} snapInfo={selectedSnap} clipUrlSuffix={clipUrlSuffix} clipVersions={clipVersions} />
                   <Divider style={{ margin: "20px 0 12px" }} />
                   <div className="section-title">证据链</div>
                   <EvidenceList segment={selectedSeg} clip={selectedClip} />
