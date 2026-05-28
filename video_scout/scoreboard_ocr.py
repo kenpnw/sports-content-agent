@@ -149,6 +149,7 @@ def parse_scoreboard_text(raw_text: str) -> tuple[int | None, float | None, str]
         _parse_ordinal_period_clock,
         _parse_qtr_period_clock,
         _parse_overtime_clock,
+        _parse_clock_first_then_period,    # NEW: handles "9:38 1ST" (clock before period)
     ]
     for parser in parsers:
         period, seconds = parser(text)
@@ -160,6 +161,37 @@ def parse_scoreboard_text(raw_text: str) -> tuple[int | None, float | None, str]
     if period is not None or clock_seconds is not None:
         return period, clock_seconds, "smart"
     return None, None, "failed"
+
+
+def _parse_clock_first_then_period(text: str) -> tuple[int | None, float | None]:
+    """Handle scoreboards where the OCR returns the clock before the period,
+    e.g. '9:38 1ST 24' or '6:55 1ST'. The four strict parsers above all
+    require period-then-clock order, so these clean M:SS strings would
+    otherwise fall through to the garbled-digit smart parser, which can
+    only extract clocks from no-colon noise like '8838'.
+    """
+    clock_match = re.search(
+        r"(?:^|[^0-9])([0-9]{1,2})[:.]([0-9]{2})(?:\.[0-9])?(?:$|[^0-9])",
+        text,
+    )
+    if not clock_match:
+        return None, None
+    minute = int(clock_match.group(1))
+    second = int(clock_match.group(2))
+    if not (0 <= minute <= 12 and 0 <= second < 60):
+        return None, None
+    clock_seconds = float(minute * 60 + second)
+
+    # Period detection: prefer explicit ordinal/Q markers, fall back to any
+    # bare 1-4 outside the clock region.
+    period_match = re.search(r"\b([1-4])\s*(?:ST|ND|RD|TH)\b", text)
+    if period_match:
+        return int(period_match.group(1)), clock_seconds
+    period_match = re.search(r"\bQ\s*([1-4])\b", text)
+    if period_match:
+        return int(period_match.group(1)), clock_seconds
+    # No reliable period marker — fail this parser so smart fallback can run.
+    return None, None
 
 
 def _extract_clock_from_garbled(text: str) -> float | None:
