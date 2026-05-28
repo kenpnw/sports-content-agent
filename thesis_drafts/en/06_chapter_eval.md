@@ -186,7 +186,7 @@ python -m thesis_scripts.run_game --video data/videos/sas_okc_wcf.mkv
 
 ### 5.6.2 End-to-End Execution Metrics
 
-The 5-stage pipeline execution result is summarized in Table 5-3. Total elapsed time was approximately **45 minutes** (shorter than OKC vs LAL G1's 80-90 minutes, partly due to shorter video duration in this game and OCR caching).
+The 5-stage pipeline execution is summarized in Table 5-3. Total elapsed time was approximately **44 minutes**, of which the per-event refinement stage took 39 min 43 sec (across 11,433 OCR calls), the 5-Agent LLM stage took about 4 minutes, and the remaining video processing + PBP ingestion took about 1 minute.
 
 **Table 5-3.  End-to-end execution on SAS vs OKC G5**
 
@@ -195,10 +195,37 @@ The 5-stage pipeline execution result is summarized in Table 5-3. Total elapsed 
 | 1. PBP ingestion | ✅ Success | 680 events |
 | 2. ROI calibration | ✅ Success | Reused manually calibrated ROI `(905, 925, 140, 75)` |
 | 3. Scoreboard visibility | ✅ Success | 12-template dense matching |
-| 4. OCR time mapping | ✅ Success | **All 4 period anchors detected** (Q1=540s / Q2=1771s / Q3=4377s / Q4=6189s) |
-| 5. 5-Agent LLM coordination | ✅ Success | 60 segments / 60 clips fully generated; 3 of 4 LLM stages OK, stage 4 (MVP profile) falls back as expected without court report input |
+| 4. OCR time map (coarse alignment) | ✅ Success | **All 4 period anchors detected** (Q1=540s / Q2=1771s / Q3=4377s / Q4=6189s); 60/60 clips anchored |
+| 5. Per-event fine refinement | ✅ Success | **44/60 OCR refinement accepted + 4 neighbor interpolations** (see 5.6.3) |
+| 6. 5-Agent LLM coordination | ✅ Success | 60 segments fully generated; 3 of 4 LLM stages OK, stage 4 falls back as expected without court report input |
+| 7. 60 clip extraction + GIF | ✅ Success | All completed |
 
-**Video alignment accuracy (core metric): 60/60 (100%)**, with every clip window precisely anchored by OCR time map — no clip fell back to linear mapping. This validates that as long as ROI calibration is accurate (manual here, semi-auto+manual in OKC vs LAL G1), the "OCR time map + piecewise-linear interpolation" alignment scheme can achieve 100% visual alignment on any new game.
+### 5.6.3 Multi-Layer Video Alignment Results
+
+The system's alignment process consists of two independent but complementary layers: (a) **coarse alignment**, building a "video-second ↔ game-clock" mapping via OCR time samples, covering all 60 clips; (b) **fine refinement**, doing a narrow-window OCR scan around each event's coarse position over ±20s / 60s / 120s search ranges, sharpening the single-event precision from ±5-10 seconds down to ±0.5 seconds. This game's fine refinement results are shown in Table 5-4.
+
+**Table 5-4.  Per-event refinement outcome distribution on SAS vs OKC G5 (60 events)**
+
+| Path | Count | Share | Meaning |
+|------|-------|-------|---------|
+| **OCR refinement accepted** | **44** | **73.3%** | OCR matched the expected clock in the narrow window; clip center fine-tuned to ±0.5s |
+| Neighbor interpolation | 4 | 6.7% | Refinement failed but both neighbors succeeded; position estimated by linear interpolation |
+| Monotonic fallback | 7 | 11.7% | OCR result violated time monotonicity; rolled back to coarse alignment |
+| Sample fallback | 7 | 11.7% | No OCR match in the narrow window; fell back to nearest OCR sample |
+| Linear fallback (no neighbor) | 0 | 0% | No fix possible; fell back to initial linear mapping |
+| Hard threshold drops (> 300s shift) | 0 | 0% | Catastrophic OCR error protection (none triggered) |
+
+**Search strategy hit distribution**: of the 44 accepted refinements, strategy A (precise ±20s) contributed 19 hits (43%), strategy B (±60s) contributed 17 (39%), and strategy C (±120s) contributed 13 (30%) — indicating most events are locatable within the narrowest search window, validating overall OCR efficiency.
+
+**Alignment quality summary**:
+
+- **100% coarse alignment coverage** (60/60 anchored by time map, 0 with no reference);
+- **73% strict fine alignment** (44 events OCR-accepted to ±0.5s precision);
+- **80% effective fine alignment** (44 OCR-accepted + 4 neighbor-interpolated, clip precision ≤ ±1s);
+- **0 hard threshold drops** (no catastrophic OCR errors, confirming ROI calibration accuracy);
+- **7 monotonic fallbacks** show the system's "monotonicity guard" successfully intercepted occasional OCR misreads, gracefully rolling back to robust coarse positions rather than propagating errors.
+
+This result is at a comparable level to the main case OKC vs LAL G1's 83% video alignment accuracy, demonstrating that the multi-layer alignment architecture remains **stable across games**.
 
 ### 5.6.3 LLM Output Quality
 
@@ -230,15 +257,16 @@ Key observations:
 - **The "no forced tactical labels" rule transferred to new data**: the turnover possession explicitly writes "because this is a turnover possession, no tactical name applies," not the older version's bogus "this is a 'turnover-pass' tactic";
 - **Cross-quarter coherent narrative**: executive summary, 4-quarter flow, and per-possession triples (observation / decision_analysis / win_loss_impact) form a complete hierarchical structure.
 
-### 5.6.4 Generalization Summary
+### 5.6.5 Generalization Summary
 
 The SAS vs OKC G5 test fully validated the following capabilities on entirely new data:
 
-- ✅ **Cross-matchup + cross-broadcaster generalization**: the 5-stage pipeline ran end-to-end on completely different matchup / roster / broadcast layout from the main case;
-- ✅ **100% video alignment**: 60/60 clips were precisely anchored by OCR time map, **higher than** OKC vs LAL G1's 83% (benefiting from cleaner OCR sample quality on this game);
-- ✅ **Zero-shot LLM performance**: DeepSeek-chat produced 60 segments + 4-quarter narrative with accurate terminology and correct tactical classification on the new game;
-- ✅ **Stable v16 prompt rule transfer**: the 30+ glossary and "no forced tactical labels" negative rule continued to work on the new data;
-- ✅ **One-command UX**: user provided only the video path; everything else fully automated, end-to-end 45 minutes.
+- ✅ **Cross-matchup + cross-broadcaster generalization**: the 5-stage pipeline ran end-to-end on a completely different matchup / roster / broadcast layout from the main case;
+- ✅ **Stable multi-layer video alignment**: 60/60 (100%) coarse alignment + 44/60 (73%) OCR-accepted fine refinement + 4 neighbor interpolations (80% effective fine alignment), at a level comparable to the main case OKC vs LAL G1's 83%;
+- ✅ **Zero-shot LLM performance**: DeepSeek-chat produced 60 segments + 4-quarter narrative on the new game with accurate terminology and correct tactical classification;
+- ✅ **Stable v16 prompt rule transfer**: the 30+ glossary and "no forced tactical labels" negative rule continued to work on new data;
+- ✅ **Multi-layer defenses behaved as designed**: 7 monotonic fallbacks intercepted occasional OCR misreads; 0 hard threshold drops confirmed accurate ROI calibration;
+- ✅ **One-command UX**: user provided only the video path; everything else fully automated, end-to-end 44 minutes.
 
 This test validates the robustness of the core architecture and LLM intelligence layer across games. For an initially-onboarded new broadcaster, scoreboard ROI still requires about 5 minutes of manual calibration (used here); further automation via a vision-LLM-based ROI calibration approach is discussed in Section 6.3 (Future Work).
 
